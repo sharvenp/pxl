@@ -3,7 +3,7 @@ import IPCCommands from "../commands";
 
 // Expose ipcRenderer to the client
 contextBridge.exposeInMainWorld("ipcAPI", {
-  call: (channel, ...args) => {
+  call: (channel: string, ...args: any) => {
     if (IPCCommands[channel] !== undefined) {
       return ipcRenderer.invoke(channel, ...args);
     }

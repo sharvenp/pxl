@@ -1,5 +1,11 @@
 import { createApp } from 'vue'
-import "./style.css"
+import "./index.css"
 import App from './App.vue'
+import { InstanceAPI } from "./api"
 
-createApp(App).mount('#app')
+let app = createApp(App);
+
+let iApi = new InstanceAPI();
+app.provide('iApi', iApi);
+
+app.mount('#app');

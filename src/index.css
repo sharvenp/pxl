@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --primary-color: rgb(243, 243, 243);
+  --secondary-color: rgb(243, 243, 243);
+  --accent-color: rgb(243, 243, 243);
+
+  --text-primary-color: black;
+  --text-secondary-color: rgb(44, 44, 44);
+}
+
+:root.dark-theme {
+  --primary-color: rgb(40, 44, 52);
+  --secondary-color: rgb(40, 44, 52);
+  --accent-color: rgb(40, 44, 52);
+
+  --text-primary-color: white;
+  --text-secondary-color: rgb(201, 201, 201);
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+	background-clip: content-box;
+}

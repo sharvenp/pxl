@@ -5,6 +5,7 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import pkg from './package.json'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -34,7 +35,7 @@ export default defineConfig(({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/main',
               rollupOptions: {
-                // Some third-party Node.js libraries may not be built correctly by Vite, especially `C/C++` addons, 
+                // Some third-party Node.js libraries may not be built correctly by Vite, especially `C/C++` addons,
                 // we can use `external` to exclude them to ensure they work correctly.
                 // Others need to put them in `dependencies` to ensure they are collected into `app.asar` after the app is built.
                 // Of course, this is not absolute, just this way is relatively simple. :)
@@ -43,7 +44,7 @@ export default defineConfig(({ command }) => {
             },
             plugins: [
               // This is just an option to improve build performance, it's non-deterministic!
-              // e.g. `import log from 'electron-log'` -> `const log = require('electron-log')` 
+              // e.g. `import log from 'electron-log'` -> `const log = require('electron-log')`
               isServe && notBundle(),
             ],
           },
@@ -51,7 +52,7 @@ export default defineConfig(({ command }) => {
         {
           entry: 'electron/preload/index.ts',
           onstart({ reload }) {
-            // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+            // Notify the Renderer process to reload the page when the Preload scripts build is complete,
             // instead of restarting the entire Electron App.
             reload()
           },
@@ -73,6 +74,11 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer process
       renderer(),
     ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      }
+    },
     server: process.env.VSCODE_DEBUG && (() => {
       const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
       return {

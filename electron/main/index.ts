@@ -35,8 +35,8 @@ const indexHtml = join(process.env.DIST, 'index.html')
 async function createWindow() {
 
   let mainWindowState = windowStateKeeper({
-    defaultWidth: 1000,
-    defaultHeight: 800
+    defaultHeight: 700,
+    defaultWidth: 1000
   });
 
   win = new BrowserWindow({
@@ -44,6 +44,8 @@ async function createWindow() {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
+    minWidth: 700,
+    minHeight: 1000,
     title: '.pxl',
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
     webPreferences: {
