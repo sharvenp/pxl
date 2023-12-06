@@ -5,8 +5,8 @@
 
 :root {
   --primary-color: rgb(243, 243, 243);
-  --secondary-color: rgb(243, 243, 243);
-  --accent-color: rgb(243, 243, 243);
+  --secondary-color: rgb(245, 245, 245);
+  --accent-color: rgb(224, 224, 224);
 
   --text-primary-color: black;
   --text-secondary-color: rgb(44, 44, 44);
@@ -25,7 +25,19 @@ html, body, #app {
   height: 100%;
 }
 
+.pixel-canvas {
+  image-rendering: pixelated;
+  background-color: rgba(0,0,0,0);
+  border: solid rgb(231, 231, 231)1px;
+}
 
+.layout {
+  background-color: var(--secondary-color);
+}
+
+.status-bar {
+  background-color: var(--accent-color);
+}
 
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
