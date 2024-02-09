@@ -28,7 +28,7 @@ html, body, #app {
 .pixel-canvas {
   image-rendering: pixelated;
   background-color: rgba(0,0,0,0);
-  border: solid rgb(231, 231, 231)1px;
+  border: solid rgb(231, 231, 231) 1px;
 }
 
 .layout {

@@ -4,3 +4,4 @@ export * from './event';
 export * from './ipc';
 export * from './canvas';
 export * from './grid';
+export * from './palette';

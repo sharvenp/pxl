@@ -5,6 +5,7 @@
                 <canvas v-show="initialized" class="bg-white pixel-canvas" ref="bgCanvas"></canvas>
             </div>
             <canvas v-show="initialized" class="pixel-canvas" ref="canvas"></canvas>
+            <!-- TODO: use iterator here to add more layers -->
         </div>
         <div v-if="!initialized" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 w-80 text-center p-5 rounded-xl">
             <p>Enter canvas dimensions</p>

@@ -39,7 +39,7 @@ export class CanvasAPI extends APIScope {
 
         if (width > height) {
             this._el.width = 512;
-            this._el.height = Math.min(Math.max((height * 1.0 / width) * 512, 32), 1000);
+            this._el.height = Math.min(Math.max((height * 1.0 / width) * 512, 32), 1024);
         } else if (width < height) {
             this._el.height = 512;
             this._el.width = Math.min(Math.max((width * 1.0 / height) * 512, 32), 1024);

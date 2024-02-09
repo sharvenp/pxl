@@ -17,6 +17,8 @@ export enum Events {
     CANVAS_MOUSE_MOVE = "canvas_mouse_move",
     CANVAS_MOUSE_DRAG_START = "canvas_mouse_drag_start",
     CANVAS_MOUSE_DRAG_STOP = "canvas_mouse_drag_stop",
+    TOOL_SELECT = "tool_select",
+    COLOR_SELECT = "color_select"
 }
 
 export class EventAPI extends APIScope {

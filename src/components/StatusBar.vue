@@ -1,24 +1,35 @@
 <template>
-    <p class="p-2 text-right">X: {{ x }} Y: {{ y }}</p>
+    <div class="flex flex-row">
+        <p class="p-2 text-left">{{ currentTool }}</p>
+        <p class="p-2 text-right ms-auto">X: {{ x }} Y: {{ y }}</p>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, inject, onUnmounted } from 'vue'
 import { InstanceAPI, Events } from '../api';
+import { Tools } from '../api/tools';
 
+let handlers: Array<string> = [];
 let x = ref<number>(0);
 let y = ref<number>(0);
+let currentTool = ref<string>("");
 const iApi = inject<InstanceAPI>('iApi');
 
+
 onMounted(() => {
-    iApi?.event.on(Events.CANVAS_MOUSE_MOVE, (coordinates: any) => {
+    handlers.push(iApi?.event.on(Events.CANVAS_MOUSE_MOVE, (coordinates: any) => {
         x.value = Math.floor(coordinates.coords.pixel.x) + 1;
         y.value = Math.floor(coordinates.coords.pixel.y) + 1;
-    });
+    })!);
+
+    handlers.push(iApi?.event.on(Events.TOOL_SELECT, (tool: Tools) => {
+        currentTool.value = tool;
+    })!);
 })
 
 onUnmounted(() => {
-    iApi?.event.off(Events.CANVAS_MOUSE_MOVE);
+    handlers.forEach(h => iApi?.event.off(h));
 })
 
 </script>
