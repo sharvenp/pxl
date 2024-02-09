@@ -4,6 +4,7 @@
     <Canvas />
     <Tools />
     <Palette />
+    <Preview />
     <div class="status-bar grid col-span-full z-10">
       <StatusBar />
     </div>
@@ -16,4 +17,5 @@ import Canvas from './components/Canvas.vue';
 import Tools from './components/Tools.vue';
 import Palette from './components/Palette.vue';
 import StatusBar from './components/StatusBar.vue';
+import Preview from './components/Preview.vue';
 </script>

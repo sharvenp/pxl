@@ -12,6 +12,8 @@ export class Pencil extends Tool {
         if (color) {
             this._grid.ctx.fillStyle = color;
             this._grid.ctx.fillRect(pixelCoords.x * this._grid.offsetX, pixelCoords.y * this._grid.offsetY, this._grid.offsetX, this._grid.offsetY);
+
+            this.notify();
         }
     }
 

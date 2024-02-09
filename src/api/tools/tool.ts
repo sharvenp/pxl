@@ -1,4 +1,4 @@
-import { GridAPI, PixelCoordinates } from "../grid";
+import { GridAPI, PixelCoordinates, Events } from "..";
 import { InstanceAPI } from "../instance";
 
 export enum Tools {
@@ -20,6 +20,10 @@ export abstract class Tool {
 
     protected get $iApi(): InstanceAPI {
         return this._grid.$iApi;
+    }
+
+    protected notify() {
+        this.$iApi.event.emit(Events.CANVAS_UPDATE);
     }
 
     abstract invoke(pixelCoords: PixelCoordinates): void;

@@ -9,6 +9,7 @@ export class Eraser extends Tool {
 
     invoke(pixelCoords: PixelCoordinates): void {
         this._grid.ctx.clearRect(pixelCoords.x * this._grid.offsetX, pixelCoords.y * this._grid.offsetY, this._grid.offsetX, this._grid.offsetY);
+        this.notify();
     }
 
     getToolProperties(): Array<ToolProperty> {

@@ -25,8 +25,11 @@ html, body, #app {
   height: 100%;
 }
 
-.pixel-canvas {
+canvas {
   image-rendering: pixelated;
+}
+
+.pixel-canvas {
   background-color: rgba(0,0,0,0);
   border: solid rgb(231, 231, 231) 1px;
 }

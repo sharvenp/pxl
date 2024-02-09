@@ -1,4 +1,4 @@
-import { APIScope, InstanceAPI, GridAPI, Events } from '.';
+import { APIScope, InstanceAPI, GridAPI } from '.';
 import Panzoom, { PanZoom } from "panzoom";
 
 export class CanvasAPI extends APIScope {
@@ -84,5 +84,9 @@ export class CanvasAPI extends APIScope {
 
     set initialized(isInitialized: boolean) {
         this._initialized = isInitialized;
+    }
+
+    get el(): HTMLCanvasElement | undefined {
+        return this._el;
     }
 }
