@@ -66,7 +66,7 @@ export class GridAPI extends APIScope {
         };
 
         this._el.onmouseenter = (event: MouseEvent) => {
-            if (event.buttons > 0 && event.buttons == 1) {
+            if (event.buttons > 0 && event.buttons === 1) {
                 let c = this.parseMouseEvent(event);
                 isDragging = true;
                 this.invokeTool(c.pixel);

@@ -16,46 +16,29 @@ export class Palette extends APIScope {
 
         this._handlers = [];
 
-        this._palette = [
-            {
-                color: '#000000',
-            },
-            {
-                color: '#FF0000',
-            },
-            {
-                color: '#00FF00',
-            },
-            {
-                color: '#0000FF',
-            },
-            {
-                color: '#F000FF',
-            },
-            {
-                color: '#00F0FF',
-            },
-            {
-                color: '#A0F0FF',
-            },
-            {
-                color: '#ABF0FF',
-            },
-        ];
+        this._palette = [];
 
         this.initialize();
-
-
     }
 
     initialize(): void {
-        this._handlers.push(this.$iApi.event.on(Events.COLOR_SELECT, (color: PaletteItem) => {
+        this._handlers.push(this.$iApi.event.on(Events.PALETTE_COLOR_SELECT, (color: PaletteItem) => {
             this._selectedColor = color;
+        }));
+
+        this._handlers.push(this.$iApi.event.on(Events.PALETTE_COLOR_ADD, (color: PaletteItem) => {
+            this.addColor(color);
         }));
     }
 
     destroy(): void {
         this._handlers.forEach(h => this.$iApi.event.off(h));
+    }
+
+    addColor(color: PaletteItem) {
+        if (!this._palette.some(c => c.color === color.color)) {
+            this._palette.push(color);
+        }
     }
 
     get selectedColor(): PaletteItem | undefined {
