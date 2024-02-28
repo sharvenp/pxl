@@ -16,7 +16,6 @@ let y = ref<number>(0);
 let currentTool = ref<string>("");
 const iApi = inject<InstanceAPI>('iApi');
 
-
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.CANVAS_MOUSE_MOVE, (coordinates: any) => {
         x.value = Math.floor(coordinates.coords.pixel.x) + 1;

@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, inject } from 'vue'
-import { Events, InstanceAPI } from '../api';
+import { InstanceAPI } from '../api';
 import { Tools } from '../api/tools';
 
 const iApi = inject<InstanceAPI>('iApi');
@@ -21,6 +21,6 @@ let currentTool = ref();
 
 function selectTool(tool: Tools) {
     currentTool.value = tool;
-    iApi?.event.emit(Events.TOOL_SELECT, tool);
+    iApi?.tool.createAndSelectTool(tool);
 }
 </script>

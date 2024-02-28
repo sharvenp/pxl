@@ -3,7 +3,7 @@ import Panzoom, { PanZoom } from "panzoom";
 
 export class CanvasAPI extends APIScope {
 
-    private grid: GridAPI | undefined;
+    private _grid: GridAPI | undefined;
 
     private _initialized: boolean;
     private _el: HTMLCanvasElement | undefined;
@@ -64,7 +64,7 @@ export class CanvasAPI extends APIScope {
         ctx.fillStyle  = '#F5F5F5';
         ctx.fill();
 
-        this.grid = new GridAPI(this.$iApi, this._el, width, height);
+        this._grid = new GridAPI(this.$iApi, this._el, width, height);
         this._initialized = true;
     }
 
@@ -72,8 +72,8 @@ export class CanvasAPI extends APIScope {
         this._initialized = false;
         this._panzoom?.dispose();
 
-        this.grid?.destroy();
-        this.grid = undefined;
+        this._grid?.destroy();
+        this._grid = undefined;
 
         this._el = undefined;
     }
@@ -88,5 +88,9 @@ export class CanvasAPI extends APIScope {
 
     get el(): HTMLCanvasElement | undefined {
         return this._el;
+    }
+
+    get grid(): GridAPI | undefined {
+        return this._grid;
     }
 }

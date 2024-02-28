@@ -5,3 +5,4 @@ export * from './ipc';
 export * from './canvas';
 export * from './grid';
 export * from './palette';
+export * from './tool';

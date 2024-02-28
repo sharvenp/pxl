@@ -1,17 +1,18 @@
-import { GridAPI, PixelCoordinates } from '../grid';
-import { Tool, ToolProperty } from './tool'
+import { InstanceAPI, PixelCoordinates } from '..';
+import { Tool, ToolProperty, Tools } from './tool'
 
 export class Pencil extends Tool {
 
-    constructor(grid: GridAPI) {
-        super(grid);
+    constructor(iApi: InstanceAPI) {
+        super(iApi, Tools.PENCIL);
     }
 
     invoke(pixelCoords: PixelCoordinates): void {
+        let grid = this.$iApi.canvas.grid!;
         let color = this.$iApi.palette.selectedColor?.color;
-        if (color) {
-            this._grid.ctx.fillStyle = color;
-            this._grid.ctx.fillRect(pixelCoords.x * this._grid.offsetX, pixelCoords.y * this._grid.offsetY, this._grid.offsetX, this._grid.offsetY);
+        if (color && grid) {
+            grid.ctx.fillStyle = color;
+            grid.ctx.fillRect(pixelCoords.x * grid.offsetX, pixelCoords.y * grid.offsetY, grid.offsetX, grid.offsetY);
 
             this.notify();
         }

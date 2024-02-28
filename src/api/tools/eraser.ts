@@ -1,15 +1,18 @@
-import { GridAPI, PixelCoordinates } from '../grid';
-import { Tool, ToolProperty } from './tool'
+import { InstanceAPI, PixelCoordinates } from '..';
+import { Tool, ToolProperty, Tools } from './tool'
 
 export class Eraser extends Tool {
 
-    constructor(grid: GridAPI) {
-        super(grid);
+    constructor(iApi: InstanceAPI) {
+        super(iApi, Tools.ERASER);
     }
 
     invoke(pixelCoords: PixelCoordinates): void {
-        this._grid.ctx.clearRect(pixelCoords.x * this._grid.offsetX, pixelCoords.y * this._grid.offsetY, this._grid.offsetX, this._grid.offsetY);
-        this.notify();
+        let grid = this.$iApi.canvas.grid!;
+        if (grid) {
+            grid.ctx.clearRect(pixelCoords.x * grid.offsetX, pixelCoords.y * grid.offsetY, grid.offsetX, grid.offsetY);
+            this.notify();
+        }
     }
 
     getToolProperties(): Array<ToolProperty> {

@@ -20,9 +20,6 @@ export class GridAPI extends APIScope {
     private _el: HTMLCanvasElement;
     private _ctx: CanvasRenderingContext2D;
 
-    private _handlers: Array<string>;
-    private _currentTool: Tool | undefined;
-
     constructor(iApi: InstanceAPI, el: HTMLCanvasElement, width: number, height: number) {
         super(iApi);
 
@@ -34,15 +31,11 @@ export class GridAPI extends APIScope {
         this._canvasHeight = el.height;
         this._ctx = el.getContext("2d")!;
 
-        this._handlers = [];
-
         this.initialize();
     }
 
     invokeTool(pixelCoords: PixelCoordinates): void {
-        if (this._currentTool) {
-            this._currentTool.invoke(pixelCoords);
-        }
+        this.$iApi.tool.invoke(pixelCoords);
     }
 
     initialize(): void {
@@ -84,36 +77,16 @@ export class GridAPI extends APIScope {
             if (isDragging) {
                 this.invokeTool(coords.pixel);
             }
-
             this.$iApi.event.emit(Events.CANVAS_MOUSE_MOVE, { coords: this.parseMouseEvent(event), isDragging });
         };
-
-        this._handlers.push(this.$iApi.event.on(Events.TOOL_SELECT, (tool: Tools) => {
-            this._currentTool = this.createTool(tool);
-        }));
     }
 
     destroy(): void {
-
-        this._handlers.forEach(h => this.$iApi.event.off(h));
-
         this._el!.onmousemove = null;
         this._el!.onmouseup = null;
         this._el!.onmousedown = null;
         this._el!.onmouseenter = null;
         this._el!.onmouseleave = null;
-    }
-
-    createTool(tool: Tools): Tool {
-        switch (tool)
-        {
-            case Tools.PENCIL:
-                return new Pencil(this)
-            case Tools.ERASER:
-                return new Eraser(this)
-            default:
-                throw new Error(`Unexpected tool: ${tool}`);
-        }
     }
 
     toPixelCoords(coords: CanvasCoordinates): PixelCoordinates {

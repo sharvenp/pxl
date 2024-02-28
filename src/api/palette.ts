@@ -4,17 +4,13 @@ export interface PaletteItem {
     color: string
 }
 
-export class Palette extends APIScope {
+export class PaletteAPI extends APIScope {
 
     private _palette: Array<PaletteItem>;
     private _selectedColor: PaletteItem | undefined;
 
-    private _handlers: Array<string>;
-
     constructor(iApi: InstanceAPI) {
         super(iApi);
-
-        this._handlers = [];
 
         this._palette = [];
 
@@ -22,23 +18,25 @@ export class Palette extends APIScope {
     }
 
     initialize(): void {
-        this._handlers.push(this.$iApi.event.on(Events.PALETTE_COLOR_SELECT, (color: PaletteItem) => {
-            this._selectedColor = color;
-        }));
-
-        this._handlers.push(this.$iApi.event.on(Events.PALETTE_COLOR_ADD, (color: PaletteItem) => {
-            this.addColor(color);
-        }));
     }
 
     destroy(): void {
-        this._handlers.forEach(h => this.$iApi.event.off(h));
     }
 
-    addColor(color: PaletteItem) {
+    selectColor(color: PaletteItem): void {
+        this._selectedColor = color;
+    }
+
+    addColor(color: PaletteItem): void {
         if (!this._palette.some(c => c.color === color.color)) {
             this._palette.push(color);
+            this.$iApi.event.emit(Events.PALETTE_COLOR_ADD, color);
         }
+    }
+
+    removeColor(color: PaletteItem): void {
+        this._palette = [...this._palette.filter(c => c.color !== color.color)]
+        this.$iApi.event.emit(Events.PALETTE_COLOR_REMOVE, color);
     }
 
     get selectedColor(): PaletteItem | undefined {
