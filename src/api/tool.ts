@@ -12,6 +12,9 @@ export class ToolAPI extends APIScope {
     }
 
     initialize(): void {
+        // TODO: load correct tool from save state
+        // default to pencil
+        this.createAndSelectTool(Tools.PENCIL);
     }
 
     destroy(): void {
@@ -32,8 +35,8 @@ export class ToolAPI extends APIScope {
         this.$iApi.event.emit(Events.TOOL_SELECT, tool.toolType);
     }
 
-    get tool(): Tool {
-        return this.tool;
+    get selectedTool(): Tool | undefined {
+        return this._selectedTool;
     }
 
     createTool(tool: Tools): Tool {

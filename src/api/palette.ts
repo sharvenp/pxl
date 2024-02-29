@@ -25,6 +25,7 @@ export class PaletteAPI extends APIScope {
 
     selectColor(color: PaletteItem): void {
         this._selectedColor = color;
+        this.$iApi.event.emit(Events.PALETTE_COLOR_SELECT, color);
     }
 
     addColor(color: PaletteItem): void {

@@ -10,11 +10,11 @@ import { ref, onMounted, inject, onUnmounted } from 'vue'
 import { InstanceAPI, Events } from '../api';
 import { Tools } from '../api/tools';
 
+const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];
 let x = ref<number>(0);
 let y = ref<number>(0);
 let currentTool = ref<string>("");
-const iApi = inject<InstanceAPI>('iApi');
 
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.CANVAS_MOUSE_MOVE, (coordinates: any) => {
@@ -25,6 +25,8 @@ onMounted(() => {
     handlers.push(iApi?.event.on(Events.TOOL_SELECT, (tool: Tools) => {
         currentTool.value = tool;
     })!);
+
+    currentTool.value = iApi?.tool.selectedTool?.toolType ?? '';
 })
 
 onUnmounted(() => {
@@ -32,5 +34,3 @@ onUnmounted(() => {
 })
 
 </script>
-
-
