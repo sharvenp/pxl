@@ -61,7 +61,7 @@ export class CanvasAPI extends APIScope {
                 }
             }
         }
-        ctx.fillStyle  = '#F5F5F5';
+        ctx.fillStyle  = '#F9F9F9';
         ctx.fill();
 
         this._grid = new GridAPI(this.$iApi, this._el, width, height);

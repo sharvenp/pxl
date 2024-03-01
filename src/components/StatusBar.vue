@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { ref, onMounted, inject, onUnmounted } from 'vue'
 import { InstanceAPI, Events } from '../api';
-import { Tools } from '../api/tools';
+import { ToolType } from '../api/tools';
 
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];
@@ -22,7 +22,7 @@ onMounted(() => {
         y.value = Math.floor(coordinates.coords.pixel.y) + 1;
     })!);
 
-    handlers.push(iApi?.event.on(Events.TOOL_SELECT, (tool: Tools) => {
+    handlers.push(iApi?.event.on(Events.TOOL_SELECT, (tool: ToolType) => {
         currentTool.value = tool;
     })!);
 

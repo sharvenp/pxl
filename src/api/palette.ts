@@ -40,15 +40,31 @@ export class PaletteAPI extends APIScope {
         this.$iApi.event.emit(Events.PALETTE_COLOR_REMOVE, color);
     }
 
-    get selectedColor(): PaletteItem | undefined {
-        return this._selectedColor;
-    }
-
     set palette(newPalette: Array<PaletteItem>)  {
         this._palette = newPalette;
     }
 
     get palette(): Array<PaletteItem> {
         return this._palette;
+    }
+
+    get selectedColor(): PaletteItem | undefined {
+        return this._selectedColor;
+    }
+
+    selectedColorRGB(alpha?: number): string {
+        if (!this._selectedColor) {
+            return "";
+        }
+
+        var r = parseInt(this._selectedColor.color.slice(1, 3), 16),
+            g = parseInt(this._selectedColor.color.slice(3, 5), 16),
+            b = parseInt(this._selectedColor.color.slice(5, 7), 16);
+
+        if (alpha !== undefined) {
+            return `rgba(${r},${g},${b},${alpha})`;
+        } else {
+            return `rgba(${r},${g},${b})`;
+        }
     }
 }

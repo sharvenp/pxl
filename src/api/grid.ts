@@ -1,5 +1,4 @@
 import { APIScope, InstanceAPI, Events } from '.';
-import { Tool, Tools, Pencil, Eraser } from './tools';
 
 export interface CanvasCoordinates {
     x: number;

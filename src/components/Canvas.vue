@@ -28,7 +28,7 @@ import { InstanceAPI } from '../api';
 const canvas = ref();
 const bgCanvas = ref();
 const iApi = inject<InstanceAPI>('iApi');
-let width = ref(32  );
+let width = ref(32);
 let height = ref(32);
 let error = ref("");
 let initialized = ref(false);

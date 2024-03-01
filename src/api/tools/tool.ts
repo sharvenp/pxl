@@ -1,33 +1,34 @@
+import { ToolProperty } from ".";
 import { PixelCoordinates, Events, APIScope } from "..";
 import { InstanceAPI } from "../instance";
 
-export enum Tools {
+export enum ToolType {
     PENCIL = "Pencil",
     ERASER = "Eraser"
 }
 
-export interface ToolProperty {
-    // TODO: implement tool properties like brush width, and stuff
-}
-
 export abstract class Tool extends APIScope {
 
-    private _toolType: Tools;
+    private _toolType: ToolType;
+    protected _toolProperties: Array<ToolProperty>;
 
-    constructor(iApi: InstanceAPI, toolType: Tools) {
+    constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
         this._toolType = toolType;
+        this._toolProperties = [];
     }
 
     protected notify(): void {
         this.$iApi.event.emit(Events.CANVAS_UPDATE);
     }
 
-    abstract invoke(pixelCoords: PixelCoordinates): void;
+    get toolProperties(): Array<ToolProperty> {
+        return this._toolProperties;
+    }
 
-    abstract getToolProperties(): Array<ToolProperty>;
-
-    get toolType(): Tools {
+    get toolType(): ToolType {
         return this._toolType;
     }
+
+    abstract invoke(pixelCoords: PixelCoordinates): void;
 }

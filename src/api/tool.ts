@@ -1,9 +1,10 @@
 import { APIScope, Events, InstanceAPI, PixelCoordinates } from ".";
-import { Eraser, Pencil, Tool, Tools } from "./tools";
+import { Eraser, Pencil, Tool, ToolType } from "./tools";
 
 export class ToolAPI extends APIScope {
 
     private _selectedTool: Tool | undefined;
+    private readonly _tools: Record<string, Tool> = {};
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
@@ -12,9 +13,13 @@ export class ToolAPI extends APIScope {
     }
 
     initialize(): void {
-        // TODO: load correct tool from save state
+
+        this._tools[ToolType.PENCIL] = new Pencil(this.$iApi)
+        this._tools[ToolType.ERASER] = new Eraser(this.$iApi)
+
         // default to pencil
-        this.createAndSelectTool(Tools.PENCIL);
+        // TODO: load correct tool from save state
+        this.selectTool(ToolType.PENCIL);
     }
 
     destroy(): void {
@@ -26,28 +31,12 @@ export class ToolAPI extends APIScope {
         }
     }
 
-    createAndSelectTool(tool: Tools): void {
-        this.selectTool(this.createTool(tool));
-    }
-
-    selectTool(tool: Tool): void {
-        this._selectedTool = tool;
-        this.$iApi.event.emit(Events.TOOL_SELECT, tool.toolType);
+    selectTool(tool: ToolType): void {
+        this._selectedTool = this._tools[tool];
+        this.$iApi.event.emit(Events.TOOL_SELECT, tool);
     }
 
     get selectedTool(): Tool | undefined {
         return this._selectedTool;
-    }
-
-    createTool(tool: Tools): Tool {
-        switch (tool)
-        {
-            case Tools.PENCIL:
-                return new Pencil(this.$iApi)
-            case Tools.ERASER:
-                return new Eraser(this.$iApi)
-            default:
-                throw new Error(`Unexpected tool: ${tool}`);
-        }
     }
 }
