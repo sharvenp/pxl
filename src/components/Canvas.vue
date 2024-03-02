@@ -1,7 +1,10 @@
 <template>
     <div class="grid place-content-center row-span-3">
         <div class="relative">
-            <div class="absolute bg-white w-full h-full -z-10">
+            <div class="absolute w-full h-full pointer-events-none">
+                <canvas v-show="initialized" class="pixel-canvas" ref="cursorCanvas"></canvas>
+            </div>
+            <div class="absolute bg-white w-full h-full -z-10 pointer-events-none">
                 <canvas v-show="initialized" class="bg-white pixel-canvas" ref="bgCanvas"></canvas>
             </div>
             <canvas v-show="initialized" class="pixel-canvas" ref="canvas"></canvas>
@@ -26,6 +29,7 @@ import { ref, inject, onUnmounted, onMounted } from 'vue'
 import { InstanceAPI } from '../api';
 
 const canvas = ref();
+const cursorCanvas = ref();
 const bgCanvas = ref();
 const iApi = inject<InstanceAPI>('iApi');
 let width = ref(32);
@@ -40,7 +44,7 @@ function initializeCanvas() {
         return;
     }
 
-    iApi?.canvas.initialize(canvas.value, bgCanvas.value, width.value, height.value);
+    iApi?.canvas.initialize(canvas.value, bgCanvas.value, cursorCanvas.value, width.value, height.value);
     initialized.value = true;
 }
 

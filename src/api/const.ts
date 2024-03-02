@@ -1,1 +1,2 @@
 export const MAX_PALETTE_SIZE = 100;
+export const CURSOR_PREVIEW_COLOR = '#75757544';

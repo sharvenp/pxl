@@ -1,13 +1,15 @@
-import { APIScope, InstanceAPI, GridAPI } from '.';
+import { APIScope, InstanceAPI, GridAPI, CursorAPI } from '.';
 import Panzoom, { PanZoom } from "panzoom";
 
 export class CanvasAPI extends APIScope {
 
     private _grid: GridAPI | undefined;
+    private _cursor: CursorAPI | undefined;
 
     private _initialized: boolean;
     private _el: HTMLCanvasElement | undefined;
     private _bgCanvas: HTMLCanvasElement | undefined;
+    private _cursorCanvas: HTMLCanvasElement | undefined;
     private _panzoom: PanZoom | undefined;
 
     constructor(iApi: InstanceAPI) {
@@ -16,7 +18,7 @@ export class CanvasAPI extends APIScope {
         this._initialized = false;
     }
 
-    initialize(el: HTMLCanvasElement, bgCanvas: HTMLCanvasElement, width: number, height: number): void {
+    initialize(el: HTMLCanvasElement, bgCanvas: HTMLCanvasElement, cursorCanvas: HTMLCanvasElement, width: number, height: number): void {
         if (this._initialized) {
             console.warn("Canvas already intialized");
             return;
@@ -24,6 +26,7 @@ export class CanvasAPI extends APIScope {
 
         this._el = el;
         this._bgCanvas = bgCanvas;
+        this._cursorCanvas = cursorCanvas;
 
         this._panzoom = Panzoom(el.parentElement!, {
             minZoom: 0.5,
@@ -48,6 +51,8 @@ export class CanvasAPI extends APIScope {
             this._el.height = 512;
         }
 
+        this._grid = new GridAPI(this.$iApi, this._el, width, height);
+
         // draw checkerboard pattern
         let ctx = this._bgCanvas.getContext("2d")!;
         this._bgCanvas.width = this._el.width;
@@ -64,7 +69,11 @@ export class CanvasAPI extends APIScope {
         ctx.fillStyle  = '#F9F9F9';
         ctx.fill();
 
-        this._grid = new GridAPI(this.$iApi, this._el, width, height);
+        this._cursorCanvas.width = this._el.width;
+        this._cursorCanvas.height = this._el.height;
+
+        this._cursor = new CursorAPI(this.$iApi, this._cursorCanvas, width, height);
+
         this._initialized = true;
     }
 
@@ -92,5 +101,9 @@ export class CanvasAPI extends APIScope {
 
     get grid(): GridAPI | undefined {
         return this._grid;
+    }
+
+    get cursor(): CursorAPI | undefined {
+        return this._cursor;
     }
 }

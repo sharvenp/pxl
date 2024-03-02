@@ -6,6 +6,9 @@ export class ToolAPI extends APIScope {
     private _selectedTool: Tool | undefined;
     private readonly _tools: Record<string, Tool> = {};
 
+    private handlers: Array<string> = [];
+
+
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
@@ -14,20 +17,47 @@ export class ToolAPI extends APIScope {
 
     initialize(): void {
 
+        // TODO: add all the tools
         this._tools[ToolType.PENCIL] = new Pencil(this.$iApi)
         this._tools[ToolType.ERASER] = new Eraser(this.$iApi)
 
         // default to pencil
         // TODO: load correct tool from save state
         this.selectTool(ToolType.PENCIL);
+
+        // setup handlers
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (evt: any) => {
+            this.$iApi.canvas.cursor?.clearCursor();
+            this.invokeAction(evt.coords.pixel);
+        }));
+
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_MOVE, (evt: any) => {
+            if (evt.isDragging) {
+                this.invokeAction(evt.coords.pixel);
+            } else {
+                this.previewCursor(evt.coords.pixel);
+            }
+        }));
+
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, () => {
+            // clear the cursor
+            this.$iApi.canvas.cursor?.clearCursor();
+        }));
     }
 
     destroy(): void {
+        this.handlers.forEach(h => this.$iApi.event.off(h));
     }
 
-    invoke(pixelCoords: PixelCoordinates): void {
+    invokeAction(pixelCoords: PixelCoordinates): void {
         if (this._selectedTool) {
-            this._selectedTool.invoke(pixelCoords);
+            this._selectedTool.invokeAction(pixelCoords);
+        }
+    }
+
+    previewCursor(pixelCoords: PixelCoordinates): void {
+        if (this._selectedTool) {
+            this._selectedTool.previewCursor(pixelCoords);
         }
     }
 

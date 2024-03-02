@@ -1,4 +1,4 @@
-import { InstanceAPI, PixelCoordinates } from '..';
+import { CURSOR_PREVIEW_COLOR, InstanceAPI, PixelCoordinates } from '..';
 import { Tool, ToolType, SliderProperty} from '.'
 
 export class Eraser extends Tool {
@@ -15,7 +15,7 @@ export class Eraser extends Tool {
         ]
     }
 
-    invoke(pixelCoords: PixelCoordinates): void {
+    invokeAction(pixelCoords: PixelCoordinates): void {
         let grid = this.$iApi.canvas.grid!;
         if (grid) {
 
@@ -24,13 +24,36 @@ export class Eraser extends Tool {
             let x = pixelCoords.x;
             let y = pixelCoords.y;
 
-            if (pxWidth >= 3 && pxWidth % 2 === 1) {
+            if (pxWidth >= 3) {
                 x -= 1;
                 y -= 1;
             }
 
             grid.ctx.clearRect(x * grid.offsetX, y * grid.offsetY, grid.offsetX * pxWidth, grid.offsetY * pxWidth);
             this.notify();
+        }
+    }
+
+    previewCursor(pixelCoords: PixelCoordinates): void {
+        let cursor = this.$iApi.canvas.cursor;
+        let color = CURSOR_PREVIEW_COLOR;
+        if (cursor) {
+
+            cursor.clearCursor();
+            cursor.cursorActive = true;
+
+            let pxWidth = this._eraserWidthProperty.value;
+
+            let x = pixelCoords.x;
+            let y = pixelCoords.y;
+
+            if (pxWidth >= 3) {
+                x -= 1;
+                y -= 1;
+            }
+
+            cursor.ctx.fillStyle = color;
+            cursor.ctx.fillRect(x * cursor.offsetX, y * cursor.offsetY, cursor.offsetX * pxWidth, cursor.offsetY * pxWidth);
         }
     }
 }

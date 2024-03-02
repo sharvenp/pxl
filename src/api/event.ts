@@ -17,6 +17,8 @@ export enum Events {
     CANVAS_MOUSE_MOVE = "canvas_mouse_move",
     CANVAS_MOUSE_DRAG_START = "canvas_mouse_drag_start",
     CANVAS_MOUSE_DRAG_STOP = "canvas_mouse_drag_stop",
+    CANVAS_MOUSE_ENTER = "canvas_mouse_enter",
+    CANVAS_MOUSE_LEAVE = "canvas_mouse_leave",
     CANVAS_UPDATE = "canvas_update",
     TOOL_SELECT = "tool_select",
     PALETTE_COLOR_SELECT = "palette_color_select",

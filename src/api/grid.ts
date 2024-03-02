@@ -12,12 +12,12 @@ export interface PixelCoordinates {
 
 export class GridAPI extends APIScope {
 
-    private _pixelWidth: number;
-    private _pixelHeight: number;
-    private _canvasWidth: number;
-    private _canvasHeight: number;
-    private _el: HTMLCanvasElement;
-    private _ctx: CanvasRenderingContext2D;
+    protected _pixelWidth: number;
+    protected _pixelHeight: number;
+    protected _canvasWidth: number;
+    protected _canvasHeight: number;
+    protected _el: HTMLCanvasElement;
+    protected _ctx: CanvasRenderingContext2D;
 
     constructor(iApi: InstanceAPI, el: HTMLCanvasElement, width: number, height: number) {
         super(iApi);
@@ -33,49 +33,39 @@ export class GridAPI extends APIScope {
         this.initialize();
     }
 
-    invokeTool(pixelCoords: PixelCoordinates): void {
-        this.$iApi.tool.invoke(pixelCoords);
-    }
-
     initialize(): void {
         this._ctx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
 
         let isDragging = false;
-        this._el.onmousedown = (event: MouseEvent) => {
+        this._el.onmousedown = (event: MouseEvent)   => {
             if (event.button === 0) {
-                let c = this.parseMouseEvent(event);
                 isDragging = true;
-                this.invokeTool(c.pixel);
-                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, this.parseMouseEvent(event));
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, { coords: this.parseMouseEvent(event), isDragging });
             }
         };
 
         this._el.onmouseup = (event: MouseEvent) => {
             if (event.button === 0) {
                 isDragging = false;
-                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_STOP, this.parseMouseEvent(event));
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_STOP, { coords: this.parseMouseEvent(event), isDragging });
             }
         };
 
         this._el.onmouseenter = (event: MouseEvent) => {
             if (event.buttons > 0 && event.buttons === 1) {
-                let c = this.parseMouseEvent(event);
                 isDragging = true;
-                this.invokeTool(c.pixel);
-                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, this.parseMouseEvent(event));
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, { coords: this.parseMouseEvent(event), isDragging });
             }
+            this.$iApi.event.emit(Events.CANVAS_MOUSE_ENTER, { coords: this.parseMouseEvent(event), isDragging });
         }
 
         this._el.onmouseleave = (event: MouseEvent) => {
             isDragging = false;
-            this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_STOP, this.parseMouseEvent(event));
+            this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_STOP, { coords: this.parseMouseEvent(event), isDragging });
+            this.$iApi.event.emit(Events.CANVAS_MOUSE_LEAVE, { coords: this.parseMouseEvent(event), isDragging });
         }
 
         this._el.onmousemove = (event: MouseEvent) => {
-            let coords = this.parseMouseEvent(event);
-            if (isDragging) {
-                this.invokeTool(coords.pixel);
-            }
             this.$iApi.event.emit(Events.CANVAS_MOUSE_MOVE, { coords: this.parseMouseEvent(event), isDragging });
         };
     }
@@ -102,7 +92,7 @@ export class GridAPI extends APIScope {
         }
     }
 
-    private parseMouseEvent(event: MouseEvent): { canvas: CanvasCoordinates, pixel: PixelCoordinates} {
+    protected parseMouseEvent(event: MouseEvent): { canvas: CanvasCoordinates, pixel: PixelCoordinates} {
         let coords: CanvasCoordinates = { x: event.offsetX, y: event.offsetY };
         let pixelCoords = this.toPixelCoords(coords);
         return { canvas: coords, pixel: pixelCoords};

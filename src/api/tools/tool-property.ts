@@ -1,6 +1,7 @@
 
 export enum ToolPropertyType {
-    SLIDER = "slider"
+    SLIDER = "slider",
+    CHECK_BOX = "check_box",
 }
 
 export abstract class ToolProperty {
@@ -47,5 +48,15 @@ export class SliderProperty extends ToolProperty {
 
     get unit(): string {
         return this._unit;
+    }
+}
+
+export class CheckboxProperty extends ToolProperty {
+    public value: boolean;
+
+    constructor(propertyLabel: string, value?: boolean) {
+        super(ToolPropertyType.CHECK_BOX, propertyLabel);
+
+        this.value = value ?? false;
     }
 }

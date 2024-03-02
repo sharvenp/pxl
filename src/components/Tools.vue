@@ -9,13 +9,20 @@
             <div class="p-4 w-16 h-16 rounded-lg bg-orange-300">06</div>
         </div>
         <div v-if="currentTool && currentTool.toolProperties.length > 0" class="bg-white mt-5 flex flex-col p-4">
+            <span class="mb-2 text-sm">{{ currentTool.toolType }}</span>
             <template v-for="prop in currentTool.toolProperties">
                 <template v-if="prop.propertyType === 'slider'">
-                    <div class="flex flex-row justify-between text-sm">
+                    <div class="flex flex-row justify-between text-xs mb-2">
                         <span>{{ prop.propertyLabel }}</span>
                         <span>{{ prop.value }}{{ prop.unit }}</span>
                     </div>
                     <input class="mb-3" type="range" :min="prop.minValue" :max="prop.maxValue" v-model="prop.value">
+                </template>
+                <template v-else-if="prop.propertyType === 'check_box'">
+                    <div class="flex flex-row items-center text-xs mb-2">
+                        <span>{{ prop.propertyLabel }}</span>
+                        <input class="ms-2" type="checkbox" v-model="prop.value">
+                    </div>
                 </template>
             </template>
         </div>

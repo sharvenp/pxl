@@ -30,5 +30,9 @@ export abstract class Tool extends APIScope {
         return this._toolType;
     }
 
-    abstract invoke(pixelCoords: PixelCoordinates): void;
+    // invoke the tool's action (e.g. draw a pixel)
+    abstract invokeAction(pixelCoords: PixelCoordinates): void;
+
+    // render the cursor preview of the tool
+    abstract previewCursor(pixelCoords: PixelCoordinates): void;
 }

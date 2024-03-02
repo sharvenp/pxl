@@ -4,6 +4,7 @@ export * from './event';
 export * from './ipc';
 export * from './canvas';
 export * from './grid';
+export * from './cursor';
 export * from './palette';
 export * from './tool';
 export * from './const';
