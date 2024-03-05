@@ -21,13 +21,8 @@ export class Eraser extends Tool {
 
             let pxWidth = this._eraserWidthProperty.value;
 
-            let x = pixelCoords.x;
-            let y = pixelCoords.y;
-
-            if (pxWidth >= 3) {
-                x -= 1;
-                y -= 1;
-            }
+            let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
+            let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
             grid.ctx.clearRect(x * grid.offsetX, y * grid.offsetY, grid.offsetX * pxWidth, grid.offsetY * pxWidth);
             this.notify();
@@ -44,13 +39,8 @@ export class Eraser extends Tool {
 
             let pxWidth = this._eraserWidthProperty.value;
 
-            let x = pixelCoords.x;
-            let y = pixelCoords.y;
-
-            if (pxWidth >= 3) {
-                x -= 1;
-                y -= 1;
-            }
+            let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
+            let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
             cursor.ctx.fillStyle = color;
             cursor.ctx.fillRect(x * cursor.offsetX, y * cursor.offsetY, cursor.offsetX * pxWidth, cursor.offsetY * pxWidth);
