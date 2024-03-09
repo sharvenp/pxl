@@ -44,7 +44,8 @@ function initializeCanvas() {
         return;
     }
 
-    iApi?.canvas.initialize(canvas.value, bgCanvas.value, cursorCanvas.value, width.value, height.value);
+    iApi?.canvas.initialize(canvas.value, bgCanvas.value, width.value, height.value);
+    iApi?.cursor.initialize(cursorCanvas.value, canvas.value.width, canvas.value.height, width.value, height.value);
     initialized.value = true;
 }
 

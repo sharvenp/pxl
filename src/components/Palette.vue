@@ -1,29 +1,41 @@
 <template>
-    <div class="absolute bottom-40 right-5 mb-14 z-10">
-        <div :key="currentColor?.color" class="p-5 w-1 h-4 rounded-lg border-4 border-gray-200" :style="{backgroundColor: currentColor?.color  || 'rgba(0,0,0,0.05)'}"></div>
+    <div class="absolute bottom-32 right-5 mb-16">
+        <div class="p-5 w-1 h-4 rounded-lg border-4 border-gray transparent-swatch"></div>
     </div>
-    <div class="absolute h-32 bottom-16 right-0 m-5 z-10 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
-        <div class="grid grid-cols-5 gap-2 p-2">
-            <button v-if="palette.length < MAX_PALETTE_SIZE" button class="p-1 rounded-lg border-4 hover:border-gray-300 bg-gray-50 flex items-center justify-center" @click="addColor">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-            </button>
-            <template v-for="item in palette">
-                <button v-if="item.color !== currentColor?.color" class="p-4 w-1 h-1 rounded-lg border-gray-100 border-4 hover:border-gray-300" :style="{backgroundColor: item.color}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
-                <button v-else class="p-4 w-1 h-1 rounded-lg border-orange-200 border-4" :style="{backgroundColor: item.color}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
-            </template>
+    <div class="absolute bottom-32 right-5 mb-16 z-10">
+        <div :key="currentColor?.colorHex" @click="() => togglePicker()" class="p-5 w-1 h-4 rounded-lg border-4 border-gray-200 z-10" :style="{backgroundColor: currentColor?.colorHex}"></div>
+    </div>
+    <div v-show="showPicker" class="absolute border shadow-md m-5 z-10 bottom-60 right-0">
+        <ColorPicker
+            default-format="hex"
+            :color="currentColor?.colorHex"
+            @color-change="colorPickerChange"
+        />
+        <div class="flex flex-row justify-end bg-white">
+            <button class="mt-2 mb-2 me-2 py-1 px-3 rounded-lg border-2 hover:border-gray-300" @click="addColor">Add</button>
+            <button class="mt-2 mb-2 me-2 py-1 px-3 rounded-lg border-2 hover:border-gray-300" @click="togglePicker(false)">Close</button>
         </div>
     </div>
-    <div v-if="palette.length < MAX_PALETTE_SIZE" class="absolute bottom-40 right-20 mb-14 z-10">
-        <input class="w-6" type="color" v-model="lastPickerColor"/>
+    <div class="absolute h-36 bottom-5 right-0 m-5 z-10 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
+        <div class="grid grid-cols-5 gap-2 p-2">
+            <template v-for="item in palette">
+                <div class="rounded-lg transparent-swatch">
+                    <button v-if="item.colorHex !== currentColor?.colorHex" class="p-4 w-1 h-1 rounded-lg border-gray-100 border-4 hover:border-gray-300" :style="{backgroundColor: item.colorHex}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
+                    <button v-else class="p-4 w-1 h-1 rounded-lg border-orange-200 border-4" :style="{backgroundColor: item.colorHex}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
+                </div>
+            </template>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { Events, InstanceAPI, PaletteItem, MAX_PALETTE_SIZE } from '../api';
+import { Events, InstanceAPI, PaletteItem, MAX_PALETTE_SIZE, Utils } from '../api';
+import { ColorPicker } from 'vue-accessible-color-picker'
 
 const iApi = inject<InstanceAPI>('iApi');
-const lastPickerColor = ref<string>("#000000");
+const showPicker = ref<Boolean>(false);
+const lastPickerColor = ref<PaletteItem>();
 let handlers: Array<string> = [];
 const palette = ref<Array<PaletteItem>>([]);
 const currentColor = ref<PaletteItem>();
@@ -51,15 +63,25 @@ onUnmounted(() => {
     handlers.forEach(h => iApi?.event.off(h));
 })
 
+function colorPickerChange(color: any) {
+    lastPickerColor.value = {
+        colorHex: color.colors.hex,
+        colorRGBA: Utils.hexToRGBA(color.colors.hex)
+    }
+}
+
+function togglePicker(state?: boolean) {
+    showPicker.value = state ?? !showPicker.value;
+}
+
 function selectColor(color: PaletteItem) {
     iApi?.palette.selectColor(color);
 }
 
 function addColor() {
-    let color: PaletteItem = {
-        color: lastPickerColor.value
-    };
-    iApi?.palette.addColor(color);
+    if (lastPickerColor.value && palette.value.length < MAX_PALETTE_SIZE) {
+        iApi?.palette.addColor(lastPickerColor.value);
+    }
 }
 
 function removeColor(color: PaletteItem) {

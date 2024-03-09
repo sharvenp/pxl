@@ -42,6 +42,10 @@ canvas {
   background-color: var(--accent-color);
 }
 
+.transparent-swatch {
+  background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 10px 10px
+}
+
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
 	background-clip: content-box;

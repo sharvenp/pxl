@@ -1,26 +1,25 @@
 import { CURSOR_PREVIEW_COLOR, InstanceAPI, PixelCoordinates } from '..';
-import { Tool, ToolType, SliderProperty, CheckboxProperty} from '.'
+import { Tool, ToolType, SliderProperty } from '.'
 
 export class Pencil extends Tool {
 
     private _brushWidthProperty: SliderProperty;
-    private _opacityProperty: SliderProperty;
 
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.PENCIL);
 
-        this._brushWidthProperty = new SliderProperty("Brush Size", 1, 10, 1, 'px');
-        this._opacityProperty = new SliderProperty("Opacity", 0, 100, 100, '%');
+        this._showPreviewOnInvoke = false;
+
+        this._brushWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px');
 
         this._toolProperties = [
             this._brushWidthProperty,
-            this._opacityProperty,
         ]
     }
 
     invokeAction(pixelCoords: PixelCoordinates): void {
         let grid = this.$iApi.canvas.grid;
-        let color = this.$iApi.palette.selectedColorRGB(this._opacityProperty.value / 100.0);
+        let color = this.$iApi.palette.selectedColor;
         if (color && grid) {
 
             let pxWidth = this._brushWidthProperty.value;
@@ -28,28 +27,24 @@ export class Pencil extends Tool {
             let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
             let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
-            grid.ctx.fillStyle = color;
-            grid.ctx.fillRect(x * grid.offsetX, y * grid.offsetY, grid.offsetX * pxWidth, grid.offsetY * pxWidth);
-
-            this.notify();
+            grid.fillRect({x, y}, pxWidth, pxWidth, color);
         }
     }
 
     previewCursor(pixelCoords: PixelCoordinates): void {
-        let cursor = this.$iApi.canvas.cursor;
         let color = CURSOR_PREVIEW_COLOR;
-        if (cursor) {
+        if (this.$iApi.cursor.ctx) {
 
-            cursor.clearCursor();
-            cursor.cursorActive = true;
+            this.$iApi.cursor.clearCursor();
+            this.$iApi.cursor.cursorActive = true;
 
             let pxWidth = this._brushWidthProperty.value;
 
             let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
             let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
-            cursor.ctx.fillStyle = color;
-            cursor.ctx.fillRect(x * cursor.offsetX, y * cursor.offsetY, cursor.offsetX * pxWidth, cursor.offsetY * pxWidth);
+            this.$iApi.cursor.ctx.fillStyle = color;
+            this.$iApi.cursor.ctx.fillRect(x * this.$iApi.cursor.offsetX, y * this.$iApi.cursor.offsetY, this.$iApi.cursor.offsetX * pxWidth, this.$iApi.cursor.offsetY * pxWidth);
         }
     }
 }

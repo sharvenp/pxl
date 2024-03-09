@@ -8,7 +8,9 @@ export class Eraser extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.ERASER);
 
-        this._eraserWidthProperty = new SliderProperty("Eraser Size", 1, 10, 1, 'px')
+        this._showPreviewOnInvoke = true;
+
+        this._eraserWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px')
 
         this._toolProperties = [
             this._eraserWidthProperty
@@ -24,26 +26,24 @@ export class Eraser extends Tool {
             let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
             let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
-            grid.ctx.clearRect(x * grid.offsetX, y * grid.offsetY, grid.offsetX * pxWidth, grid.offsetY * pxWidth);
-            this.notify();
+            grid.clearRect({x, y}, pxWidth, pxWidth);
         }
     }
 
     previewCursor(pixelCoords: PixelCoordinates): void {
-        let cursor = this.$iApi.canvas.cursor;
         let color = CURSOR_PREVIEW_COLOR;
-        if (cursor) {
+        if (this.$iApi.cursor.ctx) {
 
-            cursor.clearCursor();
-            cursor.cursorActive = true;
+            this.$iApi.cursor.clearCursor();
+            this.$iApi.cursor.cursorActive = true;
 
             let pxWidth = this._eraserWidthProperty.value;
 
             let x = Math.round(pixelCoords.x - (pxWidth / 2.0));
             let y = Math.round(pixelCoords.y - (pxWidth / 2.0));
 
-            cursor.ctx.fillStyle = color;
-            cursor.ctx.fillRect(x * cursor.offsetX, y * cursor.offsetY, cursor.offsetX * pxWidth, cursor.offsetY * pxWidth);
+            this.$iApi.cursor.ctx.fillStyle = color;
+            this.$iApi.cursor.ctx.fillRect(x * this.$iApi.cursor.offsetX, y * this.$iApi.cursor.offsetY, this.$iApi.cursor.offsetX * pxWidth, this.$iApi.cursor.offsetY * pxWidth);
         }
     }
 }

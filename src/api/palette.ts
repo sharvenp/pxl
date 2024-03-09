@@ -1,18 +1,43 @@
 import { APIScope, InstanceAPI, Events } from '.';
 
 export interface PaletteItem {
-    color: string
+    colorHex: string,
+    colorRGBA: RGBAColor
+}
+
+export interface RGBAColor {
+    r: number,
+    g: number,
+    b: number,
+    a: number
 }
 
 export class PaletteAPI extends APIScope {
 
     private _palette: Array<PaletteItem>;
-    private _selectedColor: PaletteItem | undefined;
+    private _selectedColor: PaletteItem;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this._palette = [];
+        let startingColor = {
+            colorHex: '#000000ff',
+            colorRGBA: { r: 0, g: 0, b: 0, a: 255},
+        }
+        this._palette = [
+            startingColor
+        ];
+
+        // for debugging
+        // for (let x = 0; x < 80; x++) {
+        //     let rcolor = Utils.getRandomColor();
+        //     this._palette.push({
+        //         colorHex: rcolor,
+        //         colorRGBA: Utils.hexToRGBA(rcolor)
+        //     })
+        // }
+
+        this._selectedColor = startingColor;
 
         this.initialize();
     }
@@ -29,14 +54,14 @@ export class PaletteAPI extends APIScope {
     }
 
     addColor(color: PaletteItem): void {
-        if (!this._palette.some(c => c.color === color.color)) {
+        if (!this._palette.some(c => c.colorHex === color.colorHex)) {
             this._palette.push(color);
             this.$iApi.event.emit(Events.PALETTE_COLOR_ADD, color);
         }
     }
 
     removeColor(color: PaletteItem): void {
-        this._palette = [...this._palette.filter(c => c.color !== color.color)]
+        this._palette = [...this._palette.filter(c => c.colorHex !== color.colorHex)]
         this.$iApi.event.emit(Events.PALETTE_COLOR_REMOVE, color);
     }
 
@@ -48,23 +73,7 @@ export class PaletteAPI extends APIScope {
         return this._palette;
     }
 
-    get selectedColor(): PaletteItem | undefined {
+    get selectedColor(): PaletteItem {
         return this._selectedColor;
-    }
-
-    selectedColorRGB(alpha?: number): string {
-        if (!this._selectedColor) {
-            return "";
-        }
-
-        var r = parseInt(this._selectedColor.color.slice(1, 3), 16),
-            g = parseInt(this._selectedColor.color.slice(3, 5), 16),
-            b = parseInt(this._selectedColor.color.slice(5, 7), 16);
-
-        if (alpha !== undefined) {
-            return `rgba(${r},${g},${b},${alpha})`;
-        } else {
-            return `rgba(${r},${g},${b})`;
-        }
     }
 }

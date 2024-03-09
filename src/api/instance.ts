@@ -1,10 +1,11 @@
-import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI } from '.';
+import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI } from '.';
 
 export class InstanceAPI {
 
     readonly ipc: IPCAPI;
     readonly event: EventAPI;
     readonly canvas: CanvasAPI;
+    readonly cursor: CursorAPI;
     readonly palette: PaletteAPI;
     readonly tool: ToolAPI;
 
@@ -14,5 +15,6 @@ export class InstanceAPI {
         this.canvas = new CanvasAPI(this);
         this.palette = new PaletteAPI(this);
         this.tool = new ToolAPI(this);
+        this.cursor = new CursorAPI(this);
     }
 }

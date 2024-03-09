@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-row">
-        <p class="p-2 text-right ms-auto">X: {{ x }} Y: {{ y }}</p>
+        <p class="p-1 text-right ms-auto text-xs">X: {{ x }} Y: {{ y }}</p>
     </div>
 </template>
 

@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import "./index.css"
+import "vue-accessible-color-picker/styles"
 import App from './App.vue'
 import { InstanceAPI } from "./api"
 
