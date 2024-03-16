@@ -5,7 +5,8 @@ import { InstanceAPI } from "../instance";
 export enum ToolType {
     PENCIL = "Pencil",
     ERASER = "Eraser",
-    PICKER = "Picker"
+    PICKER = "Picker",
+    FILL = "Fill",
 }
 
 export abstract class Tool extends APIScope {
@@ -13,17 +14,22 @@ export abstract class Tool extends APIScope {
     private _toolType: ToolType;
     protected _toolProperties: Array<ToolProperty>;
     protected _showPreviewOnInvoke: boolean;
+    protected _invokeOnMove: boolean;
 
     constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
         this._toolType = toolType;
         this._toolProperties = [];
         this._showPreviewOnInvoke = false;
+        this._invokeOnMove = false;
     }
-
 
     get showPreviewOnInvoke(): boolean {
         return this._showPreviewOnInvoke;
+    }
+
+    get invokeOnMove(): boolean {
+        return this._invokeOnMove;
     }
 
     get toolProperties(): Array<ToolProperty> {

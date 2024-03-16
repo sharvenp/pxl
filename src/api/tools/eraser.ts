@@ -9,6 +9,7 @@ export class Eraser extends Tool {
         super(iApi, ToolType.ERASER);
 
         this._showPreviewOnInvoke = true;
+        this._invokeOnMove = true;
 
         this._eraserWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px')
 

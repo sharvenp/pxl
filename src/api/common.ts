@@ -44,6 +44,31 @@ export class Utils {
 
     }
 
+    static rgbaToString(color: RGBAColor): string {
+        return `${color.r}-${color.g}-${color.b}-${color.a}`;
+    }
+
+    static isSameColor(color: RGBAColor, other: RGBAColor): boolean {
+        return other.r === color.r
+                && other.g === color.g
+                && other.b === color.b
+                && other.a === color.a
+    }
+
+    static getColorSimilarity(color: RGBAColor, other: RGBAColor): number {
+        // TODO: make this more efficient?
+        // calculate color "distance"
+        let dis = Math.sqrt(
+                    Math.pow(color.r - other.r, 2) +
+                    Math.pow(color.g - other.g, 2) +
+                    Math.pow(color.b - other.b, 2) +
+                    Math.pow(color.a - other.a, 2)
+                    )
+        // divide by max distance
+        let norm = dis / 441.67295593
+        return norm;
+    }
+
     // for dummy data
     static getRandomColor(): string {
         let letters = '0123456789ABCDEF';

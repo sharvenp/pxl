@@ -1,4 +1,4 @@
-import { APIScope, InstanceAPI, Events, RGBAColor, PaletteItem } from '.';
+import { APIScope, InstanceAPI, Events, RGBAColor, PaletteItem, Utils } from '.';
 
 export interface CanvasCoordinates {
     x: number;
@@ -126,6 +126,63 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
+    floodFill(coords: PixelCoordinates, tolerance: number, color: PaletteItem) {
+
+        // color to check similarity against
+        let targetColor = this.getData(coords);
+
+        // use bfs to fill neighboring colors
+        let fillStack: Array<PixelCoordinates> = [];
+        fillStack.push(coords);
+
+        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.pixelWidth && c.y >= 0 && c.y < this.pixelHeight);
+        let seenColors: Record<string, boolean> = {};
+
+        this._ctx.fillStyle = color.colorHex;
+
+        while(fillStack.length > 0) {
+
+            let {x, y} = fillStack.pop()!;
+            let currCellColor = this.getData({x, y});
+            let hsh = `${x}-${y}`;
+
+            // check current cell color is the fill color
+            // if it is, continue
+            if (seenColors[Utils.rgbaToString(currCellColor)]) {
+                continue;
+            }
+
+            // tolerance is the threshold for the color similarity of neighboring cells as a percentage
+            // check current cell color is above threshold
+            // if it is, continue
+            if (Utils.getColorSimilarity(currCellColor, targetColor) > tolerance) {
+                continue;
+            }
+
+            // fill color
+            let canvasCoords = this.toCanvasCoords({x, y});
+            this.setData({x, y}, color.colorRGBA);
+            this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this.offsetX, this.offsetY);
+            seenColors[Utils.rgbaToString(this.getData({x, y}))] = true;
+
+            if (validCoords({x, y: y + 1})) {
+                fillStack.push({x, y: y + 1});
+            }
+            if (validCoords({x, y: y - 1})) {
+                fillStack.push({x, y: y - 1});
+            }
+            if (validCoords({x: x + 1, y})) {
+                fillStack.push({x: x + 1, y});
+            }
+            if (validCoords({x: x - 1, y})) {
+                fillStack.push({x: x - 1, y});
+            }
+
+        }
+
+        this._notify();
+    }
+
     getData(coords: PixelCoordinates): RGBAColor {
         let idx = this._flattenCoords(coords);
         let c: RGBAColor = {
@@ -139,16 +196,26 @@ export class GridAPI extends APIScope {
 
     setData(coords: PixelCoordinates, color: RGBAColor): void {
         let idx = this._flattenCoords(coords);
-        this._data[idx] = color.r;
-        this._data[idx + 1] = color.g;
-        this._data[idx + 2] = color.b;
 
-        // need to merge opacities
-        if (this._data[idx + 3] !== 0) {
-            this._data[idx + 3] = this._data[idx + 3] + Math.round((255 - this._data[idx + 3]) * color.a / 255.0)
-        } else {
-            this._data[idx + 3] = color.a;
-        }
+        // calculate resulting color
+        let a0 = color.a / 255.0;
+        let a1 = this._data[idx + 3] / 255.0;
+        let r0 = color.r;
+        let r1 = this._data[idx];
+        let g0 = color.g;
+        let g1 = this._data[idx + 1];
+        let b0 = color.b;
+        let b1 = this._data[idx + 2];
+
+        let aa = (1 - a0) * a1 + a0;
+        let rr = ((1 - a0) * a1 * r1 + a0 * r0) / aa;
+        let gg = ((1 - a0) * a1 * g1 + a0 * g0) / aa;
+        let bb = ((1 - a0) * a1 * b1 + a0 * b0) / aa;
+
+        this._data[idx] = Math.round(rr);
+        this._data[idx + 1] = Math.round(gg);
+        this._data[idx + 2] = Math.round(bb);
+        this._data[idx + 3] = Math.round(aa * 255);
     }
 
     clearData(coords: PixelCoordinates): void {
@@ -157,11 +224,10 @@ export class GridAPI extends APIScope {
         this._data[idx + 1] = 0;
         this._data[idx + 2] = 0;
         this._data[idx + 3] = 0;
-        console.log(this._data);
     }
 
     private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, color?: RGBAColor) {
-        // TODO: make this faster
+        // TODO: make this faster?
         let tx = Math.max(topLeft.x, 0);
         let ty = Math.max(topLeft.y, 0);
         if (topLeft.x < 0) {
@@ -185,7 +251,7 @@ export class GridAPI extends APIScope {
     }
 
     private _flattenCoords(coords: PixelCoordinates): number {
-        // flatten coordinates with offset of 4
+        // flatten coordinates with offset of 4 [r,g,b,a]
         return (coords.y * this.pixelHeight + coords.x) * 4;
     }
 

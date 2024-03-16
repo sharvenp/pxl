@@ -7,6 +7,7 @@ export class Picker extends Tool {
         super(iApi, ToolType.PICKER);
 
         this._showPreviewOnInvoke = true;
+        this._invokeOnMove = false;
     }
 
     invokeAction(pixelCoords: PixelCoordinates): void {

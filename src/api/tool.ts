@@ -1,5 +1,5 @@
 import { APIScope, Events, InstanceAPI, PixelCoordinates } from ".";
-import { Eraser, Pencil, Picker, Tool, ToolType } from "./tools";
+import { Eraser, Fill, Pencil, Picker, Tool, ToolType } from "./tools";
 
 export class ToolAPI extends APIScope {
 
@@ -20,6 +20,7 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.PENCIL] = new Pencil(this.$iApi)
         this._tools[ToolType.ERASER] = new Eraser(this.$iApi)
         this._tools[ToolType.PICKER] = new Picker(this.$iApi)
+        this._tools[ToolType.FILL] = new Fill(this.$iApi)
 
         // default to pencil
         // TODO: load correct tool from save state
@@ -30,20 +31,21 @@ export class ToolAPI extends APIScope {
             if (this._selectedTool) {
                 if (this._selectedTool.showPreviewOnInvoke) {
                     this.previewCursor(evt.coords.pixel);
-                    this.invokeAction(evt.coords.pixel);
                 } else {
                     this.$iApi.cursor.clearCursor();
-                    this.invokeAction(evt.coords.pixel);
                 }
+                this.invokeAction(evt.coords.pixel);
             }
         }));
 
         this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_MOVE, (evt: any) => {
-            if (evt.isDragging) {
-                if (this._selectedTool?.showPreviewOnInvoke) {
+            if (evt.isDragging && this._selectedTool) {
+                if (this._selectedTool.showPreviewOnInvoke) {
                     this.previewCursor(evt.coords.pixel);
                 }
-                this.invokeAction(evt.coords.pixel);
+                if (this._selectedTool.invokeOnMove) {
+                    this.invokeAction(evt.coords.pixel);
+                }
             } else {
                 this.previewCursor(evt.coords.pixel);
             }

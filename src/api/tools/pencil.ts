@@ -9,6 +9,7 @@ export class Pencil extends Tool {
         super(iApi, ToolType.PENCIL);
 
         this._showPreviewOnInvoke = false;
+        this._invokeOnMove = true;
 
         this._brushWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px');
 
