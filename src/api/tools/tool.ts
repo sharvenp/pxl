@@ -1,5 +1,5 @@
 import { ToolProperty } from ".";
-import { PixelCoordinates, APIScope } from "..";
+import { APIScope, GridMouseEvent, Events } from "..";
 import { InstanceAPI } from "../instance";
 
 export enum ToolType {
@@ -41,8 +41,8 @@ export abstract class Tool extends APIScope {
     }
 
     // invoke the tool's action (e.g. draw a pixel)
-    abstract invokeAction(pixelCoords: PixelCoordinates): void;
+    abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void;
 
     // render the cursor preview of the tool
-    abstract previewCursor(pixelCoords: PixelCoordinates): void;
+    abstract previewCursor(event: GridMouseEvent): void;
 }

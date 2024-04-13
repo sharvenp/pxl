@@ -1,4 +1,5 @@
 export * from './common';
+export * from './interfaces';
 export * from './instance';
 export * from './event';
 export * from './ipc';

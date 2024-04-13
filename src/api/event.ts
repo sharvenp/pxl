@@ -104,7 +104,7 @@ export class EventAPI extends APIScope {
     }
 
     emit(event: string, ...args: any[]): void {
-        this._eventBus.emit(event, ...args);
+        this._eventBus.emit(event, ...args, event);
     }
 
     once(event: string, callback: Function, handlerName = ''): string {

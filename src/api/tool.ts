@@ -1,4 +1,4 @@
-import { APIScope, Events, InstanceAPI, PixelCoordinates } from ".";
+import { APIScope, Events, InstanceAPI, GridMouseEvent } from ".";
 import { Eraser, Fill, Pencil, Picker, Tool, ToolType } from "./tools";
 
 export class ToolAPI extends APIScope {
@@ -17,43 +17,52 @@ export class ToolAPI extends APIScope {
     initialize(): void {
 
         // TODO: add all the tools
-        this._tools[ToolType.PENCIL] = new Pencil(this.$iApi)
-        this._tools[ToolType.ERASER] = new Eraser(this.$iApi)
-        this._tools[ToolType.PICKER] = new Picker(this.$iApi)
-        this._tools[ToolType.FILL] = new Fill(this.$iApi)
+        this._tools[ToolType.PENCIL] = new Pencil(this.$iApi);
+        this._tools[ToolType.ERASER] = new Eraser(this.$iApi);
+        this._tools[ToolType.PICKER] = new Picker(this.$iApi);
+        this._tools[ToolType.FILL] = new Fill(this.$iApi);
 
         // default to pencil
         // TODO: load correct tool from save state
         this.selectTool(ToolType.PENCIL);
 
         // setup handlers
-        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (evt: any) => {
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
             if (this._selectedTool) {
                 if (this._selectedTool.showPreviewOnInvoke) {
-                    this.previewCursor(evt.coords.pixel);
+                    this.previewCursor(mouseEvt);
                 } else {
                     this.$iApi.cursor.clearCursor();
                 }
-                this.invokeAction(evt.coords.pixel);
+                this.invokeAction(mouseEvt, event);
             }
         }));
 
-        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_MOVE, (evt: any) => {
-            if (evt.isDragging && this._selectedTool) {
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
+            if (this._selectedTool) {
+                this.invokeAction(mouseEvt, event);
+            }
+        }));
+
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
+            if (mouseEvt.isDragging && this._selectedTool) {
                 if (this._selectedTool.showPreviewOnInvoke) {
-                    this.previewCursor(evt.coords.pixel);
+                    this.previewCursor(mouseEvt);
                 }
                 if (this._selectedTool.invokeOnMove) {
-                    this.invokeAction(evt.coords.pixel);
+                    this.invokeAction(mouseEvt, event);
                 }
             } else {
-                this.previewCursor(evt.coords.pixel);
+                this.previewCursor(mouseEvt);
             }
         }));
 
-        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, () => {
+        this.handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (mouseEvt: GridMouseEvent, event: Events) => {
             // clear the cursor
             this.$iApi.cursor.clearCursor();
+            if (this._selectedTool) {
+                this.invokeAction(mouseEvt, event);
+            }
         }));
     }
 
@@ -61,15 +70,15 @@ export class ToolAPI extends APIScope {
         this.handlers.forEach(h => this.$iApi.event.off(h));
     }
 
-    invokeAction(pixelCoords: PixelCoordinates): void {
+    invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         if (this._selectedTool) {
-            this._selectedTool.invokeAction(pixelCoords);
+            this._selectedTool.invokeAction(mouseEvent, event);
         }
     }
 
-    previewCursor(pixelCoords: PixelCoordinates): void {
+    previewCursor(event: GridMouseEvent): void {
         if (this._selectedTool) {
-            this._selectedTool.previewCursor(pixelCoords);
+            this._selectedTool.previewCursor(event);
         }
     }
 

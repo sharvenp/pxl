@@ -1,16 +1,4 @@
-import { APIScope, InstanceAPI, Events } from '.';
-
-export interface PaletteItem {
-    colorHex: string,
-    colorRGBA: RGBAColor
-}
-
-export interface RGBAColor {
-    r: number,
-    g: number,
-    b: number,
-    a: number
-}
+import { APIScope, InstanceAPI, Events, PaletteItem } from '.';
 
 export class PaletteAPI extends APIScope {
 
@@ -20,6 +8,7 @@ export class PaletteAPI extends APIScope {
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
+        // TODO: load correct palette from save state
         let startingColor = {
             colorHex: '#000000ff',
             colorRGBA: { r: 0, g: 0, b: 0, a: 255},

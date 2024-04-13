@@ -1,4 +1,4 @@
-import { CURSOR_PREVIEW_COLOR, InstanceAPI, PixelCoordinates, Utils } from '..';
+import { CURSOR_PREVIEW_COLOR, GridMouseEvent, InstanceAPI } from '..';
 import { SliderProperty, Tool, ToolType} from '.'
 
 export class Fill extends Tool {
@@ -18,23 +18,23 @@ export class Fill extends Tool {
         ]
     }
 
-    invokeAction(pixelCoords: PixelCoordinates): void {
+    invokeAction(event: GridMouseEvent): void {
         let grid = this.$iApi.canvas.grid;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid) {
-            grid.floodFill(pixelCoords, this._toleranceProperty.value / 100.0, color);
+        if (color && grid && event.isDragging) {
+            grid.floodFill(event.coords.pixel, this._toleranceProperty.value / 100.0, color);
         }
     }
 
-    previewCursor(pixelCoords: PixelCoordinates): void {
+    previewCursor(event: GridMouseEvent): void {
         let color = CURSOR_PREVIEW_COLOR;
         if (this.$iApi.cursor.ctx) {
 
             this.$iApi.cursor.clearCursor();
             this.$iApi.cursor.cursorActive = true;
 
-            let x = pixelCoords.x;
-            let y = pixelCoords.y;
+            let x = event.coords.pixel.x;
+            let y = event.coords.pixel.y;
 
             this.$iApi.cursor.ctx.fillStyle = color;
             this.$iApi.cursor.ctx.fillRect(x * this.$iApi.cursor.offsetX, y * this.$iApi.cursor.offsetY, this.$iApi.cursor.offsetX, this.$iApi.cursor.offsetY);

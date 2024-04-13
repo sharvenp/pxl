@@ -1,14 +1,4 @@
-import { APIScope, InstanceAPI, Events, RGBAColor, PaletteItem, Utils } from '.';
-
-export interface CanvasCoordinates {
-    x: number;
-    y: number;
-}
-
-export interface PixelCoordinates {
-    x: number;
-    y: number;
-}
+import { APIScope, InstanceAPI, Events, RGBAColor, PaletteItem, Utils, CanvasCoordinates, PixelCoordinates, Coordinates } from '.';
 
 export class GridAPI extends APIScope {
 
@@ -136,6 +126,8 @@ export class GridAPI extends APIScope {
         fillStack.push(coords);
 
         let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.pixelWidth && c.y >= 0 && c.y < this.pixelHeight);
+
+        // keep track of seen colors to prevent revisiting the same cell
         let seenColors: Record<string, boolean> = {};
 
         this._ctx.fillStyle = color.colorHex;
@@ -144,7 +136,6 @@ export class GridAPI extends APIScope {
 
             let {x, y} = fillStack.pop()!;
             let currCellColor = this.getData({x, y});
-            let hsh = `${x}-${y}`;
 
             // check current cell color is the fill color
             // if it is, continue
@@ -177,7 +168,6 @@ export class GridAPI extends APIScope {
             if (validCoords({x: x - 1, y})) {
                 fillStack.push({x: x - 1, y});
             }
-
         }
 
         this._notify();
@@ -255,7 +245,7 @@ export class GridAPI extends APIScope {
         return (coords.y * this.pixelHeight + coords.x) * 4;
     }
 
-    private _parseMouseEvent(event: MouseEvent): { canvas: CanvasCoordinates, pixel: PixelCoordinates} {
+    private _parseMouseEvent(event: MouseEvent): Coordinates {
         let coords: CanvasCoordinates = { x: event.offsetX, y: event.offsetY };
         let pixelCoords = this.toPixelCoords(coords);
         return { canvas: coords, pixel: pixelCoords};
