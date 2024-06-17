@@ -7,6 +7,8 @@ export enum ToolType {
     ERASER = "Eraser",
     PICKER = "Picker",
     FILL = "Fill",
+    RECTANGLE = "Rectangle",
+    CIRCLE = "Circle",
 }
 
 export abstract class Tool extends APIScope {

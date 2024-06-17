@@ -5,8 +5,8 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.ERASER)">E</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.PICKER)">Pi</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.FILL)">F</button>
-            <div class="p-4 w-16 h-16 rounded-lg bg-orange-300">05</div>
-            <div class="p-4 w-16 h-16 rounded-lg bg-orange-300">06</div>
+            <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.RECTANGLE)">R</button>
+            <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.CIRCLE)">C</button>
         </div>
         <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border">
             <span class="text-sm">{{ currentTool.toolType }}</span>
@@ -16,7 +16,7 @@
                         <span>{{ prop.propertyLabel }}</span>
                         <span>{{ prop.value }}{{ prop.unit }}</span>
                     </div>
-                    <input class="mb-3" type="range" :min="prop.minValue" :max="prop.maxValue" v-model.number="prop.value">
+                    <input class="mt-1 mb-1" type="range" :min="prop.minValue" :max="prop.maxValue" v-model.number="prop.value">
                 </template>
                 <template v-else-if="prop.propertyType === 'check_box'">
                     <div class="flex flex-row items-center text-xs mt-2">

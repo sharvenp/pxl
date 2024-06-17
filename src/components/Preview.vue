@@ -31,6 +31,7 @@ onMounted(() => {
         canvasEl.height = h;
     }
 
+    // render the preview canvas
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
         if (iApi?.canvas?.el && canvas.value) {
             let canvasEl = canvas.value;

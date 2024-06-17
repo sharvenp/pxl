@@ -36,17 +36,9 @@ export class Picker extends Tool {
     }
 
     previewCursor(event: GridMouseEvent): void {
-        let color = CURSOR_PREVIEW_COLOR;
-        if (this.$iApi.cursor.ctx) {
-
+        if (this.$iApi.cursor.grid) {
             this.$iApi.cursor.clearCursor();
-            this.$iApi.cursor.cursorActive = true;
-
-            let x = event.coords.pixel.x;
-            let y = event.coords.pixel.y;
-
-            this.$iApi.cursor.ctx.fillStyle = color;
-            this.$iApi.cursor.ctx.fillRect(x * this.$iApi.cursor.offsetX, y * this.$iApi.cursor.offsetY, this.$iApi.cursor.offsetX, this.$iApi.cursor.offsetY);
+            this.$iApi.cursor.grid.rect({x: event.coords.pixel.x, y: event.coords.pixel.y}, 1, 1);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { APIScope, InstanceAPI, GridAPI, CursorAPI } from '.';
+import { APIScope, InstanceAPI, GridAPI, CanvasCoordinates, Coordinates, Events, PixelCoordinates } from '.';
 import Panzoom, { PanZoom } from "panzoom";
 
 export class CanvasAPI extends APIScope {
@@ -66,6 +66,49 @@ export class CanvasAPI extends APIScope {
         ctx.fillStyle  = '#F9F9F9';
         ctx.fill();
 
+        let isDragging = false;
+        let lastCell: PixelCoordinates | undefined = undefined;
+        this._el.onmousedown = (event: MouseEvent) => {
+            let coords = this._parseMouseEvent(event);
+            if (event.button === 0) {
+                isDragging = true;
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, { coords , isDragging });
+                lastCell = coords.pixel;
+            }
+        };
+
+        this._el.onmouseup = (event: MouseEvent) => {
+            let coords = this._parseMouseEvent(event);
+            if (event.button === 0) {
+                isDragging = false;
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_STOP, { coords, isDragging });
+            }
+        };
+
+        this._el.onmouseenter = (event: MouseEvent) => {
+            let coords = this._parseMouseEvent(event);
+            if (event.buttons > 0 && event.buttons === 1) {
+                isDragging = true;
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_DRAG_START, { coords, isDragging });
+                lastCell = coords.pixel;
+            }
+            this.$iApi.event.emit(Events.CANVAS_MOUSE_ENTER, { coords, isDragging });
+        }
+
+        this._el.onmouseleave = (event: MouseEvent) => {
+            let coords = this._parseMouseEvent(event);
+            isDragging = false;
+            this.$iApi.event.emit(Events.CANVAS_MOUSE_LEAVE, { coords, isDragging });
+        }
+
+        this._el.onmousemove = (event: MouseEvent) => {
+            let coords = this._parseMouseEvent(event);
+            if (!(coords.pixel?.x === lastCell?.x && coords.pixel?.y === lastCell?.y)) {
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_MOVE, { coords, isDragging });
+                lastCell = coords.pixel;
+            }
+        };
+
         this._initialized = true;
     }
 
@@ -76,15 +119,22 @@ export class CanvasAPI extends APIScope {
         this._grid?.destroy();
         this._grid = undefined;
 
+        this._el!.onmousemove = null;
+        this._el!.onmouseup = null;
+        this._el!.onmousedown = null;
+        this._el!.onmouseenter = null;
+        this._el!.onmouseleave = null;
         this._el = undefined;
+    }
+
+    private _parseMouseEvent(event: MouseEvent): Coordinates {
+        let coords: CanvasCoordinates = { x: event.offsetX, y: event.offsetY };
+        let pixelCoords = this._grid!.toPixelCoords(coords);
+        return { canvas: coords, pixel: pixelCoords};
     }
 
     get initialized(): boolean {
         return this._initialized;
-    }
-
-    set initialized(isInitialized: boolean) {
-        this._initialized = isInitialized;
     }
 
     get el(): HTMLCanvasElement | undefined {

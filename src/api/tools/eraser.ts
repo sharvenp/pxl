@@ -27,24 +27,21 @@ export class Eraser extends Tool {
             let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
             let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
 
-            grid.clearRect({x, y}, pxWidth, pxWidth);
+            grid.color = undefined;
+            grid.rect({x, y}, pxWidth, pxWidth);
         }
     }
 
     previewCursor(event: GridMouseEvent): void {
-        let color = CURSOR_PREVIEW_COLOR;
-        if (this.$iApi.cursor.ctx) {
+        if (this.$iApi.cursor.grid) {
 
             this.$iApi.cursor.clearCursor();
-            this.$iApi.cursor.cursorActive = true;
 
             let pxWidth = this._eraserWidthProperty.value;
-
             let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
             let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
 
-            this.$iApi.cursor.ctx.fillStyle = color;
-            this.$iApi.cursor.ctx.fillRect(x * this.$iApi.cursor.offsetX, y * this.$iApi.cursor.offsetY, this.$iApi.cursor.offsetX * pxWidth, this.$iApi.cursor.offsetY * pxWidth);
+            this.$iApi.cursor.grid.rect({x, y}, pxWidth, pxWidth);
         }
     }
 }

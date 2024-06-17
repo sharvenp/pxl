@@ -1,71 +1,50 @@
-import { InstanceAPI, APIScope } from '.';
+import { InstanceAPI, APIScope, CURSOR_PREVIEW_COLOR, GridAPI, Utils } from '.';
 
 export class CursorAPI extends APIScope {
 
-    private _pixelWidth: number;
-    private _pixelHeight: number;
-    private _canvasWidth: number;
-    private _canvasHeight: number;
-    private _el: HTMLCanvasElement | undefined;
-    private _ctx: CanvasRenderingContext2D | undefined;
+    private _grid: GridAPI | undefined;
 
-    private _cursorActive: boolean;
+    private _initialized: boolean;
+    private _el: HTMLCanvasElement | undefined;
+    private readonly _previewColor = Utils.hexToRGBA(CURSOR_PREVIEW_COLOR);
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this._pixelWidth = 1;
-        this._pixelHeight = 1;
-        this._canvasWidth = 1;
-        this._canvasHeight = 1;
-
-        this._cursorActive = true;
+        this._initialized = false;
     }
 
-    initialize(el: HTMLCanvasElement, canvasWidth: number, canvasHeight: number, width: number, height: number): void {
+    initialize(el: HTMLCanvasElement, width: number, height: number, pxWidth: number, pxHeight: number): void {
+
         this._el = el;
+        this._el.width = width;
+        this._el.height = height;
 
-        this._el.width = canvasWidth;
-        this._el.height = canvasHeight;
-
-        this._pixelWidth = width;
-        this._pixelHeight = height;
-        this._canvasWidth = canvasWidth;
-        this._canvasHeight = canvasHeight;
-        this._ctx = this._el.getContext("2d")!;
+        this._grid = new GridAPI(this.$iApi, this._el, pxWidth, pxHeight, false);
+        this._grid.color = this._previewColor;
 
         this.clearCursor();
+
+        this._initialized = true;
     }
 
     destroy(): void {
-        this._ctx = undefined;
+        this._initialized = false;
+        this._grid?.destroy();
+        this._grid = undefined;
+
         this._el = undefined;
     }
 
     clearCursor(): void {
-        if (this._cursorActive && this._ctx) {
-            this._ctx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
-            this._cursorActive = false;
-        }
+        this._grid?.clear();
     }
 
-    get offsetX(): number {
-        return Math.floor(this._canvasWidth * 1.0 / this._pixelWidth);
+    get initialized(): boolean {
+        return this._initialized;
     }
 
-    get offsetY(): number {
-        return Math.floor(this._canvasHeight * 1.0 / this._pixelHeight);
-    }
-
-    get cursorActive(): boolean {
-        return this._cursorActive
-    }
-
-    set cursorActive(cursorActive: boolean) {
-        this._cursorActive = cursorActive;
-    }
-
-    get ctx(): CanvasRenderingContext2D | undefined {
-        return this._ctx;
+    get grid(): GridAPI | undefined {
+        return this._grid;
     }
 }
