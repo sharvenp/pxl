@@ -214,10 +214,12 @@ export class GridAPI extends APIScope {
         }
     }
 
-    private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true, clear: boolean = false) {
-        // TODO: make this faster?
+    private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true) {
+
+        // top left coords
         let tx = Math.max(topLeft.x, 0);
         let ty = Math.max(topLeft.y, 0);
+
         if (topLeft.x < 0) {
             width = width + topLeft.x;
         }
@@ -225,25 +227,39 @@ export class GridAPI extends APIScope {
             height = height + topLeft.y;
         }
 
+        // bottom right corner x and y
         let bx = Math.min(tx + width, this.pixelWidth);
         let by = Math.min(ty + height, this.pixelHeight);
-        for (let x = tx; x < bx; x++) {
-            for (let y = ty; y < by; y++) {
-                if (!fill && ((x > tx && x < bx - 1) && (y > ty  && y < by - 1))) {
-                    // inside perimeter but we don't want to fill
-                    continue;
-                }
 
-                // draw
-                this.setData({x, y});
+        if (fill) {
+            // fill all pixels
+            for (let x = tx; x < bx; x++) {
+                for (let y = ty; y < by; y++) {
+                    // draw
+                    this.setData({x, y});
+                }
+            }
+        } else {
+            // draw only perimeter
+            for (let x = tx; x < bx; x++) {
+                // draw horizontal sides
+                this.setData({x, y: ty});
+                this.setData({x, y: by - 1});
+            }
+            for (let y = ty + 1; y < by - 1; y++) {
+                // draw vertical sides
+                this.setData({x: tx, y});
+                this.setData({x: bx - 1, y});
             }
         }
     }
 
-    private _drawDataCircle(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true, clear: boolean = false) {
-        // TODO: make this faster?
+    private _drawDataCircle(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true) {
+
+        // top left coords
         let tx = Math.max(topLeft.x, 0);
         let ty = Math.max(topLeft.y, 0);
+
         if (topLeft.x < 0) {
             width = width + topLeft.x;
         }
@@ -251,31 +267,142 @@ export class GridAPI extends APIScope {
             height = height + topLeft.y;
         }
 
-        let bx = Math.min(tx + width, this.pixelWidth);
-        let by = Math.min(ty + height, this.pixelHeight);
+        // handle base-cases quickly
+        if (width === 1 && height === 1) {
+            // if it is just a point, draw point and return
+            this.setData({x: tx, y: ty});
+            return;
+        } else if (width === 2 && height === 2) {
+            // if it is 2x2, then draw rect
+            this.setData({x: tx, y: ty});
+            this.setData({x: tx + 1, y: ty});
+            this.setData({x: tx, y: ty + 1});
+            this.setData({x: tx + 1, y: ty + 1});
+            return;
+        }
 
-        for (let x = tx; x < bx; x++) {
-            for (let y = ty; y < by; y++) {
-                if (!fill && ((x > tx && x < bx - 1) && (y > ty  && y < by - 1))) {
-                    // inside perimeter but we don't want to fill
-                    continue;
+        // offsets for even width or height
+        let ewo = (width + 1) % 2;
+        let eho = (height + 1) % 2;
+
+        // semi major and minor axes
+        let rx = Math.round(width / 2.0) - (width % 2);
+        let ry = Math.round(height / 2.0) - (height % 2);
+
+        // center coord
+        let xc = tx + rx;
+        let yc = ty + ry;
+
+        // init x and y, we use this to progressively draw the ellipse
+        let x = 0;
+        let y = ry;
+
+        // decision parameters for region 1 of ellipse
+        let d1 = ((ry * ry) - (rx * rx * ry) + (0.25 * rx * rx));
+        let dx = 2 * ry * ry * x;
+        let dy = 2 * rx * rx * y;
+
+        // what follows is some number magic and idk how any of this works
+
+        // draw region 1
+        while (dx < dy) {
+
+            // set points based 4 point symmetry
+            // check if x is 0 to avoid duplication
+            if (x === 0) {
+                if (ewo !== 1) {
+                    this.setData({x: x + xc - ewo, y: y + yc - eho});
+                    this.setData({x: -x + xc, y: -y + yc});
                 }
+            } else {
+                this.setData({x: x + xc - ewo, y: y + yc - eho});
+                this.setData({x: -x + xc, y: y + yc - eho});
+                this.setData({x: x + xc - ewo, y: -y + yc});
+                this.setData({x: -x + xc, y: -y + yc});
+            }
 
-                // draw
-                this.setData({x, y});
+            if (fill) {
+                // draw vertical scanlines
+                for (let i = -y + yc + 1; i < y + yc - eho; i++) {
+
+                    if (x === 0 && ewo === 1) continue;
+
+                    this.setData({x: x + xc - ewo, y: i});
+
+                    if (x !== 0) {
+                        this.setData({x: -x + xc,  y: i});
+                    }
+                }
+            }
+
+            // update decision parameter
+            if (d1 < 0) {
+                x += 1;
+                dx = dx + (2 * ry * ry);
+                d1 = d1 + dx + (ry * ry);
+            } else {
+                x += 1;
+                y -= 1;
+                dx = dx + (2 * ry * ry);
+                dy = dy - (2 * rx * rx);
+                d1 = d1 + dx - dy + (ry * ry);
             }
         }
-    }
 
-    private _distance(p1: PixelCoordinates, p2: PixelCoordinates)
-    {
-       let dx = p2.x - p1.x;
-       dx *= dx;
+        // keep track of last x, we need this when drawing the horizontal scanlines
+        let lx = x;
 
-       let dy = p2.y - p1.y;
-       dy *= dy;
+        // decision parameters for region 1
+        let d2 = (((ry * ry) * ((x + 0.5) * (x + 0.5))) + ((rx * rx) * ((y - 1) * (y - 1))) - (rx * rx * ry * ry));
 
-       return Math.sqrt(dx + dy);
+        // draw region 2
+        while (y >= 0) {
+
+            // set points based 4 point symmetry
+            if (y === 0) {
+                if (eho !== 1) {
+                    this.setData({x: x + xc - ewo, y: y + yc - eho});
+                    this.setData({x: -x + xc, y: -y + yc});
+                }
+            } else {
+                this.setData({x: x + xc - ewo, y: y + yc - eho});
+                this.setData({x: -x + xc, y: y + yc - eho});
+                this.setData({x: x + xc - ewo, y: -y + yc});
+                this.setData({x: -x + xc, y: -y + yc});
+            }
+
+            if (fill) {
+                // draw horizontal scanlines
+                let j = 0;
+                for (let i = -x + xc + 1; i < -lx + xc + 1; i++) {
+
+                    if (y === 0 && eho === 1) continue;
+
+                    this.setData({x: x + xc - j - 1 - ewo, y: y + yc - eho});
+                    this.setData({x: i, y: y + yc - eho});
+
+                    if (y !== 0) {
+                        this.setData({x: i, y: -y + yc});
+                        this.setData({x: x + xc - j - 1 - ewo, y: -y + yc});
+                    }
+
+                    j++;
+                }
+            }
+
+            // update decision parameter
+            if (d2 > 0) {
+                y -= 1;
+                dy = dy - (2 * rx * rx);
+                d2 = d2 + (rx * rx) - dy;
+            } else {
+                y -= 1;
+                x += 1;
+                dx = dx + (2 * ry * ry);
+                dy = dy - (2 * rx * rx);
+                d2 = d2 + dx - dy + (rx * rx);
+            }
+        }
     }
 
     private _flattenCoords(coords: PixelCoordinates): number {

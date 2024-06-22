@@ -8,7 +8,7 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.RECTANGLE)">R</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.CIRCLE)">C</button>
         </div>
-        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border">
+        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40">
             <span class="text-sm">{{ currentTool.toolType }}</span>
             <template v-for="prop in currentTool.toolProperties">
                 <template v-if="prop.propertyType === 'slider'">
