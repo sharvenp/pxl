@@ -6,6 +6,8 @@ export class GridAPI extends APIScope {
     private _pixelHeight: number;
     private _canvasWidth: number;
     private _canvasHeight: number;
+    private _widthRatio: number;
+    private _heightRatio: number;
     private _ctx: CanvasRenderingContext2D;
     private _data: Uint8ClampedArray;
     private _color: RGBAColor | undefined;
@@ -20,6 +22,8 @@ export class GridAPI extends APIScope {
         this._pixelHeight = height;
         this._canvasWidth = el.width;
         this._canvasHeight = el.height;
+        this._widthRatio = Math.floor(this._canvasWidth * 1.0 / this._pixelWidth);
+        this._heightRatio = Math.floor(this._canvasHeight * 1.0 / this._pixelHeight);
         this._ctx = el.getContext("2d")!;
         this._data = new Uint8ClampedArray(0);
         this._preserveData = preserveData;
@@ -162,12 +166,12 @@ export class GridAPI extends APIScope {
 
                 // set color to canvas
                 this._ctx.fillStyle = Utils.rgbaToHex(dataColor);
-                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this.offsetX, this.offsetY);
+                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
 
             } else {
                // set color to canvas using current color
                this._ctx.fillStyle = Utils.rgbaToHex(this._color);
-               this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this.offsetX, this.offsetY);
+               this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
             }
 
 
@@ -181,7 +185,7 @@ export class GridAPI extends APIScope {
             }
 
             // clear canvas
-            this._ctx.clearRect(canvasCoords.x, canvasCoords.y, this.offsetX, this.offsetY);
+            this._ctx.clearRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
         }
     }
 
@@ -202,15 +206,15 @@ export class GridAPI extends APIScope {
 
     toPixelCoords(coords: CanvasCoordinates): PixelCoordinates {
         return {
-            x: Math.floor(coords.x / (this.offsetX * 1.0)),
-            y: Math.floor(coords.y / (this.offsetY * 1.0))
+            x: Math.floor(coords.x / (this._widthRatio * 1.0)),
+            y: Math.floor(coords.y / (this._heightRatio * 1.0))
         }
     }
 
     toCanvasCoords(coords: PixelCoordinates): CanvasCoordinates {
         return {
-            x: coords.x * this.offsetX,
-            y: coords.y * this.offsetY
+            x: coords.x * this._widthRatio,
+            y: coords.y * this._heightRatio
         }
     }
 
@@ -417,12 +421,12 @@ export class GridAPI extends APIScope {
         }
     }
 
-    get offsetX(): number {
-        return Math.floor(this._canvasWidth * 1.0 / this._pixelWidth);
+    get widthRatio(): number {
+        return this._widthRatio;
     }
 
-    get offsetY(): number {
-        return Math.floor(this._canvasHeight * 1.0 / this._pixelHeight);
+    get heightRatio(): number {
+        return this._heightRatio;
     }
 
     get pixelWidth(): number {

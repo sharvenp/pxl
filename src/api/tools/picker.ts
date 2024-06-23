@@ -21,9 +21,6 @@ export class Picker extends Tool {
                 return;
             }
 
-            // let p = grid.ctx.getImageData(event.coords.pixel.x * grid.offsetX + 2, event.coords.pixel.y * grid.offsetY + 2, 1, 1).data;
-            // console.log(p);
-
             let paletteItem: PaletteItem = {
                 colorHex: Utils.rgbaToHex(pickedColor),
                 colorRGBA: pickedColor
