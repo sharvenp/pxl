@@ -1,23 +1,27 @@
 import { Events, GridMouseEvent, InstanceAPI } from '..';
-import { Tool, ToolType, CheckboxProperty } from '.'
+import { Tool, ToolType, SliderProperty, CheckboxProperty } from '.'
 
-export class Circle extends Tool {
+export class Line extends Tool {
 
-    private _fillProperty: CheckboxProperty;
+    private _widthProperty: SliderProperty;
+    private _smoothProperty: CheckboxProperty;
+
     private dragStartX: number;
     private dragStartY: number;
     private isDragging: boolean;
 
     constructor(iApi: InstanceAPI) {
-        super(iApi, ToolType.CIRCLE);
+        super(iApi, ToolType.LINE);
 
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = true;
 
-        this._fillProperty = new CheckboxProperty("Fill", false);
+        this._widthProperty = new SliderProperty("Width", 1, 5, 1, 'px');
+        this._smoothProperty = new CheckboxProperty("Smooth", false);
 
         this._toolProperties = [
-            this._fillProperty
+            this._widthProperty,
+            this._smoothProperty
         ]
 
         this.dragStartX = -1;
@@ -47,22 +51,23 @@ export class Circle extends Tool {
                 this.isDragging = true;
             }
 
-            let x = Math.min(this.dragStartX, mouseEvent.coords.pixel.x);
-            let y = Math.min(this.dragStartY, mouseEvent.coords.pixel.y);
-            let w = Math.abs(x - Math.max(this.dragStartX, mouseEvent.coords.pixel.x) - 1);
-            let h = Math.abs(y - Math.max(this.dragStartY, mouseEvent.coords.pixel.y) - 1);
+            let x0 = this.dragStartX;
+            let y0 = this.dragStartY;
+            let x1 = mouseEvent.coords.pixel.x;
+            let y1 = mouseEvent.coords.pixel.y;
 
             if (!mouseEvent.isDragging && this.isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
-                // dragging stopped, draw rectangle
+                // dragging stopped, draw line
                 grid.color = color.colorRGBA;
-                grid.circle({x, y}, w, h, this._fillProperty.value);
+                grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._widthProperty.value, this._smoothProperty.value);
 
                 this._resetDrag();
             }
 
-            // draw preview rectangle
+            // draw preview line
             if (this.$iApi.cursor.grid && this.isDragging) {
-                this.$iApi.cursor.grid.circle({x, y}, w, h, this._fillProperty.value);
+
+                this.$iApi.cursor.grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._widthProperty.value, false);
             }
         }
     }

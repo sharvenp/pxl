@@ -69,6 +69,15 @@ export class Utils {
         return norm;
     }
 
+    static copyColor(color: RGBAColor): RGBAColor {
+        return {
+            r: color.r,
+            g: color.g,
+            b: color.b,
+            a: color.a,
+        }
+    }
+
     // for dummy data
     static getRandomColor(): string {
         let letters = '0123456789ABCDEF';

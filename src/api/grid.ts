@@ -66,85 +66,39 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    circle(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
-        this._drawDataCircle(topLeft, width, height, fill)
+    ellipse(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
+        this._drawDataEllipse(topLeft, width, height, fill)
+        this._notify();
+    }
+
+    line(start: PixelCoordinates, end: PixelCoordinates, width: number, antiAlias: boolean): void {
+        this._drawDataLine(start, end, width, antiAlias)
         this._notify();
     }
 
     floodFill(coords: PixelCoordinates, tolerance: number): void {
-
-        // if no color, then there's nothing to fill
-        if (!this._color) {
-            return;
-        }
-
-        // color to check similarity against
-        let targetColor = this.getData(coords);
-
-        // use bfs to fill neighboring colors
-        let fillStack: Array<PixelCoordinates> = [];
-        fillStack.push(coords);
-
-        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.pixelWidth && c.y >= 0 && c.y < this.pixelHeight);
-
-        // keep track of seen colors to prevent revisiting the same cell
-        let seenColors: Record<string, boolean> = {};
-
-        while(fillStack.length > 0) {
-
-            let {x, y} = fillStack.pop()!;
-            let currCellColor = this.getData({x, y});
-
-            // check current cell color is the fill color
-            // if it is, continue
-            if (seenColors[Utils.rgbaToString(currCellColor)]) {
-                continue;
-            }
-
-            // tolerance is the threshold for the color similarity of neighboring cells as a percentage
-            // check current cell color is above threshold
-            // if it is, continue
-            if (Utils.getColorSimilarity(currCellColor, targetColor) > tolerance) {
-                continue;
-            }
-
-            // fill color
-            this.setData({x, y});
-            seenColors[Utils.rgbaToString(this.getData({x, y}))] = true;
-
-            if (validCoords({x, y: y + 1})) {
-                fillStack.push({x, y: y + 1});
-            }
-            if (validCoords({x, y: y - 1})) {
-                fillStack.push({x, y: y - 1});
-            }
-            if (validCoords({x: x + 1, y})) {
-                fillStack.push({x: x + 1, y});
-            }
-            if (validCoords({x: x - 1, y})) {
-                fillStack.push({x: x - 1, y});
-            }
-        }
-
+        this._dataFloodFill(coords, tolerance);
         this._notify();
     }
 
-    setData(coords: PixelCoordinates): void {
+    setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined): void {
 
         let idx = this._flattenCoords(coords);
         let canvasCoords = this.toCanvasCoords(coords);
 
-        if (this._color) {
+        let colorToApply = color ?? this._color;
+
+        if (colorToApply) {
 
             if (this._preserveData) {
                 // calculate resulting color
-                let a0 = this._color.a / 255.0;
+                let a0 = colorToApply.a / 255.0;
                 let a1 = this._data[idx + 3] / 255.0;
-                let r0 = this._color.r;
+                let r0 = colorToApply.r;
                 let r1 = this._data[idx];
-                let g0 = this._color.g;
+                let g0 = colorToApply.g;
                 let g1 = this._data[idx + 1];
-                let b0 = this._color.b;
+                let b0 = colorToApply.b;
                 let b1 = this._data[idx + 2];
 
                 let aa = (1 - a0) * a1 + a0;
@@ -170,7 +124,7 @@ export class GridAPI extends APIScope {
 
             } else {
                // set color to canvas using current color
-               this._ctx.fillStyle = Utils.rgbaToHex(this._color);
+               this._ctx.fillStyle = Utils.rgbaToHex(colorToApply);
                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
             }
 
@@ -218,7 +172,7 @@ export class GridAPI extends APIScope {
         }
     }
 
-    private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true) {
+    private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
 
         // top left coords
         let tx = Math.max(topLeft.x, 0);
@@ -258,7 +212,10 @@ export class GridAPI extends APIScope {
         }
     }
 
-    private _drawDataCircle(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true) {
+    private _drawDataEllipse(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
+
+        // use Midpoint ellipse algorithm
+        // https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 
         // top left coords
         let tx = Math.max(topLeft.x, 0);
@@ -405,6 +362,141 @@ export class GridAPI extends APIScope {
                 dx = dx + (2 * ry * ry);
                 dy = dy - (2 * rx * rx);
                 d2 = d2 + dx - dy + (rx * rx);
+            }
+        }
+    }
+
+    private _drawDataLine(start: PixelCoordinates, end: PixelCoordinates, width: number, antiAlias: boolean): void {
+
+        // use Bresenham's line algorithm with anti-aliasing (it's magic)
+        // http://members.chello.at/~easyfilter/bresenham.html
+
+        let x0 = Math.max(start.x, 0);
+        let y0 = Math.max(start.y, 0);
+
+        let x1 = Math.max(end.x, 0);
+        let y1 = Math.max(end.y, 0);
+
+        // copy color (for adjusting alpha when anti-aliasing)
+        let color = this._color === undefined ? undefined : Utils.copyColor(this._color);
+        let ogAlpha = color?.a ?? 255;
+
+        // direction and error parameters
+        let dx = Math.abs(x1 - x0);
+        let sx = x0 < x1 ? 1 : -1;
+        let dy = Math.abs(y1 - y0);
+        let sy = y0 < y1 ? 1 : -1;
+        let err = dx - dy;
+        let e2: number;
+        let x2: number;
+        let y2: number;
+        let ed = dx + dy == 0 ? 1 : Math.sqrt(dx * dx + dy * dy);
+
+        while(true) {
+            if (width > 0) {
+                width = (width + 1) / 2.0
+            }
+
+            if (antiAlias && color) {
+                color.a = Math.min(Math.max(0, ogAlpha * (Math.abs(err - dx + dy) / ed - width + 1)), 255);
+            }
+            this.setData({x: x0, y: y0}, color);
+
+            e2 = err;
+            x2 = x0;
+
+            // x-step
+            if (2 * e2 >= -dx) {
+                for (e2 += dy, y2 = y0; e2 < ed * width && (y1 != y2 || dx > dy); e2 += dx) {
+
+                    if (antiAlias && color) {
+                        color.a = Math.min(Math.max(0, ogAlpha * (Math.abs(e2) / ed - width + 1)), 255);
+                    }
+                    this.setData({x: x0, y: y2 += sy}, color);
+                }
+
+                if (x0 == x1) {
+                    break;
+                }
+
+                e2 = err;
+                err -= dy;
+                x0 += sx;
+            }
+
+            // y-step
+            if (2 * e2 <= dy) {
+
+                for (e2 = dx - e2; e2 < ed * width && (x1 != x2 || dx < dy); e2 += dy) {
+
+                    if (antiAlias && color) {
+                        color.a = Math.min(Math.max(0, ogAlpha * (Math.abs(e2) / ed - width + 1)), 255);
+                    }
+                    this.setData({x: x2 += sx, y: y0}, color);
+                }
+
+                if (y0 == y1) {
+                    break;
+                }
+
+                err += dx;
+                y0 += sy;
+            }
+        }
+    }
+
+    private _dataFloodFill(coords: PixelCoordinates, tolerance: number): void {
+
+        if (!this._color) {
+            // early exit
+            return;
+        }
+
+        // color to check similarity against
+        let targetColor = this.getData(coords);
+
+        // use bfs to fill neighboring colors
+        let fillStack: Array<PixelCoordinates> = [];
+        fillStack.push(coords);
+
+        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.pixelWidth && c.y >= 0 && c.y < this.pixelHeight);
+
+        // keep track of seen colors to prevent revisiting the same cell
+        let seenColors: Record<string, boolean> = {};
+
+        while(fillStack.length > 0) {
+
+            let {x, y} = fillStack.pop()!;
+            let currCellColor = this.getData({x, y});
+
+            // check current cell color is the fill color
+            // if it is, continue
+            if (seenColors[Utils.rgbaToString(currCellColor)]) {
+                continue;
+            }
+
+            // tolerance is the threshold for the color similarity of neighboring cells as a percentage
+            // check current cell color is above threshold
+            // if it is, continue
+            if (Utils.getColorSimilarity(currCellColor, targetColor) > tolerance) {
+                continue;
+            }
+
+            // fill color
+            this.setData({x, y});
+            seenColors[Utils.rgbaToString(this.getData({x, y}))] = true;
+
+            if (validCoords({x, y: y + 1})) {
+                fillStack.push({x, y: y + 1});
+            }
+            if (validCoords({x, y: y - 1})) {
+                fillStack.push({x, y: y - 1});
+            }
+            if (validCoords({x: x + 1, y})) {
+                fillStack.push({x: x + 1, y});
+            }
+            if (validCoords({x: x - 1, y})) {
+                fillStack.push({x: x - 1, y});
             }
         }
     }

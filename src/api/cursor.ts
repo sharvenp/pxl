@@ -20,7 +20,7 @@ export class CursorAPI extends APIScope {
         this._el.width = width;
         this._el.height = height;
 
-        this._grid = new GridAPI(this.$iApi, this._el, pxWidth, pxHeight, false);
+        this._grid = new GridAPI(this.$iApi, this._el, pxWidth, pxHeight, false, false);
         this._grid.color = this._previewColor;
 
         this.clearCursor();
