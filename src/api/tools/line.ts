@@ -3,8 +3,7 @@ import { Tool, ToolType, SliderProperty, CheckboxProperty } from '.'
 
 export class Line extends Tool {
 
-    private _widthProperty: SliderProperty;
-    private _smoothProperty: CheckboxProperty;
+    private _thicknessProperty: SliderProperty;
 
     private dragStartX: number;
     private dragStartY: number;
@@ -16,12 +15,10 @@ export class Line extends Tool {
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = true;
 
-        this._widthProperty = new SliderProperty("Width", 1, 5, 1, 'px');
-        this._smoothProperty = new CheckboxProperty("Smooth", false);
+        this._thicknessProperty = new SliderProperty("Thickness", 1, 5, 1, 'px');
 
         this._toolProperties = [
-            this._widthProperty,
-            this._smoothProperty
+            this._thicknessProperty,
         ]
 
         this.dragStartX = -1;
@@ -59,7 +56,7 @@ export class Line extends Tool {
             if (!mouseEvent.isDragging && this.isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
                 grid.color = color.colorRGBA;
-                grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._widthProperty.value, this._smoothProperty.value);
+                grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
 
                 this._resetDrag();
             }
@@ -67,7 +64,7 @@ export class Line extends Tool {
             // draw preview line
             if (this.$iApi.cursor.grid && this.isDragging) {
 
-                this.$iApi.cursor.grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._widthProperty.value, false);
+                this.$iApi.cursor.grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
             }
         }
     }
