@@ -81,7 +81,7 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined): void {
+    setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
 
         let idx = this._flattenCoords(coords);
         let canvasCoords = this.toCanvasCoords(coords);
@@ -105,6 +105,13 @@ export class GridAPI extends APIScope {
                 let rr = ((1 - a0) * a1 * r1 + a0 * r0) / aa;
                 let gg = ((1 - a0) * a1 * g1 + a0 * g0) / aa;
                 let bb = ((1 - a0) * a1 * b1 + a0 * b0) / aa;
+
+                if (overwrite) {
+                    rr = r0;
+                    gg = g0;
+                    bb = b0;
+                    aa = a0;
+                }
 
                 let dataColor: RGBAColor = {
                     r: Math.round(rr),

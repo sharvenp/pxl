@@ -9,7 +9,8 @@ export enum ToolType {
     FILL = "Fill",
     RECTANGLE = "Rectangle",
     ELLIPSE = "Ellipse",
-    LINE = "Line"
+    LINE = "Line",
+    SHADE = "Shade"
 }
 
 export abstract class Tool extends APIScope {

@@ -1,5 +1,6 @@
 <template>
     <div class="absolute rounded top-0 left-0 m-5 z-10">
+        <!-- Tool buttons -->
         <div class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border">
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.PENCIL)">P</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.ERASER)">E</button>
@@ -8,21 +9,34 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.RECTANGLE)">R</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.ELLIPSE)">C</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.LINE)">L</button>
+            <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SHADE)">S</button>
         </div>
-        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40">
-            <span class="text-sm">{{ currentTool.toolType }}</span>
+        <!-- Tool Property -->
+        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool">
+            <span class="text-base">{{ currentTool.toolType }}</span>
             <template v-for="prop in currentTool.toolProperties">
                 <template v-if="prop.propertyType === 'slider'">
-                    <div class="flex flex-row justify-between text-xs mt-2">
+                    <div class="flex flex-row justify-between text-sm mt-2">
                         <span>{{ prop.propertyLabel }}</span>
                         <span>{{ prop.value }}{{ prop.unit }}</span>
                     </div>
-                    <input class="mt-1 mb-1" type="range" :min="prop.minValue" :max="prop.maxValue" v-model.number="prop.value">
+                    <input class="mt-1" type="range" :min="prop.minValue" :max="prop.maxValue" :step="prop.step" v-model.number="prop.value">
                 </template>
                 <template v-else-if="prop.propertyType === 'check_box'">
-                    <div class="flex flex-row items-center text-xs mt-2">
+                    <div class="flex flex-row items-center text-sm mt-2">
                         <span>{{ prop.propertyLabel }}</span>
                         <input class="ms-2" type="checkbox" v-model="prop.value">
+                    </div>
+                </template>
+                <template v-else-if="prop.propertyType === 'radio'">
+                    <div class="text-sm mt-2">
+                        <span>{{ prop.propertyLabel }}</span>
+                        <div class="mt-1 text-xs">
+                            <div v-for="option in prop.options" class="flex flex-row mt-1">
+                                <input type="radio" :value="option" v-model="prop.value">
+                                <label class="ms-2">{{ option }}</label>
+                            </div>
+                        </div>
                     </div>
                 </template>
             </template>

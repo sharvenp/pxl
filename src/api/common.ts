@@ -78,6 +78,10 @@ export class Utils {
         }
     }
 
+    static isEmptyColor(color: RGBAColor): boolean {
+        return color.r + color.g + color.b + color.a === 0;
+    }
+
     // for dummy data
     static getRandomColor(): string {
         let letters = '0123456789ABCDEF';

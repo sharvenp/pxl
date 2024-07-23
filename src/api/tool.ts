@@ -1,5 +1,5 @@
 import { APIScope, Events, InstanceAPI, GridMouseEvent } from ".";
-import { Eraser, Fill, Pencil, Picker, Rectangle, Ellipse, Tool, ToolType, Line } from "./tools";
+import { Eraser, Fill, Pencil, Picker, Rectangle, Ellipse, Tool, ToolType, Line, Shade } from "./tools";
 
 export class ToolAPI extends APIScope {
 
@@ -24,6 +24,7 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.RECTANGLE] = new Rectangle(this.$iApi);
         this._tools[ToolType.ELLIPSE] = new Ellipse(this.$iApi);
         this._tools[ToolType.LINE] = new Line(this.$iApi);
+        this._tools[ToolType.SHADE] = new Shade(this.$iApi);
 
         // default to pencil
         // TODO: load correct tool from save state
