@@ -61,6 +61,11 @@ export class GridAPI extends APIScope {
         this._touched = false;
     }
 
+    set(coords: PixelCoordinates, overwrite: boolean = false) {
+        this._setData(coords, this._color, overwrite);
+        this._notify();
+    }
+
     rect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
         this._drawDataRect(topLeft, width, height, fill)
         this._notify();
@@ -81,7 +86,7 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
+    _setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
 
         let idx = this._flattenCoords(coords);
         let canvasCoords = this.toCanvasCoords(coords);
@@ -201,20 +206,20 @@ export class GridAPI extends APIScope {
             for (let x = tx; x < bx; x++) {
                 for (let y = ty; y < by; y++) {
                     // draw
-                    this.setData({x, y});
+                    this._setData({x, y});
                 }
             }
         } else {
             // draw only perimeter
             for (let x = tx; x < bx; x++) {
                 // draw horizontal sides
-                this.setData({x, y: ty});
-                this.setData({x, y: by - 1});
+                this._setData({x, y: ty});
+                this._setData({x, y: by - 1});
             }
             for (let y = ty + 1; y < by - 1; y++) {
                 // draw vertical sides
-                this.setData({x: tx, y});
-                this.setData({x: bx - 1, y});
+                this._setData({x: tx, y});
+                this._setData({x: bx - 1, y});
             }
         }
     }
@@ -238,14 +243,14 @@ export class GridAPI extends APIScope {
         // handle base-cases quickly
         if (width === 1 && height === 1) {
             // if it is just a point, draw point and return
-            this.setData({x: tx, y: ty});
+            this._setData({x: tx, y: ty});
             return;
         } else if (width === 2 && height === 2) {
             // if it is 2x2, then draw rect
-            this.setData({x: tx, y: ty});
-            this.setData({x: tx + 1, y: ty});
-            this.setData({x: tx, y: ty + 1});
-            this.setData({x: tx + 1, y: ty + 1});
+            this._setData({x: tx, y: ty});
+            this._setData({x: tx + 1, y: ty});
+            this._setData({x: tx, y: ty + 1});
+            this._setData({x: tx + 1, y: ty + 1});
             return;
         }
 
@@ -279,14 +284,14 @@ export class GridAPI extends APIScope {
             // check if x is 0 to avoid duplication
             if (x === 0) {
                 if (ewo !== 1) {
-                    this.setData({x: x + xc - ewo, y: y + yc - eho});
-                    this.setData({x: -x + xc, y: -y + yc});
+                    this._setData({x: x + xc - ewo, y: y + yc - eho});
+                    this._setData({x: -x + xc, y: -y + yc});
                 }
             } else {
-                this.setData({x: x + xc - ewo, y: y + yc - eho});
-                this.setData({x: -x + xc, y: y + yc - eho});
-                this.setData({x: x + xc - ewo, y: -y + yc});
-                this.setData({x: -x + xc, y: -y + yc});
+                this._setData({x: x + xc - ewo, y: y + yc - eho});
+                this._setData({x: -x + xc, y: y + yc - eho});
+                this._setData({x: x + xc - ewo, y: -y + yc});
+                this._setData({x: -x + xc, y: -y + yc});
             }
 
             if (fill) {
@@ -295,10 +300,10 @@ export class GridAPI extends APIScope {
 
                     if (x === 0 && ewo === 1) continue;
 
-                    this.setData({x: x + xc - ewo, y: i});
+                    this._setData({x: x + xc - ewo, y: i});
 
                     if (x !== 0) {
-                        this.setData({x: -x + xc,  y: i});
+                        this._setData({x: -x + xc,  y: i});
                     }
                 }
             }
@@ -329,14 +334,14 @@ export class GridAPI extends APIScope {
             // set points based 4 point symmetry
             if (y === 0) {
                 if (eho !== 1) {
-                    this.setData({x: x + xc - ewo, y: y + yc - eho});
-                    this.setData({x: -x + xc, y: -y + yc});
+                    this._setData({x: x + xc - ewo, y: y + yc - eho});
+                    this._setData({x: -x + xc, y: -y + yc});
                 }
             } else {
-                this.setData({x: x + xc - ewo, y: y + yc - eho});
-                this.setData({x: -x + xc, y: y + yc - eho});
-                this.setData({x: x + xc - ewo, y: -y + yc});
-                this.setData({x: -x + xc, y: -y + yc});
+                this._setData({x: x + xc - ewo, y: y + yc - eho});
+                this._setData({x: -x + xc, y: y + yc - eho});
+                this._setData({x: x + xc - ewo, y: -y + yc});
+                this._setData({x: -x + xc, y: -y + yc});
             }
 
             if (fill) {
@@ -346,12 +351,12 @@ export class GridAPI extends APIScope {
 
                     if (y === 0 && eho === 1) continue;
 
-                    this.setData({x: x + xc - j - 1 - ewo, y: y + yc - eho});
-                    this.setData({x: i, y: y + yc - eho});
+                    this._setData({x: x + xc - j - 1 - ewo, y: y + yc - eho});
+                    this._setData({x: i, y: y + yc - eho});
 
                     if (y !== 0) {
-                        this.setData({x: i, y: -y + yc});
-                        this.setData({x: x + xc - j - 1 - ewo, y: -y + yc});
+                        this._setData({x: i, y: -y + yc});
+                        this._setData({x: x + xc - j - 1 - ewo, y: -y + yc});
                     }
 
                     j++;
@@ -392,13 +397,13 @@ export class GridAPI extends APIScope {
         let e2;
 
         while(true) {
-            this.setData({x: x0, y: y0});
+            this._setData({x: x0, y: y0});
 
             // repeat the line above and below based on the width
             let alt = -1;
             for (let i = 1; i < width; i++) {
                 let y_o = alt * Math.floor((i + 1) / 2);
-                this.setData({x: x0, y: y0 + y_o});
+                this._setData({x: x0, y: y0 + y_o});
                 alt = -alt;
             }
 
@@ -458,7 +463,7 @@ export class GridAPI extends APIScope {
             }
 
             // fill color
-            this.setData({x, y});
+            this._setData({x, y});
             seenColors[Utils.rgbaToString(this.getData({x, y}))] = true;
 
             if (validCoords({x, y: y + 1})) {
