@@ -170,6 +170,45 @@ export class GridAPI extends APIScope {
         return c
     }
 
+    getDataRect(topLeft: PixelCoordinates, width: number, height: number): Array<[PixelCoordinates, RGBAColor]> {
+        if (!this._preserveData) {
+            throw new Error("attempted to get data from grid with preserveData set to false");
+        }
+
+        // top left coords
+        let tx = Math.max(topLeft.x, 0);
+        let ty = Math.max(topLeft.y, 0);
+
+        if (topLeft.x < 0) {
+            width = width + topLeft.x;
+        }
+        if (topLeft.y < 0) {
+            height = height + topLeft.y;
+        }
+
+        let data: Array<[PixelCoordinates, RGBAColor]> = [];
+
+        // bottom right corner x and y
+        let bx = Math.min(tx + width, this.pixelWidth);
+        let by = Math.min(ty + height, this.pixelHeight);
+
+        // get all pixels
+        for (let x = tx; x < bx; x++) {
+            for (let y = ty; y < by; y++) {
+                let coords = {x, y};
+                let idx = this._flattenCoords(coords);
+                data.push([coords, {
+                    r: this._data[idx],
+                    g: this._data[idx + 1],
+                    b: this._data[idx + 2],
+                    a: this._data[idx + 3]
+                }]);
+            }
+        }
+
+        return data;
+    }
+
     toPixelCoords(coords: CanvasCoordinates): PixelCoordinates {
         return {
             x: Math.floor(coords.x / (this._widthRatio * 1.0)),

@@ -36,22 +36,24 @@ export class Shade extends Tool {
             let strength = (this._strengthProperty.value / 100.0);
             let shadeType = this._shadeTypeProperty.value;
 
-            // TODO: add brush size
-            let brushSize = this._brushWidthProperty.value;
+            let pxWidth = this._brushWidthProperty.value;
+            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
+            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
 
-            let x = event.coords.pixel.x;
-            let y = event.coords.pixel.y;
+            let currPixels = grid.getDataRect({x, y}, pxWidth, pxWidth);
 
-            let currColor = grid.getData({x, y});
+            currPixels.forEach(pxPair => {
+                let coords = pxPair[0];
+                let color = pxPair[1];
 
-            if (Utils.isEmptyColor(currColor)) {
-                // theres no color here, so return
-                return;
-            }
+                if (!Utils.isEmptyColor(color)) {
+                    // theres no color here, so continue
+                    let colorToApply = this._calculateColor(color, strength, shadeType);
+                    grid.color = colorToApply;
+                    grid.set(coords, true);
+                }
+            });
 
-            let colorToApply = this._calculateColor(currColor, strength, shadeType);
-            grid.color = colorToApply;
-            grid.set({x, y}, true);
         }
     }
 
@@ -69,13 +71,13 @@ export class Shade extends Tool {
     previewCursor(event: GridMouseEvent): void {
         if (this.$iApi.cursor.grid) {
 
-            // this.$iApi.cursor.clearCursor();
+            this.$iApi.cursor.clearCursor();
 
-            // let pxWidth = this._brushWidthProperty.value;
-            // let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
-            // let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
+            let pxWidth = this._brushWidthProperty.value;
+            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
+            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
 
-            // this.$iApi.cursor.grid.rect({x, y}, pxWidth, pxWidth);
+            this.$iApi.cursor.grid.rect({x, y}, pxWidth, pxWidth);
         }
     }
 }
