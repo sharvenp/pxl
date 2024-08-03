@@ -86,75 +86,6 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    _setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
-
-        let idx = this._flattenCoords(coords);
-        let canvasCoords = this.toCanvasCoords(coords);
-
-        let colorToApply = color ?? this._color;
-
-        if (colorToApply) {
-
-            if (this._preserveData) {
-                // calculate resulting color
-                let a0 = colorToApply.a / 255.0;
-                let a1 = this._data[idx + 3] / 255.0;
-                let r0 = colorToApply.r;
-                let r1 = this._data[idx];
-                let g0 = colorToApply.g;
-                let g1 = this._data[idx + 1];
-                let b0 = colorToApply.b;
-                let b1 = this._data[idx + 2];
-
-                let aa = (1 - a0) * a1 + a0;
-                let rr = ((1 - a0) * a1 * r1 + a0 * r0) / aa;
-                let gg = ((1 - a0) * a1 * g1 + a0 * g0) / aa;
-                let bb = ((1 - a0) * a1 * b1 + a0 * b0) / aa;
-
-                if (overwrite) {
-                    rr = r0;
-                    gg = g0;
-                    bb = b0;
-                    aa = a0;
-                }
-
-                let dataColor: RGBAColor = {
-                    r: Math.round(rr),
-                    g: Math.round(gg),
-                    b: Math.round(bb),
-                    a: Math.round(aa * 255)
-                };
-
-                this._data[idx] = dataColor.r;
-                this._data[idx + 1] = dataColor.g;
-                this._data[idx + 2] = dataColor.b;
-                this._data[idx + 3] = dataColor.a;
-
-                // set color to canvas
-                this._ctx.fillStyle = Utils.rgbaToHex(dataColor);
-                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
-
-            } else {
-               // set color to canvas using current color
-               this._ctx.fillStyle = Utils.rgbaToHex(colorToApply);
-               this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
-            }
-
-
-        } else {
-
-            if (this._preserveData) {
-                this._data[idx] = 0;
-                this._data[idx + 1] = 0;
-                this._data[idx + 2] = 0;
-                this._data[idx + 3] = 0;
-            }
-
-            // clear canvas
-            this._ctx.clearRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
-        }
-    }
-
     getData(coords: PixelCoordinates): RGBAColor {
         if (!this._preserveData) {
             throw new Error("attempted to get data from grid with preserveData set to false");
@@ -517,6 +448,75 @@ export class GridAPI extends APIScope {
             if (validCoords({x: x - 1, y})) {
                 fillStack.push({x: x - 1, y});
             }
+        }
+    }
+
+    _setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
+
+        let idx = this._flattenCoords(coords);
+        let canvasCoords = this.toCanvasCoords(coords);
+
+        let colorToApply = color ?? this._color;
+
+        if (colorToApply) {
+
+            if (this._preserveData) {
+                // calculate resulting color
+                let a0 = colorToApply.a / 255.0;
+                let a1 = this._data[idx + 3] / 255.0;
+                let r0 = colorToApply.r;
+                let r1 = this._data[idx];
+                let g0 = colorToApply.g;
+                let g1 = this._data[idx + 1];
+                let b0 = colorToApply.b;
+                let b1 = this._data[idx + 2];
+
+                let aa = (1 - a0) * a1 + a0;
+                let rr = ((1 - a0) * a1 * r1 + a0 * r0) / aa;
+                let gg = ((1 - a0) * a1 * g1 + a0 * g0) / aa;
+                let bb = ((1 - a0) * a1 * b1 + a0 * b0) / aa;
+
+                if (overwrite) {
+                    rr = r0;
+                    gg = g0;
+                    bb = b0;
+                    aa = a0;
+                }
+
+                let dataColor: RGBAColor = {
+                    r: Math.round(rr),
+                    g: Math.round(gg),
+                    b: Math.round(bb),
+                    a: Math.round(aa * 255)
+                };
+
+                this._data[idx] = dataColor.r;
+                this._data[idx + 1] = dataColor.g;
+                this._data[idx + 2] = dataColor.b;
+                this._data[idx + 3] = dataColor.a;
+
+                // set color to canvas
+                this._ctx.fillStyle = Utils.rgbaToHex(dataColor);
+                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
+
+            } else {
+               // set color to canvas using current color
+               this._ctx.fillStyle = Utils.rgbaToHex(colorToApply);
+               this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
+            }
+
+
+        } else {
+
+            if (this._preserveData) {
+                this._data[idx] = 0;
+                this._data[idx + 1] = 0;
+                this._data[idx + 2] = 0;
+                this._data[idx + 3] = 0;
+            }
+
+            // clear canvas
+            this._ctx.clearRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
         }
     }
 
