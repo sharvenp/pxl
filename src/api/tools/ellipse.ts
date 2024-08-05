@@ -13,6 +13,7 @@ export class Ellipse extends Tool {
 
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = true;
+        this._trackPixels = false;
 
         this._fillProperty = new CheckboxProperty("Fill", false);
 

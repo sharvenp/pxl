@@ -108,6 +108,12 @@ export class ToolAPI extends APIScope {
     }
 
     private _checkTracking(coords: PixelCoordinates): boolean {
+
+        if (this._selectedTool?.trackPixels === false) {
+            // short-circuit
+            return false;
+        }
+
         let grid = this.$iApi.canvas.grid;
         if (grid) {
             return this._trackedPixels.has(coords.y * grid.pixelHeight + coords.x);
@@ -116,6 +122,11 @@ export class ToolAPI extends APIScope {
     }
 
     private _updateTracking(coords: PixelCoordinates): void {
+
+        if (this._selectedTool?.trackPixels === false) {
+            return;
+        }
+
         let grid = this.$iApi.canvas.grid;
         if (grid) {
             this._trackedPixels.add(coords.y * grid.pixelHeight + coords.x);
