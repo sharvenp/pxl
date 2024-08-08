@@ -14,6 +14,7 @@ export class Line extends Tool {
 
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = true;
+        this._trackPixels = false;
 
         this._thicknessProperty = new SliderProperty("Thickness", 1, 5, 1, 'px');
 

@@ -1,4 +1,4 @@
-import { CURSOR_PREVIEW_COLOR, GridMouseEvent, InstanceAPI } from '..';
+import { GridMouseEvent, InstanceAPI } from '..';
 import { Tool, ToolType, SliderProperty} from '.'
 
 export class Eraser extends Tool {

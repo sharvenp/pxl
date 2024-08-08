@@ -1,4 +1,4 @@
-import { CURSOR_PREVIEW_COLOR, GridMouseEvent, InstanceAPI, PaletteItem, Utils } from '..';
+import { GridMouseEvent, InstanceAPI, PaletteItem, Utils } from '..';
 import { Tool, ToolType} from '.'
 
 export class Picker extends Tool {
@@ -8,6 +8,7 @@ export class Picker extends Tool {
 
         this._showPreviewOnInvoke = true;
         this._invokeOnMove = false;
+        this._canMirror = false;
     }
 
     invokeAction(event: GridMouseEvent): void {

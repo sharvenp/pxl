@@ -1,4 +1,4 @@
-import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI } from '.';
+import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI, SettingsAPI } from '.';
 
 export class InstanceAPI {
 
@@ -8,6 +8,7 @@ export class InstanceAPI {
     readonly cursor: CursorAPI;
     readonly palette: PaletteAPI;
     readonly tool: ToolAPI;
+    readonly settings: SettingsAPI;
 
     constructor() {
         this.event = new EventAPI(this);
@@ -16,5 +17,6 @@ export class InstanceAPI {
         this.palette = new PaletteAPI(this);
         this.tool = new ToolAPI(this);
         this.cursor = new CursorAPI(this);
+        this.settings = new SettingsAPI(this);
     }
 }

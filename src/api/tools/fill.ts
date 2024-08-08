@@ -1,4 +1,4 @@
-import { CURSOR_PREVIEW_COLOR, GridMouseEvent, InstanceAPI } from '..';
+import { GridMouseEvent, InstanceAPI } from '..';
 import { SliderProperty, Tool, ToolType} from '.'
 
 export class Fill extends Tool {
@@ -10,6 +10,7 @@ export class Fill extends Tool {
 
         this._showPreviewOnInvoke = true;
         this._invokeOnMove = false;
+        this._canMirror = false;
 
         this._toleranceProperty = new SliderProperty("Tolerance", 0, 100, 0, '%');
 

@@ -20,6 +20,7 @@ export abstract class Tool extends APIScope {
     protected _showPreviewOnInvoke: boolean;
     protected _invokeOnMove: boolean;
     protected _trackPixels: boolean;
+    protected _canMirror: boolean;
 
     constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
@@ -28,6 +29,7 @@ export abstract class Tool extends APIScope {
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = false;
         this._trackPixels = true;
+        this._canMirror = true;
     }
 
     get showPreviewOnInvoke(): boolean {
@@ -40,6 +42,10 @@ export abstract class Tool extends APIScope {
 
     get trackPixels(): boolean {
         return this._trackPixels;
+    }
+
+    get canMirror(): boolean {
+        return this._canMirror;
     }
 
     get toolProperties(): Array<ToolProperty> {

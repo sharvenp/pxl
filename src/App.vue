@@ -5,6 +5,7 @@
     <Tools />
     <Palette />
     <Preview />
+    <Settings />
     <div class="status-bar grid col-span-full z-10">
       <StatusBar />
     </div>
@@ -18,4 +19,5 @@ import Tools from './components/Tools.vue';
 import Palette from './components/Palette.vue';
 import StatusBar from './components/StatusBar.vue';
 import Preview from './components/Preview.vue';
+import Settings from './components/Settings.vue';
 </script>

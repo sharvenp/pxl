@@ -42,6 +42,12 @@ canvas {
   background-color: var(--accent-color);
 }
 
+.canvas-settings {
+  top: 140px;
+  right: 0px;
+  width: 132px;
+}
+
 .transparent-swatch {
   background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 10px 10px
 }
