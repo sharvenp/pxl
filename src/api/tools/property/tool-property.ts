@@ -2,7 +2,8 @@
 export enum ToolPropertyType {
     SLIDER = "slider",
     CHECK_BOX = "check_box",
-    RADIO = 'radio'
+    RADIO = 'radio',
+    BUTTON = 'button'
 }
 
 export abstract class ToolProperty {

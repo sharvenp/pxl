@@ -10,6 +10,7 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.ELLIPSE)">C</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.LINE)">L</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SHADE)">S</button>
+            <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SELECT)">Se</button>
         </div>
         <!-- Tool Property -->
         <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool">
@@ -37,6 +38,14 @@
                                 <label class="ms-2">{{ option }}</label>
                             </div>
                         </div>
+                    </div>
+                </template>
+                <template v-else-if="prop.propertyType === 'button'">
+                    <div class="text-xs mt-2">
+                        <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded"
+                                @click="iApi?.event.emit(prop.event)">
+                                {{ prop.propertyLabel }}
+                        </button>
                     </div>
                 </template>
             </template>
