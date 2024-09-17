@@ -29,7 +29,7 @@ export class ToolAPI extends APIScope {
 
         // default to pencil
         // TODO: load correct tool from save state
-        this.selectTool(ToolType.PENCIL);
+        this.selectTool(ToolType.SELECT);
 
         // setup _handlers
         this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
@@ -103,7 +103,14 @@ export class ToolAPI extends APIScope {
     }
 
     selectTool(tool: ToolType): void {
+        if (this._selectedTool) {
+            this._selectedTool.dispose();
+            this.$iApi.cursor?.clearCursor();
+        }
+
         this._selectedTool = this._tools[tool];
+        this._selectedTool.initalize();
+
         this.$iApi.event.emit(Events.TOOL_SELECT, tool);
     }
 

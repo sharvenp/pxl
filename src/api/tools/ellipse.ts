@@ -4,9 +4,9 @@ import { Tool, ToolType, CheckboxProperty } from '.'
 export class Ellipse extends Tool {
 
     private _fillProperty: CheckboxProperty;
-    private dragStartX: number;
-    private dragStartY: number;
-    private isDragging: boolean;
+    private _dragStartX: number;
+    private _dragStartY: number;
+    private _isDragging: boolean;
 
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.ELLIPSE);
@@ -21,9 +21,9 @@ export class Ellipse extends Tool {
             this._fillProperty
         ]
 
-        this.dragStartX = -1;
-        this.dragStartY = -1;
-        this.isDragging = false;
+        this._dragStartX = -1;
+        this._dragStartY = -1;
+        this._isDragging = false;
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -39,21 +39,21 @@ export class Ellipse extends Tool {
             }
 
             if (mouseEvent.isDragging) {
-                if (!this.isDragging) {
-                    this.dragStartX = mouseEvent.coords.pixel.x;
+                if (!this._isDragging) {
+                    this._dragStartX = mouseEvent.coords.pixel.x;
                 }
-                if (!this.isDragging) {
-                    this.dragStartY = mouseEvent.coords.pixel.y;
+                if (!this._isDragging) {
+                    this._dragStartY = mouseEvent.coords.pixel.y;
                 }
-                this.isDragging = true;
+                this._isDragging = true;
             }
 
-            let x = Math.min(this.dragStartX, mouseEvent.coords.pixel.x);
-            let y = Math.min(this.dragStartY, mouseEvent.coords.pixel.y);
-            let w = Math.abs(x - Math.max(this.dragStartX, mouseEvent.coords.pixel.x) - 1);
-            let h = Math.abs(y - Math.max(this.dragStartY, mouseEvent.coords.pixel.y) - 1);
+            let x = Math.min(this._dragStartX, mouseEvent.coords.pixel.x);
+            let y = Math.min(this._dragStartY, mouseEvent.coords.pixel.y);
+            let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.pixel.x) - 1);
+            let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.pixel.y) - 1);
 
-            if (!mouseEvent.isDragging && this.isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+            if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
                 grid.color = color.colorRGBA;
                 grid.ellipse({x, y}, w, h, this._fillProperty.value);
@@ -62,20 +62,19 @@ export class Ellipse extends Tool {
             }
 
             // draw preview ellipse
-            if (this.$iApi.cursor.grid && this.isDragging) {
+            if (this.$iApi.cursor.grid && this._isDragging) {
                 this.$iApi.cursor.grid.ellipse({x, y}, w, h, this._fillProperty.value);
             }
         }
     }
 
-    previewCursor(): void {
-        // preview handled by invoke
-        return;
+    dispose(): void {
+        this._resetDrag();
     }
 
     private _resetDrag(): void {
-        this.dragStartX = -1;
-        this.dragStartY = -1;
-        this.isDragging = false;
+        this._dragStartX = -1;
+        this._dragStartY = -1;
+        this._isDragging = false;
     }
 }

@@ -23,6 +23,8 @@ export abstract class Tool extends APIScope {
     protected _trackPixels: boolean;
     protected _canMirror: boolean;
 
+    protected _handlers: Array<string>;
+
     constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
         this._toolType = toolType;
@@ -31,6 +33,8 @@ export abstract class Tool extends APIScope {
         this._invokeOnMove = false;
         this._trackPixels = true;
         this._canMirror = true;
+
+        this._handlers = [];
     }
 
     get showPreviewOnInvoke(): boolean {
@@ -57,9 +61,18 @@ export abstract class Tool extends APIScope {
         return this._toolType;
     }
 
+    initalize(): void {
+        // will be implemented by tool
+    }
+
+    dispose(): void {
+        // will be implemented by tool
+    }
+
+    previewCursor(event: GridMouseEvent): void {
+        // will be implemented by tool
+    }
+
     // invoke the tool's action (e.g. draw a pixel)
     abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void;
-
-    // render the cursor preview of the tool
-    abstract previewCursor(event: GridMouseEvent): void;
 }

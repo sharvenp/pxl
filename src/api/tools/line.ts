@@ -5,9 +5,9 @@ export class Line extends Tool {
 
     private _thicknessProperty: SliderProperty;
 
-    private dragStartX: number;
-    private dragStartY: number;
-    private isDragging: boolean;
+    private _dragStartX: number;
+    private _dragStartY: number;
+    private _isDragging: boolean;
 
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.LINE);
@@ -22,9 +22,9 @@ export class Line extends Tool {
             this._thicknessProperty,
         ]
 
-        this.dragStartX = -1;
-        this.dragStartY = -1;
-        this.isDragging = false;
+        this._dragStartX = -1;
+        this._dragStartY = -1;
+        this._isDragging = false;
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -40,21 +40,21 @@ export class Line extends Tool {
             }
 
             if (mouseEvent.isDragging) {
-                if (!this.isDragging) {
-                    this.dragStartX = mouseEvent.coords.pixel.x;
+                if (!this._isDragging) {
+                    this._dragStartX = mouseEvent.coords.pixel.x;
                 }
-                if (!this.isDragging) {
-                    this.dragStartY = mouseEvent.coords.pixel.y;
+                if (!this._isDragging) {
+                    this._dragStartY = mouseEvent.coords.pixel.y;
                 }
-                this.isDragging = true;
+                this._isDragging = true;
             }
 
-            let x0 = this.dragStartX;
-            let y0 = this.dragStartY;
+            let x0 = this._dragStartX;
+            let y0 = this._dragStartY;
             let x1 = mouseEvent.coords.pixel.x;
             let y1 = mouseEvent.coords.pixel.y;
 
-            if (!mouseEvent.isDragging && this.isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+            if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
                 grid.color = color.colorRGBA;
                 grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
@@ -63,21 +63,20 @@ export class Line extends Tool {
             }
 
             // draw preview line
-            if (this.$iApi.cursor.grid && this.isDragging) {
+            if (this.$iApi.cursor.grid && this._isDragging) {
 
                 this.$iApi.cursor.grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
             }
         }
     }
 
-    previewCursor(): void {
-        // preview handled by invoke
-        return;
+    dispose(): void {
+        this._resetDrag();
     }
 
     private _resetDrag(): void {
-        this.dragStartX = -1;
-        this.dragStartY = -1;
-        this.isDragging = false;
+        this._dragStartX = -1;
+        this._dragStartY = -1;
+        this._isDragging = false;
     }
 }
