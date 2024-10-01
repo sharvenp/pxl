@@ -37,7 +37,10 @@ export class CursorAPI extends APIScope {
     }
 
     clearCursor(): void {
-        this._grid?.clear();
+        if (this._grid) {
+            this._grid.color = this._previewColor;
+            this._grid.clear();
+        }
     }
 
     get initialized(): boolean {

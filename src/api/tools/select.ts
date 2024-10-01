@@ -4,6 +4,7 @@ import { Tool, ToolType, ButtonProperty} from '.'
 interface RegionData {
     originalCoords: PixelCoordinates;
     currentCoords: PixelCoordinates;
+    lastCoords: PixelCoordinates;
     originalColor: RGBAColor;
     currentColor: RGBAColor;
 }
@@ -49,20 +50,40 @@ class SelectedRegion {
         this._y = this._lastY + dy;
 
         this._pixels.forEach(pair => {
+
+            // keep track of previous x,y values
+            if (pair.lastCoords.x === -1) {
+                pair.lastCoords.x = pair.currentCoords.x;
+            }
+            if (pair.lastCoords.y === -1) {
+                pair.lastCoords.y = pair.currentCoords.y;
+            }
+
             // move the position
-            pair.currentCoords.x += dx;
-            pair.currentCoords.y += dy;
+            pair.currentCoords.x = pair.lastCoords.x + dx;
+            pair.currentCoords.y = pair.lastCoords.y + dy;
+
         });
     }
 
     stopTransform() {
         this._lastX = -1;
         this._lastY = -1;
+
+        this._pixels.forEach(pair => {
+            pair.lastCoords.x = -1;
+            pair.lastCoords.y = -1;
+        });
     }
 
     revertTransform() {
         this._x = this._originalX;
         this._y = this._originalY;
+
+        this._pixels.forEach(pair => {
+            pair.lastCoords.x = pair.originalCoords.x;
+            pair.lastCoords.y = pair.originalCoords.y;
+        });
     }
 
     get x(): number {
@@ -103,6 +124,7 @@ export class Select extends Tool {
         this._showPreviewOnInvoke = true;
         this._invokeOnMove = true;
         this._trackPixels = false;
+        this._canMirror = false;
 
         this._resetButtonProperty = new ButtonProperty("Reset", Events.SELECT_TOOL_RESET);
 
@@ -177,11 +199,15 @@ export class Select extends Tool {
                 if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                     // dragging stopped, select area
                     this._isSelected = true;
-                    let pixels: Array<RegionData> = grid.getDataRect({x, y}, w, h)
+                    let pixels: Array<RegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
                                                         .filter(p => !Utils.isEmptyColor(p[1]))
                                                         .map(p => <RegionData>{
                                                             originalCoords: p[0],
                                                             currentCoords: p[0],
+                                                            lastCoords: {
+                                                                x: -1,
+                                                                y: -1
+                                                            },
                                                             originalColor: p[1],
                                                             currentColor: p[1]
                                                         });
@@ -217,14 +243,17 @@ export class Select extends Tool {
                         // check if click is inside the region
                         // if not, reset drag
 
-                            let dx = mouseEvent.coords.pixel.x - this._dragStartX;
-                            let dy = mouseEvent.coords.pixel.y - this._dragStartY;
+                        let dx = mouseEvent.coords.pixel.x - this._dragStartX;
+                        let dy = mouseEvent.coords.pixel.y - this._dragStartY;
 
-                            this._selectedRegion!.transform(dx, dy);
-                            this._previewRegion();
+                        this._selectedRegion!.transform(dx, dy);
+                        this._previewRegion();
                     }
 
                 } else {
+
+                    // place it
+
                     this._resetDrag();
                     this._resetRegionSelect();
                 }
@@ -255,15 +284,16 @@ export class Select extends Tool {
             return;
         }
 
-        let grid = this.$iApi.canvas.grid;
 
-        if (!grid) {
+        if (!this.$iApi.cursor.grid) {
             return;
         }
 
-        // draw cursor box
+        // clear cursor
         this.$iApi.cursor.clearCursor();
-        this.$iApi.cursor.grid?.rect(
+
+        // draw cursor box
+        this.$iApi.cursor.grid.rect(
             {
                 x: this._selectedRegion.x,
                 y: this._selectedRegion.y
@@ -274,10 +304,9 @@ export class Select extends Tool {
         );
 
         // draw pixel data
-        // TODO: here is where we left off
         this._selectedRegion.pixels.forEach(px => {
-            grid.color = px.currentColor;
-            grid.set(px.currentCoords, true);
+            this.$iApi.cursor.grid!.color = px.currentColor;
+            this.$iApi.cursor.grid!.set(px.currentCoords, true);
         });
     }
 
