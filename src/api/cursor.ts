@@ -6,7 +6,6 @@ export class CursorAPI extends APIScope {
 
     private _initialized: boolean;
     private _el: HTMLCanvasElement | undefined;
-    private readonly _previewColor = Utils.hexToRGBA(CURSOR_PREVIEW_COLOR);
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
@@ -21,7 +20,7 @@ export class CursorAPI extends APIScope {
         this._el.height = height;
 
         this._grid = new GridAPI(this.$iApi, this._el, pxWidth, pxHeight, false, false);
-        this._grid.color = this._previewColor;
+        this._grid.color = CURSOR_PREVIEW_COLOR;
 
         this.clearCursor();
 
@@ -38,7 +37,7 @@ export class CursorAPI extends APIScope {
 
     clearCursor(): void {
         if (this._grid) {
-            this._grid.color = this._previewColor;
+            this._grid.color = CURSOR_PREVIEW_COLOR;
             this._grid.clear();
         }
     }

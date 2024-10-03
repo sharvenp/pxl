@@ -5,8 +5,7 @@ interface RegionData {
     originalCoords: PixelCoordinates;
     currentCoords: PixelCoordinates;
     lastCoords: PixelCoordinates;
-    originalColor: RGBAColor;
-    currentColor: RGBAColor;
+    color: RGBAColor;
 }
 
 class SelectedRegion {
@@ -199,6 +198,8 @@ export class Select extends Tool {
                 if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                     // dragging stopped, select area
                     this._isSelected = true;
+
+                    // get pixels within region
                     let pixels: Array<RegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
                                                         .filter(p => !Utils.isEmptyColor(p[1]))
                                                         .map(p => <RegionData>{
@@ -208,16 +209,26 @@ export class Select extends Tool {
                                                                 x: -1,
                                                                 y: -1
                                                             },
-                                                            originalColor: p[1],
-                                                            currentColor: p[1]
+                                                            color: p[1],
                                                         });
+                    // create region
                     this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
+
+                    // erase pixels from grid
+                    pixels.forEach(px => {
+                        grid.color = undefined;
+                        grid.set(px.currentCoords);
+                    });
+
+                    this._previewRegion();
+
                     this._isDragging = false;
                 }
             } else {
 
                 // STAGE 2
 
+                // check if click is inside the region
                 if (this._isPointInRegion(mouseEvent.coords.pixel)) {
 
                     if (event === Events.CANVAS_MOUSE_DRAG_START) {
@@ -240,7 +251,6 @@ export class Select extends Tool {
                     }
 
                     if (mouseEvent.isDragging && event === Events.CANVAS_MOUSE_MOVE) {
-                        // check if click is inside the region
                         // if not, reset drag
 
                         let dx = mouseEvent.coords.pixel.x - this._dragStartX;
@@ -252,7 +262,11 @@ export class Select extends Tool {
 
                 } else {
 
-                    // place it
+                    // place region
+                    this._selectedRegion?.pixels.forEach(px => {
+                        grid.color = px.color;
+                        grid.set(px.currentCoords);
+                    });
 
                     this._resetDrag();
                     this._resetRegionSelect();
@@ -305,7 +319,7 @@ export class Select extends Tool {
 
         // draw pixel data
         this._selectedRegion.pixels.forEach(px => {
-            this.$iApi.cursor.grid!.color = px.currentColor;
+            this.$iApi.cursor.grid!.color = px.color;
             this.$iApi.cursor.grid!.set(px.currentCoords, true);
         });
     }
