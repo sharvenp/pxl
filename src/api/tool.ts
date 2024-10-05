@@ -29,7 +29,7 @@ export class ToolAPI extends APIScope {
 
         // default to pencil
         // TODO: load correct tool from save state
-        this.selectTool(ToolType.SELECT);
+        this.selectTool(ToolType.PENCIL);
 
         // setup _handlers
         this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
