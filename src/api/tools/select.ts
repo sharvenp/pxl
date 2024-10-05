@@ -80,9 +80,10 @@ class SelectedRegion {
         this._y = this._originalY;
 
         this._pixels.forEach(pair => {
-            pair.lastCoords.x = pair.originalCoords.x;
-            pair.lastCoords.y = pair.originalCoords.y;
+            pair.currentCoords.x = pair.originalCoords.x;
+            pair.currentCoords.y = pair.originalCoords.y;
         });
+        this.stopTransform();
     }
 
     get x(): number {
@@ -204,7 +205,7 @@ export class Select extends Tool {
                                                         .filter(p => !Utils.isEmptyColor(p[1]))
                                                         .map(p => <RegionData>{
                                                             originalCoords: p[0],
-                                                            currentCoords: p[0],
+                                                            currentCoords: {x: p[0].x, y: p[0].y}, // make copy
                                                             lastCoords: {
                                                                 x: -1,
                                                                 y: -1
@@ -294,12 +295,7 @@ export class Select extends Tool {
 
     private _previewRegion(): void {
 
-        if (!this._selectedRegion) {
-            return;
-        }
-
-
-        if (!this.$iApi.cursor.grid) {
+        if (!this._selectedRegion || !this.$iApi.cursor.grid) {
             return;
         }
 
