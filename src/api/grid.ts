@@ -157,19 +157,12 @@ export class GridAPI extends APIScope {
     private _drawDataRect(topLeft: PixelCoordinates, width: number, height: number, fill: boolean = true): void {
 
         // top left coords
-        let tx = Math.max(topLeft.x, 0);
-        let ty = Math.max(topLeft.y, 0);
-
-        if (topLeft.x < 0) {
-            width = width + topLeft.x;
-        }
-        if (topLeft.y < 0) {
-            height = height + topLeft.y;
-        }
+        let tx = topLeft.x;
+        let ty = topLeft.y;
 
         // bottom right corner x and y
-        let bx = Math.min(tx + width, this.pixelWidth);
-        let by = Math.min(ty + height, this.pixelHeight);
+        let bx = tx + width;
+        let by = ty + height;
 
         if (fill) {
             // fill all pixels
@@ -200,8 +193,8 @@ export class GridAPI extends APIScope {
         // https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 
         // top left coords
-        let tx = Math.max(topLeft.x, 0);
-        let ty = Math.max(topLeft.y, 0);
+        let tx = topLeft.x;
+        let ty = topLeft.y;
 
         if (topLeft.x < 0) {
             width = width + topLeft.x;
