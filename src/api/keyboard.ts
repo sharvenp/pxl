@@ -9,16 +9,23 @@ import { Key } from 'ts-key-enum';
 //
 // Keep customizability in mind (i.e. bindings can be changed through user interface)
 
+enum KeyAction {
+    DOWN = 'down',
+    UP = 'up'
+}
+
 class KeyBind {
     name: string;
+    onAction: KeyAction;
     mods: Array<Key>;
     keys: Array<Key>;
     event: Events;
     args: Array<any>;
     disabled: boolean;
 
-    constructor(name: string, mods: Array<Key>, keys: Array<Key>, event: Events, ...args: Array<any>) {
+    constructor(name: string, onAction: KeyAction, mods: Array<Key>, keys: Array<Key>, event: Events, ...args: Array<any>) {
         this.name = name;
+        this.onAction = onAction;
         this.mods = mods;
         this.keys = keys;
         this.event = event;
@@ -30,29 +37,43 @@ class KeyBind {
 export class KeyboardAPI extends APIScope {
 
     private readonly _keyBinds: Array<KeyBind>;
+    private readonly _keys: Map<Key, boolean>;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
         this._keyBinds = [];
+        this._keys = new Map();
+
+        this.initialize();
     }
 
-    private findKeyBind(keyBindName: string): KeyBind | undefined {
+    initialize(): void {
+        document.addEventListener('keydown', this._processInputDown);
+        document.addEventListener('keyup', this._processInputUp);
+    }
+
+    destroy(): void {
+        document.removeEventListener('keydown', this._processInputDown);
+        document.removeEventListener('keyup', this._processInputUp);
+    }
+
+    private _findKeyBind(keyBindName: string): KeyBind | undefined {
         return this._keyBinds.find(kb => kb.name === keyBindName);
     }
 
-    on(keyBindName: string, mods: Array<Key>, keys: Array<Key>, event: Events, ...args: Array<any>): void {
+    on(keyBindName: string, onAction: KeyAction, mods: Array<Key>, keys: Array<Key>, event: Events, ...args: Array<any>): void {
         // check if name already registered
-        if (this.findKeyBind(keyBindName)) {
+        if (this._findKeyBind(keyBindName)) {
             throw new Error('Duplicate keybind name registration: ' + keyBindName);
         }
 
         // register the key bind
-        this._keyBinds.push(new KeyBind(keyBindName, mods, keys, event, args))
+        this._keyBinds.push(new KeyBind(keyBindName, onAction, mods, keys, event, args))
     }
 
     toggle(keyBindName: string): void {
         // check if name exists
-        const kb = this.findKeyBind(keyBindName);
+        const kb = this._findKeyBind(keyBindName);
 
         if (kb) {
             // toggle it
@@ -60,7 +81,35 @@ export class KeyboardAPI extends APIScope {
         }
     }
 
-    processInput(): void {
-        // TODO: listen for keyboard input and match with closest keybind
+    private _processInputDown(evt: KeyboardEvent): void {
+
+        let key = <Key>evt.key;
+        this._keys.set(key, true);
+
+        this._matchKeyBind(KeyAction.DOWN);
+
+    }
+
+    private _processInputUp(evt: KeyboardEvent): void {
+
+        this._matchKeyBind(KeyAction.UP);
+
+        let key = <Key>evt.key;
+        this._keys.delete(key);
+
+    }
+
+    private _matchKeyBind(onAction: KeyAction) {
+        // look at the current state of keys and find a match
+        // if match(es) found, execute them
+
+        let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === onAction);
+
+        // TODO: how to match this? Ask AI ?
+
+        // fire events
+        candidateKeyBinds.forEach(kb => {
+            this.$iApi.event.emit(kb.event, ...kb.args);
+        });
     }
 }
