@@ -1,5 +1,6 @@
-import { GridMouseEvent, InstanceAPI } from '..';
-import { SliderProperty, Tool, ToolType} from '.'
+import { InstanceAPI } from '..';
+import { SliderProperty, Tool } from '.'
+import { GridMouseEvent, ToolType } from '../utils';
 
 export class Fill extends Tool {
 

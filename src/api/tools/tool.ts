@@ -1,18 +1,7 @@
 import { ToolProperty } from ".";
-import { APIScope, GridMouseEvent, Events } from "..";
+import { APIScope } from "..";
 import { InstanceAPI } from "../instance";
-
-export enum ToolType {
-    PENCIL = "Pencil",
-    ERASER = "Eraser",
-    PICKER = "Picker",
-    FILL = "Fill",
-    RECTANGLE = "Rectangle",
-    ELLIPSE = "Ellipse",
-    LINE = "Line",
-    SHADE = "Shade",
-    SELECT = "Select",
-}
+import { Events, GridMouseEvent, ToolType } from "../utils";
 
 export abstract class Tool extends APIScope {
 

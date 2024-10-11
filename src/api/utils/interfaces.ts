@@ -24,6 +24,13 @@ export interface PaletteItem {
     colorRGBA: RGBAColor
 }
 
+export interface SelectedRegionData {
+    originalCoords: PixelCoordinates;
+    currentCoords: PixelCoordinates;
+    lastCoords: PixelCoordinates;
+    color: RGBAColor;
+}
+
 export interface RGBAColor {
     r: number,
     g: number,

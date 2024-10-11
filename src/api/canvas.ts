@@ -1,5 +1,6 @@
-import { APIScope, InstanceAPI, GridAPI, CanvasCoordinates, Coordinates, Events, PixelCoordinates } from '.';
+import { APIScope, InstanceAPI, GridAPI } from '.';
 import Panzoom, { PanZoom } from "panzoom";
+import { CanvasCoordinates, Coordinates, Events, PixelCoordinates } from './utils';
 
 export class CanvasAPI extends APIScope {
 

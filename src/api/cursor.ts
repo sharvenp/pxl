@@ -1,4 +1,5 @@
-import { InstanceAPI, APIScope, CURSOR_PREVIEW_COLOR, GridAPI, Utils } from '.';
+import { InstanceAPI, APIScope, GridAPI } from '.';
+import { CURSOR_PREVIEW_COLOR } from './utils';
 
 export class CursorAPI extends APIScope {
 

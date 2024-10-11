@@ -1,5 +1,6 @@
-import { Events, GridMouseEvent, InstanceAPI } from '..';
-import { Tool, ToolType, SliderProperty, CheckboxProperty } from '.'
+import { InstanceAPI } from '..';
+import { Tool, SliderProperty } from '.'
+import { Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Line extends Tool {
 

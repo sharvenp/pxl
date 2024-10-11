@@ -1,5 +1,6 @@
-import { Events, GridMouseEvent, InstanceAPI } from '..';
-import { Tool, ToolType, CheckboxProperty } from '.'
+import { InstanceAPI } from '..';
+import { Tool, CheckboxProperty } from '.'
+import { Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Ellipse extends Tool {
 

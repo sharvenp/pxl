@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { Events, InstanceAPI } from '../api';
+import { InstanceAPI } from '../api';
+import { Events } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 const canvas = ref<HTMLCanvasElement>();

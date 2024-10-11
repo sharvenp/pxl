@@ -1,10 +1,4 @@
-
-export enum ToolPropertyType {
-    SLIDER = "slider",
-    CHECK_BOX = "check_box",
-    RADIO = 'radio',
-    BUTTON = 'button'
-}
+import { ToolPropertyType } from "../../utils";
 
 export abstract class ToolProperty {
 

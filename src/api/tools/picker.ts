@@ -1,5 +1,6 @@
-import { GridMouseEvent, InstanceAPI, PaletteItem, Utils } from '..';
-import { Tool, ToolType} from '.'
+import { InstanceAPI } from '..';
+import { Tool } from '.'
+import { GridMouseEvent, PaletteItem, ToolType, Utils } from '../utils';
 
 export class Picker extends Tool {
 

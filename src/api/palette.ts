@@ -1,4 +1,5 @@
-import { APIScope, InstanceAPI, Events, PaletteItem } from '.';
+import { APIScope, InstanceAPI } from '.';
+import { Events, PaletteItem } from './utils';
 
 export class PaletteAPI extends APIScope {
 

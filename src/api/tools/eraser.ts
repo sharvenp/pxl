@@ -1,5 +1,6 @@
-import { GridMouseEvent, InstanceAPI } from '..';
-import { Tool, ToolType, SliderProperty} from '.'
+import { InstanceAPI } from '..';
+import { Tool, SliderProperty} from '.'
+import { GridMouseEvent, ToolType } from '../utils';
 
 export class Eraser extends Tool {
 

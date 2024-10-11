@@ -13,7 +13,7 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SELECT)">Se</button>
         </div>
         <!-- Tool Property -->
-        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool">
+        <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool.toolType">
             <span class="text-base">{{ currentTool.toolType }}</span>
             <template v-for="prop in currentTool.toolProperties">
                 <template v-if="prop.propertyType === 'slider'">
@@ -55,8 +55,8 @@
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { Events, InstanceAPI } from '../api';
-import { ToolType } from '../api/tools';
+import { InstanceAPI } from '../api';
+import { Events, ToolType } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];

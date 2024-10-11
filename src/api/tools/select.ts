@@ -1,12 +1,6 @@
-import { Events, GridMouseEvent, InstanceAPI, PixelCoordinates, RGBAColor, Utils } from '..';
-import { Tool, ToolType, ButtonProperty} from '.'
-
-interface RegionData {
-    originalCoords: PixelCoordinates;
-    currentCoords: PixelCoordinates;
-    lastCoords: PixelCoordinates;
-    color: RGBAColor;
-}
+import { InstanceAPI } from '..';
+import { Tool, ButtonProperty} from '.'
+import { SelectedRegionData, GridMouseEvent, Utils, PixelCoordinates, Events, ToolType } from '../utils';
 
 class SelectedRegion {
 
@@ -19,9 +13,9 @@ class SelectedRegion {
     private _width: number;
     private _height: number
 
-    private _pixels: Array<RegionData>;
+    private _pixels: Array<SelectedRegionData>;
 
-    constructor(originalX: number, originalY: number, width: number, height: number, pixels: Array<RegionData>) {
+    constructor(originalX: number, originalY: number, width: number, height: number, pixels: Array<SelectedRegionData>) {
         this._originalX = originalX;
         this._originalY = originalY;
         this._x = originalX;
@@ -102,7 +96,7 @@ class SelectedRegion {
         return this._height;
     }
 
-    get pixels(): Array<RegionData> {
+    get pixels(): Array<SelectedRegionData> {
         return this._pixels;
     }
 }
@@ -201,9 +195,9 @@ export class Select extends Tool {
                     this._isSelected = true;
 
                     // get pixels within region
-                    let pixels: Array<RegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
+                    let pixels: Array<SelectedRegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
                                                         .filter(p => !Utils.isEmptyColor(p[1]))
-                                                        .map(p => <RegionData>{
+                                                        .map(p => <SelectedRegionData>{
                                                             originalCoords: p[0],
                                                             currentCoords: {x: p[0].x, y: p[0].y}, // make copy
                                                             lastCoords: {

@@ -1,10 +1,6 @@
-import { GridMouseEvent, InstanceAPI, RGBAColor, Utils } from '..';
-import { Tool, ToolType, SliderProperty, RadioProperty } from '.'
-
-enum ShadeMode {
-    LIGHTEN = "Lighten",
-    DARKEN = "Darken"
-}
+import { InstanceAPI } from '..';
+import { Tool, SliderProperty, RadioProperty } from '.'
+import { GridMouseEvent, Utils, RGBAColor, ShadeMode, ToolType } from '../utils';
 
 export class Shade extends Tool {
 

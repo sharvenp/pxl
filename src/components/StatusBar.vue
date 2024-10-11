@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, inject, onUnmounted } from 'vue'
-import { InstanceAPI, Events } from '../api';
+import { InstanceAPI } from '../api';
+import { Events } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];

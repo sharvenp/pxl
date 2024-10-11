@@ -30,8 +30,9 @@
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { Events, InstanceAPI, PaletteItem, MAX_PALETTE_SIZE, Utils } from '../api';
+import { InstanceAPI } from '../api';
 import { ColorPicker } from 'vue-accessible-color-picker'
+import { Events, MAX_PALETTE_SIZE, PaletteItem, Utils } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 const showPicker = ref<Boolean>(false);
@@ -47,12 +48,12 @@ onMounted(() => {
 
     handlers.push(iApi?.event.on(Events.PALETTE_COLOR_ADD, () => {
         // refresh
-        palette.value = [...iApi?.palette.palette] ?? [];
+        palette.value = [...iApi?.palette.palette];
     })!);
 
     handlers.push(iApi?.event.on(Events.PALETTE_COLOR_REMOVE, () => {
         // refresh
-        palette.value = [...iApi?.palette.palette] ?? [];
+        palette.value = [...iApi?.palette.palette];
     })!);
 
     currentColor.value = iApi?.palette.selectedColor;

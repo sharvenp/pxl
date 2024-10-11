@@ -1,5 +1,5 @@
-import { Events } from "../../event";
-import { ToolProperty, ToolPropertyType } from "./tool-property";
+import { Events, ToolPropertyType } from "../../utils";
+import { ToolProperty } from "./tool-property";
 
 export class ButtonProperty extends ToolProperty {
 

@@ -1,4 +1,5 @@
-import { ToolProperty, ToolPropertyType } from "./tool-property";
+import { ToolPropertyType } from "../../utils";
+import { ToolProperty } from "./tool-property";
 
 export class CheckboxProperty extends ToolProperty {
     public value: boolean;

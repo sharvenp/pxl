@@ -1,4 +1,5 @@
-import { APIScope, InstanceAPI, Events, RGBAColor, Utils, CanvasCoordinates, PixelCoordinates } from '.';
+import { APIScope, InstanceAPI } from '.';
+import { CanvasCoordinates, Events, PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
