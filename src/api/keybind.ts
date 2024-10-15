@@ -144,8 +144,8 @@ export class KeyBindAPI extends APIScope {
         this.on("select-select", KeyAction.DOWN, [Key.Digit9], () => this.$iApi.tool.selectTool(ToolType.SELECT));
 
         // Picker alt-click
-        this.on("picker-alt-down", KeyAction.DOWN, [Key.Alt], () => this.$iApi.tool.selectTool(ToolType.SELECT));
-        this.on("picker-alt-up", KeyAction.UP, [Key.Alt], () => this.$iApi.tool.selectTool(ToolType.SELECT));
+        this.on("picker-alt-down", KeyAction.DOWN, [Key.Alt], () => this.$iApi.tool.altSelectTool(ToolType.PICKER));
+        this.on("picker-alt-up", KeyAction.UP, [Key.Alt], () => this.$iApi.tool.altSelectToolReset());
 
         // TODO: Open
         this.on("open", KeyAction.DOWN, [Key.Control, Key.o], () => { });

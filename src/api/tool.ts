@@ -5,6 +5,7 @@ import { Events, GridMouseEvent, PixelCoordinates, ToolType } from "./utils";
 export class ToolAPI extends APIScope {
 
     private _selectedTool: Tool | undefined;
+    private _altSelectToolStore: ToolType | undefined;
     private readonly _tools: Record<string, Tool> = {};
 
     private _handlers: Array<string> = [];
@@ -114,6 +115,18 @@ export class ToolAPI extends APIScope {
         this._selectedTool.initalize();
 
         this.$iApi.event.emit(Events.TOOL_SELECT, tool);
+    }
+
+    altSelectTool(tool: ToolType): void {
+        this._altSelectToolStore = this._selectedTool?.toolType;
+
+        this.selectTool(tool);
+    }
+
+    altSelectToolReset(): void {
+        if (this._altSelectToolStore !== undefined) {
+            this.selectTool(this._altSelectToolStore);
+        }
     }
 
     private _checkTracking(coords: PixelCoordinates): boolean {
