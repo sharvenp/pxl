@@ -1,5 +1,5 @@
 import { APIScope, InstanceAPI} from '.';
-import { Events, Key, KeyAction, ToolType } from './utils';
+import { Key, KeyAction, ToolType } from './utils';
 
 // TODO:
 // - Easily create bindings that fire a certain event
@@ -12,15 +12,13 @@ import { Events, Key, KeyAction, ToolType } from './utils';
 class KeyBind {
     name: string;
     onAction: KeyAction;
-    mods: Array<Key>;
     keys: Array<Key>;
     disabled: boolean;
     action: () => void;
 
-    constructor(name: string, onAction: KeyAction, mods: Array<Key>, keys: Array<Key>, action: () => void) {
+    constructor(name: string, onAction: KeyAction, keys: Array<Key>, action: () => void) {
         this.name = name;
         this.onAction = onAction;
-        this.mods = mods;
         this.keys = keys;
         this.disabled = false;
         this.action = action;
@@ -30,12 +28,12 @@ class KeyBind {
 export class KeyBindAPI extends APIScope {
 
     private readonly _keyBinds: Array<KeyBind>;
-    private readonly _keys: Map<string, boolean>;
+    private readonly _keys: Array<string>;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
         this._keyBinds = [];
-        this._keys = new Map();
+        this._keys = [];
 
         this.initialize();
     }
@@ -56,14 +54,14 @@ export class KeyBindAPI extends APIScope {
         return this._keyBinds.find(kb => kb.name === keyBindName);
     }
 
-    on(keyBindName: string, onAction: KeyAction, mods: Array<Key>, keys: Array<Key>, action: () => void): void {
+    on(keyBindName: string, onAction: KeyAction, keys: Array<Key>, action: () => void): void {
         // check if name already registered
         if (this._findKeyBind(keyBindName)) {
             throw new Error('Duplicate keybind name registration: ' + keyBindName);
         }
 
         // register the key bind
-        this._keyBinds.push(new KeyBind(keyBindName, onAction, mods, keys, action))
+        this._keyBinds.push(new KeyBind(keyBindName, onAction, keys, action))
     }
 
     toggle(keyBindName: string): void {
@@ -78,36 +76,84 @@ export class KeyBindAPI extends APIScope {
 
     private _processInputDown(evt: KeyboardEvent): void {
 
-        this._keys.set(evt.key, true);
-        this._matchKeyBind(KeyAction.DOWN);
+        // prevent firing repeatedly when held down
+        if (evt.repeat) {
+            return
+        }
+
+        let key = <Key>evt.key;
+
+        this._keys.push(key);
+
+        let matchKeys = (keys: Array<Key>) => {
+            if (keys.length != this._keys.length) {
+                return false;
+            }
+            for (let i = 0; i < keys.length; i++) {
+                if (keys[i] !== this._keys[i]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.DOWN);
+        candidateKeyBinds = candidateKeyBinds.filter(kb => matchKeys(kb.keys));
+
+        // trigger actions
+        candidateKeyBinds.forEach(kb => {
+            console.log("Executing keybind:", kb.name);
+            kb.action();
+        });
+
+        console.log(this._keys);
     }
 
     private _processInputUp(evt: KeyboardEvent): void {
 
-        this._matchKeyBind(KeyAction.UP);
-        this._keys.delete(evt.key);
-    }
+        let key = <Key>evt.key;
 
-    private _matchKeyBind(onAction: KeyAction): void {
-        // look at the current state of keys and find a match
-        // if match(es) found, execute them
+        let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.UP && k.keys.includes(key));
 
-        let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === onAction);
-        candidateKeyBinds = candidateKeyBinds.filter(kb => kb.keys.every(k => this._keys.has(k))
-                                                        && kb.mods.every(m => this._keys.has(m)));
+        candidateKeyBinds.forEach(kb => {
+            console.log("Executing keybind:", kb.name);
+            kb.action();
+        });
 
-        if (candidateKeyBinds.length > 0) {
-            console.log(candidateKeyBinds.map(k => k.name))
+        const index = this._keys.indexOf(key);
+        if (index > -1) {
+            this._keys.splice(index, 1);
         }
 
-        // fire events
-        candidateKeyBinds.forEach(kb => kb.action());
+        console.log(this._keys);
     }
 
     private _initiailizeDefaultKeyBinds(): void {
 
-        // TODO: make these customizable
-        this.on("pencil-select", KeyAction.DOWN, [], [Key.Digit1], () => this.$iApi.tool.selectTool(ToolType.PENCIL));
-        this.on("eraser-select", KeyAction.UP, [], [Key.Digit2], () => this.$iApi.tool.selectTool(ToolType.ERASER));
+        // TODO: make these customizable and load them from user preferences
+
+        // Tools
+        this.on("pencil-select", KeyAction.DOWN, [Key.Digit1], () => this.$iApi.tool.selectTool(ToolType.PENCIL));
+        this.on("eraser-select", KeyAction.DOWN, [Key.Digit2], () => this.$iApi.tool.selectTool(ToolType.ERASER));
+        this.on("picker-select", KeyAction.DOWN, [Key.Digit3], () => this.$iApi.tool.selectTool(ToolType.PICKER));
+        this.on("fill-select", KeyAction.DOWN, [Key.Digit4], () => this.$iApi.tool.selectTool(ToolType.FILL));
+        this.on("rectangle-select", KeyAction.DOWN, [Key.Digit5], () => this.$iApi.tool.selectTool(ToolType.RECTANGLE));
+        this.on("ellipse-select", KeyAction.DOWN, [Key.Digit6], () => this.$iApi.tool.selectTool(ToolType.ELLIPSE));
+        this.on("line-select", KeyAction.DOWN, [Key.Digit7], () => this.$iApi.tool.selectTool(ToolType.LINE));
+        this.on("shade-select", KeyAction.DOWN, [Key.Digit8], () => this.$iApi.tool.selectTool(ToolType.SHADE));
+        this.on("select-select", KeyAction.DOWN, [Key.Digit9], () => this.$iApi.tool.selectTool(ToolType.SELECT));
+
+        // Picker alt-click
+        this.on("picker-alt-down", KeyAction.DOWN, [Key.Alt], () => this.$iApi.tool.selectTool(ToolType.SELECT));
+        this.on("picker-alt-up", KeyAction.UP, [Key.Alt], () => this.$iApi.tool.selectTool(ToolType.SELECT));
+
+        // TODO: Open
+        this.on("open", KeyAction.DOWN, [Key.Control, Key.o], () => { });
+
+        // TODO: Undo
+        this.on("undo", KeyAction.DOWN, [Key.Control, Key.z], () => { });
+
+        // TODO: Redo
+        this.on("redo", KeyAction.DOWN, [Key.Control, Key.y], () => { });
     }
 }

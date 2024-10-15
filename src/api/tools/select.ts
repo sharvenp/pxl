@@ -139,6 +139,12 @@ export class Select extends Tool {
         }));
     }
 
+    dispose(): void {
+        this._handlers.forEach(h => this.$iApi.event.off(h));
+        this._resetDrag();
+        this._resetRegionSelect();
+    }
+
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
 
@@ -268,12 +274,6 @@ export class Select extends Tool {
                 }
             }
         }
-    }
-
-    dispose(): void {
-        this._handlers.forEach(h => this.$iApi.event.off(h));
-        this._resetDrag();
-        this._resetRegionSelect();
     }
 
     private _isPointInRegion(coords: PixelCoordinates): boolean {
