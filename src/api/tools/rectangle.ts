@@ -54,6 +54,23 @@ export class Rectangle extends Tool {
             let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.pixel.x) - 1);
             let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.pixel.y) - 1);
 
+            // is the user dragging in reverse?
+            let rev = (x < this._dragStartX) || (y < this._dragStartY);
+
+            // If in alt-mode, snap to nearest square
+            if (this.$iApi.tool.isAltMode) {
+
+                // get closest snap width/height
+                // adjust the x, y if in reverse
+                if (h > w) {
+                    x -= rev ? (h - w) : 0;
+                    w = h;
+                } else if (h < w) {
+                    y -= rev ? (w - h) : 0;
+                    h = w;
+                }
+            }
+
             if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                 // dragging stopped, draw rectangle
                 grid.color = color.colorRGBA;

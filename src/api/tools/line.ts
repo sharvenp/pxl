@@ -55,6 +55,22 @@ export class Line extends Tool {
             let x1 = mouseEvent.coords.pixel.x;
             let y1 = mouseEvent.coords.pixel.y;
 
+            // If in alt-mode, snap the line to fixed angles
+            if (this.$iApi.tool.isAltMode) {
+
+                // get closest snap angle
+
+                if (Math.abs(x0 - x1) < Math.abs(y0 - y1)) {
+                    // snap to vertical line
+                    x1 = x0;
+                } else if (Math.abs(y0 - y1) < Math.abs(x0 - x1)) {
+                    // snap to horizontal line
+                    y1 = y0
+                }
+
+                // else, snap to diagonal
+            }
+
             if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
                 grid.color = color.colorRGBA;

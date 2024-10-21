@@ -1,14 +1,6 @@
 import { APIScope, InstanceAPI} from '.';
 import { Key, KeyAction, ToolType } from './utils';
 
-// TODO:
-// - Easily create bindings that fire a certain event
-// - Bindings setup listeners on the app
-// - Bindings should have ids (like event handlers) and should be removable
-// - Bindings should also capture "key up" and "key down"
-//
-// Keep customizability in mind (i.e. bindings can be changed through user interface)
-
 class KeyBind {
     name: string;
     onAction: KeyAction;
@@ -102,11 +94,8 @@ export class KeyBindAPI extends APIScope {
 
         // trigger actions
         candidateKeyBinds.forEach(kb => {
-            console.log("Executing keybind:", kb.name);
             kb.action();
         });
-
-        console.log(this._keys);
     }
 
     private _processInputUp(evt: KeyboardEvent): void {
@@ -116,7 +105,6 @@ export class KeyBindAPI extends APIScope {
         let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.UP && k.keys.includes(key));
 
         candidateKeyBinds.forEach(kb => {
-            console.log("Executing keybind:", kb.name);
             kb.action();
         });
 
@@ -124,8 +112,6 @@ export class KeyBindAPI extends APIScope {
         if (index > -1) {
             this._keys.splice(index, 1);
         }
-
-        console.log(this._keys);
     }
 
     private _initiailizeDefaultKeyBinds(): void {
@@ -144,8 +130,20 @@ export class KeyBindAPI extends APIScope {
         this.on("select-select", KeyAction.DOWN, [Key.Digit9], () => this.$iApi.tool.selectTool(ToolType.SELECT));
 
         // Picker alt-click
-        this.on("picker-alt-down", KeyAction.DOWN, [Key.Alt], () => this.$iApi.tool.altSelectTool(ToolType.PICKER));
-        this.on("picker-alt-up", KeyAction.UP, [Key.Alt], () => this.$iApi.tool.altSelectToolReset());
+        let currTool: ToolType | undefined = undefined;
+        this.on("picker-alt-down", KeyAction.DOWN, [Key.Backquote], () => {
+            currTool = this.$iApi.tool.selectedTool?.toolType;
+            this.$iApi.tool.selectTool(ToolType.PICKER);
+        });
+        this.on("picker-alt-up", KeyAction.UP, [Key.Backquote], () => {
+            if (currTool !== undefined) {
+                this.$iApi.tool.selectTool(currTool)
+            }
+        });
+
+        // Toggle tool alt mode
+        this.on("tool-alt-mode-down", KeyAction.DOWN, [Key.Shift], () => this.$iApi.tool.toggleAltMode(true));
+        this.on("tool-alt-mode-up", KeyAction.UP, [Key.Shift], () => this.$iApi.tool.toggleAltMode(false));
 
         // TODO: Open
         this.on("open", KeyAction.DOWN, [Key.Control, Key.o], () => { });

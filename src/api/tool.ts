@@ -5,14 +5,19 @@ import { Events, GridMouseEvent, PixelCoordinates, ToolType } from "./utils";
 export class ToolAPI extends APIScope {
 
     private _selectedTool: Tool | undefined;
-    private _altSelectToolStore: ToolType | undefined;
-    private readonly _tools: Record<string, Tool> = {};
+    private _isAltMode: boolean;
+    private readonly _tools: Record<string, Tool>;
 
-    private _handlers: Array<string> = [];
-    private _trackedPixels: Set<number> = new Set();
+    private _handlers: Array<string>;
+    private _trackedPixels: Set<number>;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
+
+        this._tools = {};
+        this._trackedPixels = new Set();
+        this._handlers = [];
+        this._isAltMode = false;
 
         this.initialize();
     }
@@ -117,16 +122,8 @@ export class ToolAPI extends APIScope {
         this.$iApi.event.emit(Events.TOOL_SELECT, tool);
     }
 
-    altSelectTool(tool: ToolType): void {
-        this._altSelectToolStore = this._selectedTool?.toolType;
-
-        this.selectTool(tool);
-    }
-
-    altSelectToolReset(): void {
-        if (this._altSelectToolStore !== undefined) {
-            this.selectTool(this._altSelectToolStore);
-        }
+    toggleAltMode(mode: boolean): void {
+        this._isAltMode = mode;
     }
 
     private _checkTracking(coords: PixelCoordinates): boolean {
@@ -161,5 +158,9 @@ export class ToolAPI extends APIScope {
 
     get selectedTool(): Tool | undefined {
         return this._selectedTool;
+    }
+
+    get isAltMode(): boolean {
+        return this._isAltMode;
     }
 }

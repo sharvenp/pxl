@@ -362,12 +362,17 @@ export class GridAPI extends APIScope {
 
         while(true) {
             this._setData({x: x0, y: y0});
-
             // repeat the line above and below based on the width
             let alt = -1;
+            let x_o = 0;
+            let y_o = 0;
             for (let i = 1; i < width; i++) {
-                let y_o = alt * Math.floor((i + 1) / 2);
-                this._setData({x: x0, y: y0 + y_o});
+                if (dx < -dy) {
+                    x_o = alt * Math.floor((i + 1) / 2);
+                } else if (-dy <= dx) {
+                    y_o = alt * Math.floor((i + 1) / 2);
+                }
+                this._setData({x: x0 + x_o, y: y0 + y_o});
                 alt = -alt;
             }
 
