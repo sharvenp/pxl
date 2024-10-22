@@ -11,6 +11,7 @@
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.LINE)">L</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SHADE)">S</button>
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.SELECT)">Se</button>
+            <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.CLONE)">Cl</button>
         </div>
         <!-- Tool Property -->
         <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool.toolType">

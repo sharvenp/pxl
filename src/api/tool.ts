@@ -1,5 +1,5 @@
 import { APIScope, InstanceAPI } from ".";
-import { Ellipse, Eraser, Fill, Line, Pencil, Picker, Rectangle, Select, Shade, Tool } from "./tools";
+import { Clone, Ellipse, Eraser, Fill, Line, Pencil, Picker, Rectangle, Select, Shade, Tool } from "./tools";
 import { Events, GridMouseEvent, PixelCoordinates, ToolType } from "./utils";
 
 export class ToolAPI extends APIScope {
@@ -34,6 +34,7 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.LINE] = new Line(this.$iApi);
         this._tools[ToolType.SHADE] = new Shade(this.$iApi);
         this._tools[ToolType.SELECT] = new Select(this.$iApi);
+        this._tools[ToolType.CLONE] = new Clone(this.$iApi);
 
         // default to pencil
         // TODO: load correct tool from save state
@@ -117,13 +118,14 @@ export class ToolAPI extends APIScope {
         }
 
         this._selectedTool = this._tools[tool];
-        this._selectedTool.initalize();
+        this._selectedTool.initialize();
 
         this.$iApi.event.emit(Events.TOOL_SELECT, tool);
     }
 
     toggleAltMode(mode: boolean): void {
         this._isAltMode = mode;
+        this.$iApi.event.emit(Events.TOOL_ALT_MODE_UPDATE, mode);
     }
 
     private _checkTracking(coords: PixelCoordinates): boolean {

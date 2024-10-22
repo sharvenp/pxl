@@ -50,7 +50,7 @@ export abstract class Tool extends APIScope {
         return this._toolType;
     }
 
-    initalize(): void {
+    initialize(): void {
         // will be implemented by tool
     }
 

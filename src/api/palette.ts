@@ -1,5 +1,5 @@
 import { APIScope, InstanceAPI } from '.';
-import { Events, PaletteItem } from './utils';
+import { Events, PaletteItem, Utils } from './utils';
 
 export class PaletteAPI extends APIScope {
 
@@ -18,14 +18,14 @@ export class PaletteAPI extends APIScope {
             startingColor
         ];
 
-        // for debugging
-        // for (let x = 0; x < 80; x++) {
-        //     let rcolor = Utils.getRandomColor();
-        //     this._palette.push({
-        //         colorHex: rcolor,
-        //         colorRGBA: Utils.hexToRGBA(rcolor)
-        //     })
-        // }
+        // TODO: remove this for debugging
+        for (let x = 0; x < 10; x++) {
+            let rcolor = Utils.getRandomColor(0.5);
+            this._palette.push({
+                colorHex: rcolor,
+                colorRGBA: Utils.hexToRGBA(rcolor)
+            })
+        }
 
         this._selectedColor = startingColor;
 

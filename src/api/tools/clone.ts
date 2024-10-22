@@ -2,7 +2,7 @@ import { InstanceAPI } from '..';
 import { Tool, ButtonProperty} from '.'
 import { SelectedRegionData, GridMouseEvent, Utils, PixelCoordinates, Events, ToolType, SelectedRegion } from '../utils';
 
-export class Select extends Tool {
+export class Clone extends Tool {
 
     private _dragStartX: number;
     private _dragStartY: number;
@@ -13,14 +13,14 @@ export class Select extends Tool {
     private _resetButtonProperty: ButtonProperty;
 
     constructor(iApi: InstanceAPI) {
-        super(iApi, ToolType.SELECT);
+        super(iApi, ToolType.CLONE);
 
         this._showPreviewOnInvoke = true;
         this._invokeOnMove = true;
         this._trackPixels = false;
         this._canMirror = false;
 
-        this._resetButtonProperty = new ButtonProperty("Reset", Events.SELECT_TOOL_RESET);
+        this._resetButtonProperty = new ButtonProperty("Reset", Events.CLONE_TOOL_RESET);
 
         this._toolProperties = [
             this._resetButtonProperty
@@ -33,16 +33,16 @@ export class Select extends Tool {
     }
 
     initialize(): void {
-        this._handlers.push(this.$iApi.event.on(Events.SELECT_TOOL_RESET, () => {
+        this._handlers.push(this.$iApi.event.on(Events.CLONE_TOOL_RESET, () => {
             this._resetDrag();
-            this._revertRegion();
+            this._resetRegionSelect();
         }));
     }
 
     dispose(): void {
         this._handlers.forEach(h => this.$iApi.event.off(h));
         this._resetDrag();
-        this._revertRegion();
+        this._resetRegionSelect();
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -106,12 +106,6 @@ export class Select extends Tool {
                     // create region
                     this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
 
-                    // erase pixels from grid
-                    pixels.forEach(px => {
-                        grid.color = undefined;
-                        grid.set(px.currentCoords);
-                    });
-
                     this._previewRegion();
 
                     this._isDragging = false;
@@ -120,62 +114,33 @@ export class Select extends Tool {
 
                 // STAGE 2
 
-                // check if click is inside the region
-                if (this._isPointInRegion(mouseEvent.coords.pixel)) {
+                // place region
+                this._selectedRegion?.pixels.forEach(px => {
+                    grid.color = px.color;
+                    grid.set(px.currentCoords);
+                });
 
-                    if (event === Events.CANVAS_MOUSE_DRAG_START) {
-
-                        if (!this._isDragging) {
-                            this._dragStartX = mouseEvent.coords.pixel.x;
-                        }
-                        if (!this._isDragging) {
-                            this._dragStartY = mouseEvent.coords.pixel.y;
-                        }
-                        this._isDragging = true;
-
-                    } else if (event === Events.CANVAS_MOUSE_DRAG_STOP) {
-
-                        this._dragStartX = -1;
-                        this._dragStartY = -1;
-                        this._isDragging = false;
-                        this._selectedRegion?.stopTransform();
-
-                    }
-
-                    if (mouseEvent.isDragging && event === Events.CANVAS_MOUSE_MOVE) {
-                        // if not, reset drag
-
-                        let dx = mouseEvent.coords.pixel.x - this._dragStartX;
-                        let dy = mouseEvent.coords.pixel.y - this._dragStartY;
-
-                        this._selectedRegion!.transform(dx, dy);
-                        this._previewRegion();
-                    }
-
-                } else {
-
-                    // place region
-                    this._selectedRegion?.pixels.forEach(px => {
-                        grid.color = px.color;
-                        grid.set(px.currentCoords);
-                    });
-
-                    this._resetDrag();
-                    this._resetRegionSelect();
-                }
             }
         }
     }
 
-    private _isPointInRegion(coords: PixelCoordinates): boolean {
+    previewCursor(event: GridMouseEvent): void {
+
+        // update region coords
         if (this._selectedRegion) {
-            return (
-                (coords.x >= this._selectedRegion.x && coords.x <= this._selectedRegion.x + this._selectedRegion.width) &&
-                (coords.y >= this._selectedRegion.y && coords.y <= this._selectedRegion.y + this._selectedRegion.height)
-            );
-        } else {
-            return false;
+
+            let dx = event.coords.pixel.x - this._selectedRegion.x;
+            let dy = event.coords.pixel.y - this._selectedRegion.y;
+
+            dx -= Math.round(this._selectedRegion.width / 2);
+            dy -= Math.round(this._selectedRegion.height / 2);
+
+            this._selectedRegion.transform(dx, dy);
+            this._selectedRegion.stopTransform();
+
+            this._previewRegion();
         }
+
     }
 
     private _previewRegion(): void {
@@ -187,20 +152,8 @@ export class Select extends Tool {
         // clear cursor
         this.$iApi.cursor.clearCursor();
 
-        // draw cursor box
-        this.$iApi.cursor.grid.rect(
-            {
-                x: this._selectedRegion.x,
-                y: this._selectedRegion.y
-            },
-            this._selectedRegion.width,
-            this._selectedRegion.height,
-            false
-        );
-
         // draw pixel data
         this._selectedRegion.pixels.forEach(px => {
-            this.$iApi.cursor.grid!.color = px.color;
             this.$iApi.cursor.grid!.set(px.currentCoords, true);
         });
     }
@@ -209,21 +162,6 @@ export class Select extends Tool {
         this._dragStartX = -1;
         this._dragStartY = -1;
         this._isDragging = false;
-    }
-
-    private _revertRegion(): void {
-        let grid = this.$iApi.canvas.grid;
-
-        if (this._isSelected && grid) {
-            this._selectedRegion?.revertTransform();
-
-            this._selectedRegion?.pixels.forEach(px => {
-                grid.color = px.color;
-                grid.set(px.currentCoords);
-            });
-        }
-
-        this._resetRegionSelect();
     }
 
     private _resetRegionSelect(): void {

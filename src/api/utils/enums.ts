@@ -7,10 +7,12 @@ export enum Events {
     CANVAS_MOUSE_LEAVE = "canvas_mouse_leave",
     CANVAS_UPDATE = "canvas_update",
     TOOL_SELECT = "tool_select",
+    TOOL_ALT_MODE_UPDATE = "tool_alt_mode_update",
     PALETTE_COLOR_SELECT = "palette_color_select",
     PALETTE_COLOR_ADD = "palette_color_add",
     PALETTE_COLOR_REMOVE = "palette_color_remove",
-    SELECT_TOOL_RESET = "select_tool_reset"
+    SELECT_TOOL_RESET = "select_tool_reset",
+    CLONE_TOOL_RESET = "clone_tool_reset"
 }
 
 export enum ShadeMode {
@@ -35,6 +37,7 @@ export enum ToolType {
     LINE = "Line",
     SHADE = "Shade",
     SELECT = "Select",
+    CLONE = "Clone",
 }
 
 export enum KeyAction {

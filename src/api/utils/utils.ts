@@ -74,12 +74,19 @@ export class Utils {
     }
 
     // for dummy data
-    static getRandomColor(): string {
+    static getRandomColor(solidRate: number): string {
         let letters = '0123456789ABCDEF';
         let color = '#';
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 6; i++) {
           color += letters[Math.floor(Math.random() * 16)];
         }
+
+        if (Math.random() < solidRate) {
+            color += 'FF';
+        } else {
+            color += letters[Math.floor(Math.random() * 16)].concat(letters[Math.floor(Math.random() * 16)]);
+        }
+
         return color;
     }
 }
