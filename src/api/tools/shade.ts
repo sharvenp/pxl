@@ -27,7 +27,7 @@ export class Shade extends Tool {
 
     invokeAction(event: GridMouseEvent): void {
         let grid = this.$iApi.canvas.grid;
-        if (grid && event.isDragging) {
+        if (grid && event.isDragging && event.isOnCanvas) {
 
             let strength = (this._strengthProperty.value / 100.0);
             let shadeType = this._shadeTypeProperty.value;

@@ -1,4 +1,4 @@
-import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI, SettingsAPI, KeyBindAPI } from '.';
+import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI, SettingsAPI, KeyBindAPI, HistoryAPI } from '.';
 
 export class InstanceAPI {
 
@@ -10,6 +10,7 @@ export class InstanceAPI {
     readonly tool: ToolAPI;
     readonly settings: SettingsAPI;
     readonly keybind: KeyBindAPI;
+    readonly history: HistoryAPI;
 
     constructor() {
         this.event = new EventAPI(this);
@@ -19,6 +20,7 @@ export class InstanceAPI {
         this.canvas = new CanvasAPI(this);
         this.cursor = new CursorAPI(this);
         this.keybind = new KeyBindAPI(this);
+        this.history = new HistoryAPI(this);
         this.settings = new SettingsAPI(this);
     }
 }

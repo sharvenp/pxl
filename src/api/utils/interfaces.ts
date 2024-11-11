@@ -16,7 +16,8 @@ export interface Coordinates {
 
 export interface GridMouseEvent {
     coords: Coordinates,
-    isDragging: boolean
+    isDragging: boolean,
+    isOnCanvas: boolean
 }
 
 export interface PaletteItem {

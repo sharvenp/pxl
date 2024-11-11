@@ -104,6 +104,7 @@ export class KeyBindAPI extends APIScope {
 
         let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.UP && k.keys.includes(key));
 
+        // trigger actions
         candidateKeyBinds.forEach(kb => {
             kb.action();
         });
@@ -145,13 +146,13 @@ export class KeyBindAPI extends APIScope {
         this.on("tool-alt-mode-down", KeyAction.DOWN, [Key.Shift], () => this.$iApi.tool.toggleAltMode(true));
         this.on("tool-alt-mode-up", KeyAction.UP, [Key.Shift], () => this.$iApi.tool.toggleAltMode(false));
 
+        // Undo
+        this.on("undo", KeyAction.DOWN, [Key.Control, Key.z], () => this.$iApi.history.undo());
+
+        // Redo
+        this.on("redo", KeyAction.DOWN, [Key.Control, Key.y], () => this.$iApi.history.redo());
+
         // TODO: Open
         this.on("open", KeyAction.DOWN, [Key.Control, Key.o], () => { });
-
-        // TODO: Undo
-        this.on("undo", KeyAction.DOWN, [Key.Control, Key.z], () => { });
-
-        // TODO: Redo
-        this.on("redo", KeyAction.DOWN, [Key.Control, Key.y], () => { });
     }
 }

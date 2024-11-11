@@ -32,12 +32,12 @@ export class Ellipse extends Tool {
         let color = this.$iApi.palette.selectedColor;
         if (color && grid) {
 
-            this.$iApi.cursor.clearCursor();
-            if (event === Events.CANVAS_MOUSE_LEAVE) {
+            if (!mouseEvent.isOnCanvas) {
                 // mouse left canvas, do nothing
-                this._resetDrag();
                 return;
             }
+
+            this.$iApi.cursor.clearCursor();
 
             if (mouseEvent.isDragging) {
                 if (!this._isDragging) {
@@ -71,7 +71,7 @@ export class Ellipse extends Tool {
                 }
             }
 
-            if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+            if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
                 grid.color = color.colorRGBA;
                 grid.ellipse({x, y}, w, h, this._fillProperty.value);

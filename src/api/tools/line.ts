@@ -31,14 +31,14 @@ export class Line extends Tool {
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid) {
+        if (color && grid && mouseEvent.isOnCanvas) {
 
-            this.$iApi.cursor.clearCursor();
-            if (event === Events.CANVAS_MOUSE_LEAVE) {
+            if (!mouseEvent.isOnCanvas) {
                 // mouse left canvas, do nothing
-                this._resetDrag();
                 return;
             }
+
+            this.$iApi.cursor.clearCursor();
 
             if (mouseEvent.isDragging) {
                 if (!this._isDragging) {
@@ -71,7 +71,7 @@ export class Line extends Tool {
                 // else, snap to diagonal
             }
 
-            if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+            if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
                 grid.color = color.colorRGBA;
                 grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);

@@ -23,7 +23,7 @@ export class Fill extends Tool {
     invokeAction(event: GridMouseEvent): void {
         let grid = this.$iApi.canvas.grid;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid && event.isDragging) {
+        if (color && grid && event.isDragging && event.isOnCanvas) {
             grid.color = color.colorRGBA;
             grid.floodFill(event.coords.pixel, this._toleranceProperty.value / 100.0);
         }

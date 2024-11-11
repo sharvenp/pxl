@@ -27,7 +27,7 @@ export class PaletteAPI extends APIScope {
             })
         }
 
-        this._selectedColor = startingColor;
+        this._selectedColor = this.palette[5];
 
         this.initialize();
     }

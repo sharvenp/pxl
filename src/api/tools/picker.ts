@@ -14,7 +14,7 @@ export class Picker extends Tool {
 
     invokeAction(event: GridMouseEvent): void {
         let grid = this.$iApi.canvas.grid!;
-        if (grid && event.isDragging) {
+        if (grid && event.isDragging && event.isOnCanvas) {
 
             let pickedColor = grid.getData(event.coords.pixel);
 

@@ -87,7 +87,7 @@ export class Select extends Tool {
                     this.$iApi.cursor.grid.rect({x, y}, w, h, false);
                 }
 
-                if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+                if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                     // dragging stopped, select area
                     this._isSelected = true;
 
@@ -123,7 +123,7 @@ export class Select extends Tool {
                 // check if click is inside the region
                 if (this._isPointInRegion(mouseEvent.coords.pixel)) {
 
-                    if (event === Events.CANVAS_MOUSE_DRAG_START) {
+                    if (event === Events.MOUSE_DRAG_START) {
 
                         if (!this._isDragging) {
                             this._dragStartX = mouseEvent.coords.pixel.x;
@@ -133,7 +133,7 @@ export class Select extends Tool {
                         }
                         this._isDragging = true;
 
-                    } else if (event === Events.CANVAS_MOUSE_DRAG_STOP) {
+                    } else if (event === Events.MOUSE_DRAG_STOP) {
 
                         this._dragStartX = -1;
                         this._dragStartY = -1;
@@ -142,7 +142,7 @@ export class Select extends Tool {
 
                     }
 
-                    if (mouseEvent.isDragging && event === Events.CANVAS_MOUSE_MOVE) {
+                    if (mouseEvent.isDragging && event === Events.MOUSE_MOVE) {
                         // if not, reset drag
 
                         let dx = mouseEvent.coords.pixel.x - this._dragStartX;
@@ -152,7 +152,7 @@ export class Select extends Tool {
                         this._previewRegion();
                     }
 
-                } else {
+                } else if (mouseEvent.isOnCanvas) {
 
                     // place region
                     this._selectedRegion?.pixels.forEach(px => {

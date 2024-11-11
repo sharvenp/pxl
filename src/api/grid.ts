@@ -62,6 +62,12 @@ export class GridAPI extends APIScope {
         this._touched = false;
     }
 
+    loadData(data: Uint8ClampedArray): void {
+        this._data.set(data);
+        this._refreshCanvas();
+        this._notify();
+    }
+
     set(coords: PixelCoordinates, overwrite: boolean = false) {
         this._setData(coords, this._color, overwrite);
         this._notify();
@@ -540,6 +546,28 @@ export class GridAPI extends APIScope {
         });
     }
 
+    private _refreshCanvas(): void {
+        // clear the canvas and draw it again
+
+        this._ctx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+
+        for (let x = 0; x < this._pixelWidth; x++) {
+            for (let y = 0; y < this._pixelHeight; y++) {
+                let idx = this._flattenCoords({x, y});
+                let canvasCoords = this.toCanvasCoords({x, y});
+                let dataColor: RGBAColor = {
+                    r: this._data[idx],
+                    g: this._data[idx + 1],
+                    b: this._data[idx + 2],
+                    a: this._data[idx + 3]
+                };
+
+                this._ctx.fillStyle = Utils.rgbaToHex(dataColor);
+                this._ctx.fillRect(canvasCoords.x, canvasCoords.y, this._widthRatio, this._heightRatio);
+            }
+        }
+    }
+
     private _flattenCoords(coords: PixelCoordinates): number {
         // flatten coordinates with offset of 4 [r,g,b,a]
         return (coords.y * this.pixelHeight + coords.x) * 4;
@@ -578,6 +606,10 @@ export class GridAPI extends APIScope {
 
     get ctx(): CanvasRenderingContext2D {
         return this._ctx;
+    }
+
+    get data(): Uint8ClampedArray {
+        return this._data;
     }
 
     get color(): RGBAColor | undefined {

@@ -1,5 +1,5 @@
 <template>
-    <div class="grid place-content-center row-span-3">
+    <div ref="container" class="grid place-content-center row-span-3">
         <div class="relative">
             <div class="absolute w-full h-full pointer-events-none">
                 <canvas v-show="initialized" class="pixel-canvas" ref="cursorCanvas"></canvas>
@@ -27,7 +27,9 @@
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from 'vue'
 import { InstanceAPI } from '../api';
+import { CanvasCoordinates, Coordinates, Events, PixelCoordinates } from '../api/utils';
 
+const container = ref();
 const canvas = ref();
 const cursorCanvas = ref();
 const bgCanvas = ref();
@@ -47,7 +49,69 @@ function initializeCanvas() {
     iApi?.canvas.initialize(canvas.value, bgCanvas.value, width.value, height.value);
     iApi?.cursor.initialize(cursorCanvas.value, canvas.value.width, canvas.value.height, width.value, height.value);
     initialized.value = true;
+
+    let isDragging = false;
+    let isOnCanvas = false;
+    let lastCell: PixelCoordinates | undefined = undefined;
+
+    if (container.value !== null) {
+
+        container.value.onmousedown = (event: MouseEvent) => {
+            let coords = _parseMouseEvent(event);
+            isOnCanvas = !!canvas.value.matches(':hover');
+            if (event.button === 0) {
+                isDragging = true;
+                iApi?.event.emit(Events.MOUSE_DRAG_START, { coords , isDragging, isOnCanvas });
+                lastCell = coords.pixel;
+            }
+        };
+
+        container.value.onmouseup = (event: MouseEvent) => {
+            let coords = _parseMouseEvent(event);
+            isOnCanvas = !!canvas.value.matches(':hover');
+            if (event.button === 0) {
+                isDragging = false;
+                iApi?.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas });
+            }
+        };
+
+        container.value.onmousemove = (event: MouseEvent) => {
+            let coords = _parseMouseEvent(event);
+
+            let prevIsOnCanvas = isOnCanvas;
+            isOnCanvas = !!canvas.value.matches(':hover');
+
+            if (prevIsOnCanvas && !isOnCanvas) {
+                iApi?.event.emit(Events.CANVAS_MOUSE_LEAVE, { coords, isDragging, isOnCanvas });
+                return;
+            }
+
+            if (!prevIsOnCanvas && isOnCanvas) {
+                iApi?.event.emit(Events.CANVAS_MOUSE_ENTER, { coords, isDragging, isOnCanvas });
+            }
+
+            if (!(coords.pixel.x === lastCell?.x && coords.pixel.y === lastCell?.y)) {
+                iApi?.event.emit(Events.MOUSE_MOVE, { coords, isDragging, isOnCanvas });
+                lastCell = coords.pixel;
+            }
+        };
+    }
 }
+
+function _parseMouseEvent(event: MouseEvent): Coordinates {
+    let coords: CanvasCoordinates = { x: event.offsetX, y: event.offsetY };
+    let pixelCoords = {
+        x: Math.floor(coords.x / (iApi!.canvas.grid!.widthRatio * 1.0)),
+        y: Math.floor(coords.y / (iApi!.canvas.grid!.heightRatio * 1.0))
+    };
+    return { canvas: coords, pixel: pixelCoords};
+}
+
+function _pixelCheck(coords: PixelCoordinates): boolean {
+    return (coords.x >= 0 && coords.y >= 0) &&
+           (coords.x < (iApi?.canvas.grid?.pixelWidth ?? 0) && coords.y < (iApi?.canvas.grid?.pixelHeight ?? 0));
+}
+
 
 onMounted(() => {
     initializeCanvas();
@@ -56,6 +120,14 @@ onMounted(() => {
 onUnmounted(() => {
     iApi?.canvas.destroy();
     initialized.value = false;
+
+    if (container.value !== null) {
+        container.value.onmousemove = null;
+        container.value.onmouseup = null;
+        container.value.onmousedown = null;
+        container.value.onmouseenter = null;
+        container.value.onmouseleave = null;
+    }
 })
 
 

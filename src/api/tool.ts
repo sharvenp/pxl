@@ -41,8 +41,8 @@ export class ToolAPI extends APIScope {
         this.selectTool(ToolType.PENCIL);
 
         // setup _handlers
-        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
-            if (this._selectedTool) {
+        this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
+            if (this._selectedTool && mouseEvt.isOnCanvas) {
                 if (this._selectedTool.showPreviewOnInvoke) {
                     this.previewCursor(mouseEvt);
                 } else {
@@ -52,7 +52,8 @@ export class ToolAPI extends APIScope {
             }
         }));
 
-        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
+        this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
+
             if (this._selectedTool) {
                 this.invokeAction(mouseEvt, event);
             }
@@ -60,20 +61,25 @@ export class ToolAPI extends APIScope {
             this._stopTracking();
         }));
 
-        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
-            if (mouseEvt.isDragging && this._selectedTool) {
-                if (this._selectedTool.showPreviewOnInvoke) {
+        this._handlers.push(this.$iApi.event.on(Events.MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
+
+            // invoke only if it on canvas
+            if (mouseEvt.isOnCanvas) {
+                if (mouseEvt.isDragging && this._selectedTool) {
+                    if (this._selectedTool.showPreviewOnInvoke) {
+                        this.previewCursor(mouseEvt);
+                    }
+                    if (this._selectedTool.invokeOnMove) {
+                        this.invokeAction(mouseEvt, event);
+                    }
+                } else {
                     this.previewCursor(mouseEvt);
                 }
-                if (this._selectedTool.invokeOnMove) {
-                    this.invokeAction(mouseEvt, event);
-                }
-            } else {
-                this.previewCursor(mouseEvt);
             }
         }));
 
         this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (mouseEvt: GridMouseEvent, event: Events) => {
+
             // clear the cursor
             this.$iApi.cursor.clearCursor();
 
@@ -92,8 +98,7 @@ export class ToolAPI extends APIScope {
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         if (this._selectedTool) {
-
-            if (!this._checkTracking(mouseEvent.coords.pixel)) {
+            if (!this._checkTracking(mouseEvent.coords.pixel) || !mouseEvent.isDragging) {
 
                 // only update the pixel tracking if mouse is being dragged
                 if (mouseEvent.isDragging) {

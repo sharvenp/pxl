@@ -87,9 +87,8 @@ export class Clone extends Tool {
                     this.$iApi.cursor.grid.rect({x, y}, w, h, false);
                 }
 
-                if (!mouseEvent.isDragging && this._isDragging && event === Events.CANVAS_MOUSE_DRAG_STOP) {
+                if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                     // dragging stopped, select area
-                    this._isSelected = true;
 
                     // get pixels within region
                     let pixels: Array<SelectedRegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
@@ -103,12 +102,20 @@ export class Clone extends Tool {
                                                             },
                                                             color: p[1],
                                                         });
-                    // create region
-                    this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
 
-                    this._previewRegion();
+                    if (pixels.length !== 0) {
+                        this._isSelected = true;
 
-                    this._isDragging = false;
+                        // create region
+                        this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
+
+                        this._previewRegion();
+                        this._isDragging = false;
+                    } else {
+                        this._resetDrag();
+                        this._previewRegion();
+                        this.$iApi.cursor.clearCursor();
+                    }
                 }
             } else {
 
