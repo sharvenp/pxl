@@ -123,8 +123,11 @@ export class Clone extends Tool {
 
                 // place region
                 this._selectedRegion?.pixels.forEach(px => {
-                    grid.color = px.color;
-                    grid.set(px.currentCoords);
+                    // only draw if coords are inside the canvas
+                    if (grid.coordsInBounds(px.currentCoords)) {
+                        grid.color = px.color;
+                        grid.set(px.currentCoords);
+                    }
                 });
 
             }
