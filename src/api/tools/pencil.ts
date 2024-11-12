@@ -32,7 +32,7 @@ export class Pencil extends Tool {
             grid.rect({x, y}, pxWidth, pxWidth);
         }
 
-        if (event === Events.MOUSE_DRAG_STOP) {
+        if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
             this.$iApi.history.push();
         }
     }

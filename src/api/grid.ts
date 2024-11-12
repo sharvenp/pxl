@@ -580,6 +580,10 @@ export class GridAPI extends APIScope {
         }
     }
 
+    coordsInBounds(coords: PixelCoordinates): boolean {
+        return (coords.x >= 0 && coords.x < this.pixelWidth) && (coords.y >= 0 && coords.y < this.pixelHeight);
+    }
+
     get widthRatio(): number {
         return this._widthRatio;
     }
