@@ -38,6 +38,7 @@ export class HistoryAPI extends APIScope {
 
     undo(): void {
 
+        // keep at least one state in the undo stack
         if (this._undoStack.length === 1) {
             // nothing to undo
             return;
@@ -50,6 +51,7 @@ export class HistoryAPI extends APIScope {
             let state = this._undoStack.pop()!;
             this._redoStack.push(state);
 
+            // load the top of the undo stack
             grid.loadData(this._undoStack[this._undoStack.length - 1]);
         }
     }
@@ -64,7 +66,7 @@ export class HistoryAPI extends APIScope {
         let grid = this.$iApi.canvas.grid;
         if (grid) {
 
-            // get the state
+            // get the state and load it
             let state = this._redoStack.pop()!;
             this._undoStack.push(state);
             grid.loadData(state);
