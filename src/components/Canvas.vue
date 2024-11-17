@@ -50,6 +50,9 @@ function initializeCanvas() {
     iApi?.cursor.initialize(cursorCanvas.value, canvas.value.width, canvas.value.height, width.value, height.value);
     initialized.value = true;
 
+    // push the initial state
+    iApi?.history.push();
+
     let isDragging = false;
     let isOnCanvas = false;
     let lastCell: PixelCoordinates | undefined = undefined;
