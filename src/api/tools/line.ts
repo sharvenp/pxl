@@ -76,6 +76,8 @@ export class Line extends Tool {
                 grid.color = color.colorRGBA;
                 grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
 
+                this.$iApi.history.push();
+
                 this._resetDrag();
             }
 

@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty} from '.'
-import { GridMouseEvent, ToolType } from '../utils';
+import { Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Eraser extends Tool {
 
@@ -19,17 +19,21 @@ export class Eraser extends Tool {
         ]
     }
 
-    invokeAction(event: GridMouseEvent): void {
+    invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid!;
-        if (grid && event.isDragging && event.isOnCanvas) {
+        if (grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
 
             let pxWidth = this._eraserWidthProperty.value;
 
-            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(mouseEvent.coords.pixel.x - (pxWidth / 2.0));
+            let y = Math.round(mouseEvent.coords.pixel.y - (pxWidth / 2.0));
 
             grid.color = undefined;
             grid.rect({x, y}, pxWidth, pxWidth);
+        }
+
+        if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
+            this.$iApi.history.push();
         }
     }
 

@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty, RadioProperty } from '.'
-import { GridMouseEvent, Utils, RGBAColor, ShadeMode, ToolType } from '../utils';
+import { GridMouseEvent, Utils, RGBAColor, ShadeMode, ToolType, Events } from '../utils';
 
 export class Shade extends Tool {
 
@@ -12,7 +12,7 @@ export class Shade extends Tool {
         super(iApi, ToolType.SHADE);
 
         this._showPreviewOnInvoke = false;
-    this._invokeOnMove = true;
+        this._invokeOnMove = true;
 
         this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], ShadeMode.LIGHTEN);
         this._strengthProperty = new SliderProperty("Strength", 0, 100, 10, '%');
@@ -25,16 +25,16 @@ export class Shade extends Tool {
         ]
     }
 
-    invokeAction(event: GridMouseEvent): void {
+    invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
-        if (grid && event.isDragging && event.isOnCanvas) {
+        if (grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
 
             let strength = (this._strengthProperty.value / 100.0);
             let shadeType = this._shadeTypeProperty.value;
 
             let pxWidth = this._brushWidthProperty.value;
-            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(mouseEvent.coords.pixel.x - (pxWidth / 2.0));
+            let y = Math.round(mouseEvent.coords.pixel.y - (pxWidth / 2.0));
 
             let currPixels = grid.getDataRect({x, y}, pxWidth, pxWidth);
 
@@ -50,6 +50,10 @@ export class Shade extends Tool {
                 }
             });
 
+        }
+
+        if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
+            this.$iApi.history.push();
         }
     }
 

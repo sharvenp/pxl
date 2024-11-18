@@ -163,6 +163,8 @@ export class Select extends Tool {
                         }
                     });
 
+                    this.$iApi.history.push();
+
                     this._resetDrag();
                     this._resetRegionSelect();
                 }

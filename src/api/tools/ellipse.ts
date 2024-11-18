@@ -76,6 +76,8 @@ export class Ellipse extends Tool {
                 grid.color = color.colorRGBA;
                 grid.ellipse({x, y}, w, h, this._fillProperty.value);
 
+                this.$iApi.history.push();
+
                 this._resetDrag();
             }
 

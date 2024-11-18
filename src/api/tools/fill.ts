@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { SliderProperty, Tool } from '.'
-import { GridMouseEvent, ToolType } from '../utils';
+import { Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Fill extends Tool {
 
@@ -20,12 +20,16 @@ export class Fill extends Tool {
         ]
     }
 
-    invokeAction(event: GridMouseEvent): void {
+    invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid && event.isDragging && event.isOnCanvas) {
+        if (color && grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
             grid.color = color.colorRGBA;
-            grid.floodFill(event.coords.pixel, this._toleranceProperty.value / 100.0);
+            grid.floodFill(mouseEvent.coords.pixel, this._toleranceProperty.value / 100.0);
+        }
+
+        if (event === Events.MOUSE_DRAG_STOP) {
+            this.$iApi.history.push();
         }
     }
 
