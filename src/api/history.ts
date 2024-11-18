@@ -1,5 +1,5 @@
 import { InstanceAPI, APIScope } from '.';
-import { MAX_HISTORY_SIZE } from './utils';
+import { Events, MAX_HISTORY_SIZE } from './utils';
 
 export class HistoryAPI extends APIScope {
 
@@ -53,6 +53,8 @@ export class HistoryAPI extends APIScope {
 
             // load the top of the undo stack
             grid.loadData(this._undoStack[this._undoStack.length - 1]);
+
+            this.$iApi.event.emit(Events.UNDO);
         }
     }
 
@@ -69,7 +71,10 @@ export class HistoryAPI extends APIScope {
             // get the state and load it
             let state = this._redoStack.pop()!;
             this._undoStack.push(state);
+
             grid.loadData(state);
+
+            this.$iApi.event.emit(Events.REDO);
         }
     }
 }

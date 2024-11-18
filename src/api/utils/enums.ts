@@ -12,7 +12,9 @@ export enum Events {
     PALETTE_COLOR_ADD = "palette_color_add",
     PALETTE_COLOR_REMOVE = "palette_color_remove",
     SELECT_TOOL_RESET = "select_tool_reset",
-    CLONE_TOOL_RESET = "clone_tool_reset"
+    CLONE_TOOL_RESET = "clone_tool_reset",
+    UNDO = "undo",
+    REDO = "redo",
 }
 
 export enum ShadeMode {

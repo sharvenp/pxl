@@ -54,6 +54,19 @@ export class EventAPI extends APIScope {
         return this._nameRegister.slice();
     }
 
+    ons(events: Array<string>, callback: Function, handlerNames: Array<string> = []): Array<string> {
+
+        events.forEach((e, i) => {
+            let hName = this.on(e, callback, handlerNames.length === 0 ? '' : handlerNames[i]);
+
+            if (handlerNames.length === 0) {
+                handlerNames.push(hName);
+            }
+        })
+
+        return handlerNames;
+    }
+
     on(event: string, callback: Function, handlerName = ''): string {
         // check if name already registered
         if (this.findHandler(handlerName)) {
