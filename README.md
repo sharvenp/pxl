@@ -1,6 +1,6 @@
 # .pxl
 
-A desktop pixel art editor made with Electron and VueJs.
+A desktop pixel art editor powered by [PixiJS](https://github.com/pixijs/pixijs), Electron, and VueJS.
 
 ## WIP
 
