@@ -30,8 +30,11 @@ canvas {
 }
 
 .pixel-canvas {
-  background-color: rgba(0,0,0,0);
-  border: solid rgb(231, 231, 231) 1px;
+  position: absolute;
+  transform: translate(50%, 50%);
+  background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 2px 2px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .layout {

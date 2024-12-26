@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty } from '.'
-import { Events, GridMouseEvent, ToolType } from '../utils';
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Line extends Tool {
 
@@ -30,30 +30,31 @@ export class Line extends Tool {
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
+        let cursor = this.$iApi.canvas.cursor;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid && mouseEvent.isOnCanvas) {
+        if (color && grid && cursor) {
 
             if (!mouseEvent.isOnCanvas) {
-                // mouse left canvas, do nothing
+                this._resetDrag();
                 return;
             }
 
-            this.$iApi.cursor.clearCursor();
+            cursor.clearCursor();
 
             if (mouseEvent.isDragging) {
                 if (!this._isDragging) {
-                    this._dragStartX = mouseEvent.coords.pixel.x;
+                    this._dragStartX = mouseEvent.coords.x;
                 }
                 if (!this._isDragging) {
-                    this._dragStartY = mouseEvent.coords.pixel.y;
+                    this._dragStartY = mouseEvent.coords.y;
                 }
                 this._isDragging = true;
             }
 
             let x0 = this._dragStartX;
             let y0 = this._dragStartY;
-            let x1 = mouseEvent.coords.pixel.x;
-            let y1 = mouseEvent.coords.pixel.y;
+            let x1 = mouseEvent.coords.x;
+            let y1 = mouseEvent.coords.y;
 
             // If in alt-mode, snap the line to fixed angles
             if (this.$iApi.tool.isAltMode) {
@@ -71,20 +72,23 @@ export class Line extends Tool {
                 // else, snap to diagonal
             }
 
+            let pxWidth = this._thicknessProperty.value;
+
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
-                grid.color = color.colorRGBA;
-                grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
 
-                this.$iApi.history.push();
+                this._drawGraphic.moveTo(x0, y0).lineTo(x1, y1).stroke({ width: pxWidth, color: color.colorHex, pixelLine: pxWidth === 1 });
+                grid.draw(this._drawGraphic);
 
                 this._resetDrag();
+                this.newGraphic();
             }
 
             // draw preview line
-            if (this.$iApi.cursor.grid && this._isDragging) {
+            if (this._isDragging) {
 
-                this.$iApi.cursor.grid.line({x: x0, y: y0}, {x: x1, y: y1}, this._thicknessProperty.value);
+                cursor.clearCursor();
+                cursor.cursorGraphic.moveTo(x0, y0).lineTo(x1, y1).stroke({ width: pxWidth, color: CURSOR_PREVIEW_COLOR, pixelLine: pxWidth === 1 });
             }
         }
     }

@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool } from '.'
-import { GridMouseEvent, PaletteItem, ToolType, Utils } from '../utils';
+import { CURSOR_PREVIEW_COLOR, GridMouseEvent, PaletteItem, ToolType, Utils } from '../utils';
 
 export class Picker extends Tool {
 
@@ -16,12 +16,14 @@ export class Picker extends Tool {
         let grid = this.$iApi.canvas.grid!;
         if (grid && event.isDragging && event.isOnCanvas) {
 
-            let pickedColor = grid.getData(event.coords.pixel);
+            let pickedColor = grid.getPixel(event.coords);
 
-            if (pickedColor.r + pickedColor.g + pickedColor.b + pickedColor.a === 0) {
+            if (Utils.isEmptyColor(pickedColor)) {
                 // no color
                 return;
             }
+
+            console.log(pickedColor)
 
             let paletteItem: PaletteItem = {
                 colorHex: Utils.rgbaToHex(pickedColor),
@@ -30,14 +32,17 @@ export class Picker extends Tool {
 
             // will not duplicate if color with hex code is already present
             this.$iApi.palette.addColor(paletteItem);
-            this.$iApi.palette.selectColor(this.$iApi.palette.palette.find(c => c.colorHex === paletteItem.colorHex)!);
+
+            this.$iApi.palette.selectColor(this.$iApi.palette.palette
+                              .find(c => c.colorHex === paletteItem.colorHex)!);
         }
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.cursor.grid) {
-            this.$iApi.cursor.clearCursor();
-            this.$iApi.cursor.grid.rect({x: event.coords.pixel.x, y: event.coords.pixel.y}, 1, 1);
+        if (this.$iApi.canvas.cursor) {
+            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            graphic.clear();
+            graphic.rect(event.coords.x, event.coords.y, 1, 1).fill(CURSOR_PREVIEW_COLOR);
         }
     }
 }

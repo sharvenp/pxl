@@ -32,9 +32,9 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.RECTANGLE] = new Rectangle(this.$iApi);
         this._tools[ToolType.ELLIPSE] = new Ellipse(this.$iApi);
         this._tools[ToolType.LINE] = new Line(this.$iApi);
-        this._tools[ToolType.SHADE] = new Shade(this.$iApi);
-        this._tools[ToolType.SELECT] = new Select(this.$iApi);
-        this._tools[ToolType.CLONE] = new Clone(this.$iApi);
+        // this._tools[ToolType.SHADE] = new Shade(this.$iApi);
+        // this._tools[ToolType.SELECT] = new Select(this.$iApi);
+        // this._tools[ToolType.CLONE] = new Clone(this.$iApi);
 
         // default to pencil
         // TODO: load correct tool from save state
@@ -46,26 +46,27 @@ export class ToolAPI extends APIScope {
                 if (this._selectedTool.showPreviewOnInvoke) {
                     this.previewCursor(mouseEvt);
                 } else {
-                    this.$iApi.cursor.clearCursor();
+                    this.$iApi.canvas.cursor?.clearCursor();
                 }
                 this.invokeAction(mouseEvt, event);
             }
         }));
 
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
-
             if (this._selectedTool) {
                 this.invokeAction(mouseEvt, event);
             }
-            // clear tracking set
+            if (mouseEvt.isOnCanvas) {
+                this.previewCursor(mouseEvt);
+            }
             this._stopTracking();
         }));
 
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
 
             // invoke only if it on canvas
-            if (mouseEvt.isOnCanvas) {
-                if (mouseEvt.isDragging && this._selectedTool) {
+            if (this._selectedTool && mouseEvt.isOnCanvas) {
+                if (mouseEvt.isDragging) {
                     if (this._selectedTool.showPreviewOnInvoke) {
                         this.previewCursor(mouseEvt);
                     }
@@ -78,14 +79,14 @@ export class ToolAPI extends APIScope {
             }
         }));
 
-        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (mouseEvt: GridMouseEvent, event: Events) => {
+        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (event: Events) => {
 
             // clear the cursor
-            this.$iApi.cursor.clearCursor();
+            this.$iApi.canvas.cursor?.clearCursor();
 
-            if (this._selectedTool) {
-                this.invokeAction(mouseEvt, event);
-            }
+            // if (this._selectedTool) {
+            //     this.invokeAction(mouseEvt, event);
+            // }
 
             // clear tracking set
             this._stopTracking();
@@ -98,14 +99,15 @@ export class ToolAPI extends APIScope {
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         if (this._selectedTool) {
-            if (!this._checkTracking(mouseEvent.coords.pixel) || !mouseEvent.isDragging) {
+            if (!this._checkTracking(mouseEvent.coords) || !mouseEvent.isDragging) {
 
                 // only update the pixel tracking if mouse is being dragged
                 if (mouseEvent.isDragging) {
-                    this._updateTracking(mouseEvent.coords.pixel);
+                    this._updateTracking(mouseEvent.coords);
                 }
 
                 this._selectedTool.invokeAction(mouseEvent, event);
+                this.$iApi.history.update();
             }
         }
     }
@@ -119,7 +121,7 @@ export class ToolAPI extends APIScope {
     selectTool(tool: ToolType): void {
         if (this._selectedTool) {
             this._selectedTool.dispose();
-            this.$iApi.cursor?.clearCursor();
+            this.$iApi.canvas.cursor?.clearCursor();
         }
 
         this._selectedTool = this._tools[tool];
@@ -140,9 +142,9 @@ export class ToolAPI extends APIScope {
             return false;
         }
 
-        let grid = this.$iApi.canvas.grid;
-        if (grid) {
-            return this._trackedPixels.has(coords.y * grid.pixelHeight + coords.x);
+        let canvas = this.$iApi.canvas;
+        if (canvas) {
+            return this._trackedPixels.has(coords.y * canvas.height + coords.x);
         }
         return true;
     }
@@ -153,9 +155,9 @@ export class ToolAPI extends APIScope {
             return;
         }
 
-        let grid = this.$iApi.canvas.grid;
-        if (grid) {
-            this._trackedPixels.add(coords.y * grid.pixelHeight + coords.x);
+        let canvas = this.$iApi.canvas;
+        if (canvas) {
+            this._trackedPixels.add(coords.y * canvas.height + coords.x);
         }
     }
 

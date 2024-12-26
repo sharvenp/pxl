@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty} from '.'
-import { Events, GridMouseEvent, ToolType } from '../utils';
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, NO_COLOR_FULL_ALPHA, ToolType } from '../utils';
 
 export class Eraser extends Tool {
 
@@ -25,28 +25,29 @@ export class Eraser extends Tool {
 
             let pxWidth = this._eraserWidthProperty.value;
 
-            let x = Math.round(mouseEvent.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(mouseEvent.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
+            let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            grid.color = undefined;
-            grid.rect({x, y}, pxWidth, pxWidth);
+            this._drawGraphic.blendMode = 'erase';
+            this._drawGraphic.rect(x, y, pxWidth, pxWidth).fill(NO_COLOR_FULL_ALPHA);
+            grid.draw(this._drawGraphic);
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
-            this.$iApi.history.push();
+            this.newGraphic();
         }
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.cursor.grid) {
-
-            this.$iApi.cursor.clearCursor();
+        if (this.$iApi.canvas.cursor) {
 
             let pxWidth = this._eraserWidthProperty.value;
-            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(event.coords.x - (pxWidth / 2.0));
+            let y = Math.round(event.coords.y - (pxWidth / 2.0));
 
-            this.$iApi.cursor.grid.rect({x, y}, pxWidth, pxWidth);
+            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            graphic.clear();
+            graphic.rect(x, y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
         }
     }
 }

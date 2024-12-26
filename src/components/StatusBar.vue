@@ -21,13 +21,13 @@ let isOnCanvas = ref<boolean>(false);
 
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.MOUSE_MOVE, (evt: GridMouseEvent) => {
-        if (evt.isOnCanvas) {
-            x.value = Math.floor(evt.coords.pixel.x) + 1;
-            y.value = Math.floor(evt.coords.pixel.y) + 1;
-            isOnCanvas.value = true;
-        } else {
-            isOnCanvas.value = false;
-        }
+        x.value = Math.floor(evt.coords.x) + 1;
+        y.value = Math.floor(evt.coords.y) + 1;
+        isOnCanvas.value = true;
+    })!);
+
+    handlers.push(iApi?.event.on(Events.CANVAS_MOUSE_LEAVE, () => {
+        isOnCanvas.value = false;
     })!);
 })
 

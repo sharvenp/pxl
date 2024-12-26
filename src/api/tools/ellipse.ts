@@ -1,10 +1,11 @@
 import { InstanceAPI } from '..';
-import { Tool, CheckboxProperty } from '.'
-import { Events, GridMouseEvent, ToolType } from '../utils';
+import { Tool, CheckboxProperty, SliderProperty } from '.'
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Ellipse extends Tool {
 
     private _fillProperty: CheckboxProperty;
+    private _widthProperty: SliderProperty;
     private _dragStartX: number;
     private _dragStartY: number;
     private _isDragging: boolean;
@@ -17,9 +18,11 @@ export class Ellipse extends Tool {
         this._trackPixels = false;
 
         this._fillProperty = new CheckboxProperty("Fill", false);
+        this._widthProperty = new SliderProperty("Width", 1, 10, 1, 'px');
 
         this._toolProperties = [
-            this._fillProperty
+            this._fillProperty,
+            this._widthProperty
         ]
 
         this._dragStartX = -1;
@@ -29,30 +32,31 @@ export class Ellipse extends Tool {
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
+        let cursor = this.$iApi.canvas.cursor;
         let color = this.$iApi.palette.selectedColor;
-        if (color && grid) {
+        if (color && grid && cursor) {
 
             if (!mouseEvent.isOnCanvas) {
-                // mouse left canvas, do nothing
+                this._resetDrag();
                 return;
             }
 
-            this.$iApi.cursor.clearCursor();
+            cursor.clearCursor();
 
             if (mouseEvent.isDragging) {
                 if (!this._isDragging) {
-                    this._dragStartX = mouseEvent.coords.pixel.x;
+                    this._dragStartX = mouseEvent.coords.x;
                 }
                 if (!this._isDragging) {
-                    this._dragStartY = mouseEvent.coords.pixel.y;
+                    this._dragStartY = mouseEvent.coords.y;
                 }
                 this._isDragging = true;
             }
 
-            let x = Math.min(this._dragStartX, mouseEvent.coords.pixel.x);
-            let y = Math.min(this._dragStartY, mouseEvent.coords.pixel.y);
-            let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.pixel.x) - 1);
-            let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.pixel.y) - 1);
+            let x = Math.min(this._dragStartX, mouseEvent.coords.x);
+            let y = Math.min(this._dragStartY, mouseEvent.coords.y);
+            let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.x) - 1);
+            let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
             // is the user dragging in reverse?
             let rev = (x < this._dragStartX) || (y < this._dragStartY);
@@ -71,19 +75,42 @@ export class Ellipse extends Tool {
                 }
             }
 
+            // adjust width and height into axis radii
+            w = Math.floor(w / 2);
+            h = Math.floor(h / 2);
+
+            // offset x and y
+            x += w;
+            y += h;
+
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
-                grid.color = color.colorRGBA;
-                grid.ellipse({x, y}, w, h, this._fillProperty.value);
+                this._drawGraphic.blendMode = 'normal';
+                this._drawGraphic.ellipse(x, y, w, h);
 
-                this.$iApi.history.push();
+                if (this._fillProperty.value) {
+                    this._drawGraphic.fill(color.colorHex);
+                } else {
+                    this._drawGraphic.stroke({ width: this._widthProperty.value, color: color.colorHex });
+                }
+
+                grid.draw(this._drawGraphic);
 
                 this._resetDrag();
+                this.newGraphic();
             }
 
             // draw preview ellipse
-            if (this.$iApi.cursor.grid && this._isDragging) {
-                this.$iApi.cursor.grid.ellipse({x, y}, w, h, this._fillProperty.value);
+            if (this._isDragging) {
+
+                cursor.clearCursor();
+                cursor.cursorGraphic.ellipse(x, y, w, h);
+
+                if (this._fillProperty.value) {
+                    cursor.cursorGraphic.fill(CURSOR_PREVIEW_COLOR);
+                } else {
+                    cursor.cursorGraphic.stroke({ width: this._widthProperty.value, color: CURSOR_PREVIEW_COLOR });
+                }
             }
         }
     }

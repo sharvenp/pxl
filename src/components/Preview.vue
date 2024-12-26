@@ -34,16 +34,16 @@ onMounted(() => {
 
     // TODO: this needs to be updated to work with layers
     // render the preview canvas
-    handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        if (iApi?.canvas?.el && canvas.value) {
-            let canvasEl = canvas.value;
-            let ctx = canvasEl.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
-                ctx.drawImage(iApi.canvas.el, 0, 0, canvasEl.width, canvasEl.height);
-            }
-        }
-    })!);
+    // handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
+    //     if (iApi?.canvas?.el && canvas.value) {
+    //         let canvasEl = canvas.value;
+    //         let ctx = canvasEl.getContext('2d');
+    //         if (ctx) {
+    //             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
+    //             ctx.drawImage(iApi.canvas.el, 0, 0, canvasEl.width, canvasEl.height);
+    //         }
+    //     }
+    // })!);
 })
 
 onUnmounted(() => {

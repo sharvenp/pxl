@@ -1,21 +1,11 @@
 
-export interface CanvasCoordinates {
-    x: number;
-    y: number;
-}
-
 export interface PixelCoordinates {
     x: number;
     y: number;
 }
 
-export interface Coordinates {
-    canvas: CanvasCoordinates,
-    pixel: PixelCoordinates
-}
-
 export interface GridMouseEvent {
-    coords: Coordinates,
+    coords: PixelCoordinates,
     isDragging: boolean,
     isOnCanvas: boolean
 }

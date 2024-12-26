@@ -1,15 +1,8 @@
 <template>
-    <div ref="container" class="grid place-content-center row-span-3">
-        <div class="relative">
-            <div class="absolute w-full h-full pointer-events-none">
-                <canvas v-show="initialized" class="pixel-canvas" ref="cursorCanvas"></canvas>
-            </div>
-            <div class="absolute bg-white w-full h-full -z-10 pointer-events-none">
-                <canvas v-show="initialized" class="bg-white pixel-canvas" ref="bgCanvas"></canvas>
-            </div>
-            <canvas v-show="initialized" class="pixel-canvas" ref="canvas"></canvas>
-            <!-- TODO: use iterator here to add more layers -->
-        </div>
+    <div ref="container" class="grid place-content-center row-span-3 cursor-pointer scale-1">
+
+        <!-- PIXI Canvas will get injected here -->
+
         <div v-if="!initialized" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 w-80 text-center p-5 rounded-xl">
             <p>Enter canvas dimensions</p>
             <div class="flex flex-row justify-center mt-2">
@@ -27,12 +20,10 @@
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from 'vue'
 import { InstanceAPI } from '../api';
-import { CanvasCoordinates, Coordinates, Events, PixelCoordinates } from '../api/utils';
+import { Events, PixelCoordinates } from '../api/utils';
+import { Application, FederatedMouseEvent } from 'pixi.js';
 
 const container = ref();
-const canvas = ref();
-const cursorCanvas = ref();
-const bgCanvas = ref();
 const iApi = inject<InstanceAPI>('iApi');
 let width = ref(32);
 let height = ref(32);
@@ -46,75 +37,69 @@ function initializeCanvas() {
         return;
     }
 
-    iApi?.canvas.initialize(canvas.value, bgCanvas.value, width.value, height.value);
-    iApi?.cursor.initialize(cursorCanvas.value, canvas.value.width, canvas.value.height, width.value, height.value);
-    initialized.value = true;
+    let pixi = new Application();
+    pixi.init({
+        width: width.value,
+        height: height.value,
+        backgroundAlpha: 0,
+        eventMode: 'static',
+        autoDensity: true
+    }).then(() => {
+        container.value.appendChild(pixi.canvas);
+        pixi.canvas.classList.add("pixel-canvas"); // add the style class
 
-    // push the initial state
-    iApi?.history.push();
+        let isDragging = false;
+        let lastCell: PixelCoordinates | undefined = undefined;
+        let getCoords = (event: FederatedMouseEvent) => {
+            const localPos = event.getLocalPosition(pixi.stage, { x: event.globalX, y: event.globalY })
+            return {x: Math.abs(Math.floor(localPos.x)), y: Math.abs(Math.floor(localPos.y))};
+        }
 
-    let isDragging = false;
-    let isOnCanvas = false;
-    let lastCell: PixelCoordinates | undefined = undefined;
+        pixi.stage.eventMode = 'static';
+        pixi.stage.hitArea = pixi.screen;
 
-    if (container.value !== null) {
-
-        container.value.onmousedown = (event: MouseEvent) => {
-            let coords = _parseMouseEvent(event);
-            isOnCanvas = !!canvas.value.matches(':hover');
+        pixi.stage
+        .on('pointerdown', (event) => {
+            const coords = getCoords(event);
             if (event.button === 0) {
                 isDragging = true;
-                iApi?.event.emit(Events.MOUSE_DRAG_START, { coords , isDragging, isOnCanvas });
-                lastCell = coords.pixel;
+                iApi?.event.emit(Events.MOUSE_DRAG_START, { coords , isDragging, isOnCanvas: true });
+                lastCell = {x: coords.x, y: coords.y};
             }
-        };
-
-        container.value.onmouseup = (event: MouseEvent) => {
-            let coords = _parseMouseEvent(event);
-            isOnCanvas = !!canvas.value.matches(':hover');
+        })
+        .on('pointerup', (event) => {
+            const coords = getCoords(event);
             if (event.button === 0) {
                 isDragging = false;
-                iApi?.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas });
+                iApi?.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas: true });
             }
-        };
-
-        container.value.onmousemove = (event: MouseEvent) => {
-            let coords = _parseMouseEvent(event);
-
-            let prevIsOnCanvas = isOnCanvas;
-            isOnCanvas = !!canvas.value.matches(':hover');
-
-            if (prevIsOnCanvas && !isOnCanvas) {
-                iApi?.event.emit(Events.CANVAS_MOUSE_LEAVE, { coords, isDragging, isOnCanvas });
-                return;
+        })
+        .on('pointerupoutside', (event) => {
+            const coords = getCoords(event);
+            if (event.button === 0) {
+                isDragging = false;
+                iApi?.event.emit(Events.MOUSE_DRAG_STOP, {coords, isDragging, isOnCanvas: false });
             }
-
-            if (!prevIsOnCanvas && isOnCanvas) {
-                iApi?.event.emit(Events.CANVAS_MOUSE_ENTER, { coords, isDragging, isOnCanvas });
+        })
+        .on('pointermove', (event) => {
+            let coords = getCoords(event);
+            if (!(coords.x === lastCell?.x && coords.y === lastCell?.y)) {
+                iApi?.event.emit(Events.MOUSE_MOVE, { coords, isDragging, isOnCanvas: true });
+                lastCell = {x: coords.x, y: coords.y};
             }
+        })
+        .on('pointerout', (event) => {
+            iApi?.event.emit(Events.CANVAS_MOUSE_LEAVE);
+        })
+        .on('pointerenter', (event) => {
+            iApi?.event.emit(Events.CANVAS_MOUSE_ENTER);
+        });
 
-            if (!(coords.pixel.x === lastCell?.x && coords.pixel.y === lastCell?.y)) {
-                iApi?.event.emit(Events.MOUSE_MOVE, { coords, isDragging, isOnCanvas });
-                lastCell = coords.pixel;
-            }
-        };
-    }
+        iApi?.canvas.initialize(pixi);
+
+        initialized.value = true;
+    });
 }
-
-function _parseMouseEvent(event: MouseEvent): Coordinates {
-    let coords: CanvasCoordinates = { x: event.offsetX, y: event.offsetY };
-    let pixelCoords = {
-        x: Math.floor(coords.x / (iApi!.canvas.grid!.widthRatio * 1.0)),
-        y: Math.floor(coords.y / (iApi!.canvas.grid!.heightRatio * 1.0))
-    };
-    return { canvas: coords, pixel: pixelCoords};
-}
-
-function _pixelCheck(coords: PixelCoordinates): boolean {
-    return (coords.x >= 0 && coords.y >= 0) &&
-           (coords.x < (iApi?.canvas.grid?.pixelWidth ?? 0) && coords.y < (iApi?.canvas.grid?.pixelHeight ?? 0));
-}
-
 
 onMounted(() => {
     initializeCanvas();
@@ -123,14 +108,6 @@ onMounted(() => {
 onUnmounted(() => {
     iApi?.canvas.destroy();
     initialized.value = false;
-
-    if (container.value !== null) {
-        container.value.onmousemove = null;
-        container.value.onmouseup = null;
-        container.value.onmousedown = null;
-        container.value.onmouseenter = null;
-        container.value.onmouseleave = null;
-    }
 })
 
 

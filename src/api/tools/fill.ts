@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { SliderProperty, Tool } from '.'
-import { Events, GridMouseEvent, ToolType } from '../utils';
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Fill extends Tool {
 
@@ -24,20 +24,21 @@ export class Fill extends Tool {
         let grid = this.$iApi.canvas.grid;
         let color = this.$iApi.palette.selectedColor;
         if (color && grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
-            grid.color = color.colorRGBA;
-            grid.floodFill(mouseEvent.coords.pixel, this._toleranceProperty.value / 100.0);
+            this._drawGraphic.blendMode = 'normal';
+            grid.floodFill(this._drawGraphic, mouseEvent.coords, this._toleranceProperty.value / 100.0);
+            this._drawGraphic.fill(color.colorHex);
         }
 
         if (event === Events.MOUSE_DRAG_STOP) {
-            this.$iApi.history.push();
+            this.newGraphic();
         }
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.cursor.grid) {
-
-            this.$iApi.cursor.clearCursor();
-            this.$iApi.cursor.grid.rect({x: event.coords.pixel.x, y: event.coords.pixel.y}, 1, 1);
+        if (this.$iApi.canvas.cursor) {
+            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            graphic.clear();
+            graphic.rect(event.coords.x, event.coords.y, 1, 1).fill(CURSOR_PREVIEW_COLOR);
         }
     }
 }

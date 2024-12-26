@@ -1,53 +1,42 @@
-import { InstanceAPI, APIScope, GridAPI } from '.';
+import { Application, Container, Graphics } from 'pixi.js';
+import { InstanceAPI, APIScope } from '.';
 import { CURSOR_PREVIEW_COLOR } from './utils';
 
 export class CursorAPI extends APIScope {
 
-    private _grid: GridAPI | undefined;
+    private _pixi: Application;
+    private _cursorLayer: Container;
+    private _cursorGraphic: Graphics;
 
-    private _initialized: boolean;
-    private _el: HTMLCanvasElement | undefined;
-
-    constructor(iApi: InstanceAPI) {
+    constructor(iApi: InstanceAPI, pixi: Application) {
         super(iApi);
 
-        this._initialized = false;
+        this._pixi = pixi;
+
+        this._cursorLayer = new Container({alpha: 0.25, eventMode: 'none'});
+        this._cursorGraphic = new Graphics({roundPixels: true});
+
+        this._cursorLayer.addChild(this._cursorGraphic);
+        this._pixi.stage.addChild(this._cursorLayer);
+
+
+        this.initialize();
     }
 
-    initialize(el: HTMLCanvasElement, width: number, height: number, pxWidth: number, pxHeight: number): void {
-
-        this._el = el;
-        this._el.width = width;
-        this._el.height = height;
-
-        this._grid = new GridAPI(this.$iApi, this._el, pxWidth, pxHeight, false, false);
-        this._grid.color = CURSOR_PREVIEW_COLOR;
-
+    initialize(): void {
         this.clearCursor();
-
-        this._initialized = true;
     }
 
     destroy(): void {
-        this._initialized = false;
-        this._grid?.destroy();
-        this._grid = undefined;
-
-        this._el = undefined;
+        this._cursorGraphic.destroy();
+        this._cursorLayer.destroy();
     }
 
     clearCursor(): void {
-        if (this._grid) {
-            this._grid.color = CURSOR_PREVIEW_COLOR;
-            this._grid.clear();
-        }
+        this._cursorGraphic.clear();
     }
 
-    get initialized(): boolean {
-        return this._initialized;
-    }
-
-    get grid(): GridAPI | undefined {
-        return this._grid;
+    get cursorGraphic(): Graphics {
+        return this._cursorGraphic;
     }
 }

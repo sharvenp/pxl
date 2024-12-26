@@ -1,15 +1,16 @@
-import { APIScope, InstanceAPI, GridAPI } from '.';
-import Panzoom, { PanZoom } from "panzoom";
-import { CanvasCoordinates, Coordinates, Events, PixelCoordinates } from './utils';
+import { APIScope, InstanceAPI, GridAPI, CursorAPI } from '.';
+import Panzoom, { PanzoomObject, ZoomOptions } from "@panzoom/panzoom";
+import { Application } from 'pixi.js';
+
 
 export class CanvasAPI extends APIScope {
 
     private _grid: GridAPI | undefined;
+    private _cursor: CursorAPI | undefined;
 
     private _initialized: boolean;
-    private _el: HTMLCanvasElement | undefined;
-    private _bgCanvas: HTMLCanvasElement | undefined;
-    private _panzoom: PanZoom | undefined;
+    private _panzoom: PanzoomObject | undefined;
+    private _pixi: Application | undefined;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
@@ -17,78 +18,109 @@ export class CanvasAPI extends APIScope {
         this._initialized = false;
     }
 
-    initialize(el: HTMLCanvasElement, bgCanvas: HTMLCanvasElement, width: number, height: number): void {
+    initialize(pixi: Application): void {
         if (this._initialized) {
             console.warn("Canvas already intialized");
             return;
         }
 
-        this._el = el;
-        this._bgCanvas = bgCanvas;
+        this._pixi = pixi;
 
-        this._panzoom = Panzoom(el.parentElement!, {
-            minZoom: 0.5,
-            maxZoom: 6,
-            smoothScroll: false,
-            beforeMouseDown: (event) => {
-                return event.button !== 1;
-            },
-            onDoubleClick: () => {
-                return false
-            }
+        this._pixi.renderer.clear();
+
+        // set up panzoom
+
+        let canvasParent = pixi.canvas.parentElement!;
+        let pbr = canvasParent.getBoundingClientRect();
+
+        const scaleX = pbr.width / pixi.canvas.width;
+        const scaleY = pbr.height / pixi.canvas.height;
+        const scale = Math.round(Math.min(scaleX, scaleY) * 0.7);
+
+        this._panzoom = Panzoom(canvasParent, {
+            minScale: Math.floor(scale * 0.5),
+            maxScale: Math.ceil(scale * 20),
+            cursor: 'default'
         });
 
-        if (width > height) {
-            this._el.width = 512;
-            this._el.height = Math.min(Math.max((height * 1.0 / width) * 512, 32), 1024);
-        } else if (width < height) {
-        this._el.height = 512;
-            this._el.width = Math.min(Math.max((width * 1.0 / height) * 512, 32), 1024);
-        } else {
-            this._el.width = 512;
-            this._el.height = 512;
-        }
+        // add scroll wheen zoom listener
+        canvasParent.onwheel = this._handleZoom.bind(this);
 
-        this._grid = new GridAPI(this.$iApi, this._el, width, height);
+        // add pan listener (remove existing listener)
+        canvasParent.removeEventListener('pointerdown', this._panzoom.handleDown);
+        canvasParent.onpointerdown = this._handlePan.bind(this);
 
-        // draw checkerboard pattern
-        let ctx = this._bgCanvas.getContext("2d")!;
-        this._bgCanvas.width = this._el.width;
-        this._bgCanvas.height = this._el.height;
-        let cw = this._bgCanvas.width / width;
-        let ch = this._bgCanvas.height / height;
-        for (let i = 0; i < width; i++) {
-            for (let j = 0; j < height; j++) {
-                if (j % 2 === 0 && i % 2 === 1 || j % 2 === 1 && i % 2 === 0) {
-                    ctx.rect(i * cw, j * ch, cw, ch);
-                }
-            }
-        }
-        ctx.fillStyle  = '#F9F9F9';
-        ctx.fill();
+        // ensure pixel-perfect positioning
+        this._handleResize();
+        window.onresize = this._handleResize.bind(this);
+
+        // zoom in to canvas to fit into screen
+        this._panzoom.zoom(scale, {animate: true});
+
+        // initialize grid
+        this._grid = new GridAPI(this.$iApi, this._pixi);
+        this._cursor = new CursorAPI(this.$iApi, this._pixi);
 
         this._initialized = true;
     }
 
     destroy(): void {
         this._initialized = false;
-        this._panzoom?.dispose();
+
+        window.onresize = null;
+        window.onwheel = null;
+        window.onpointerdown = null;
 
         this._grid?.destroy();
         this._grid = undefined;
 
-        this._el = undefined;
+        this._cursor?.destroy();
+        this._cursor = undefined;
+
+        this._pixi?.destroy();
+    }
+
+    private _handlePan(event: PointerEvent) {
+        if (event.button !== 1) {
+            return;
+        }
+        this._panzoom?.handleDown(event);
+    }
+
+    private _handleZoom(event: WheelEvent, zoomOptions?: ZoomOptions) {
+        this._panzoom?.zoomWithWheel(event, zoomOptions);
+    }
+
+    private _handleResize() {
+        if (this._pixi) {
+            const rect = this._pixi.canvas.parentElement!.getBoundingClientRect();
+            const m = new WebKitCSSMatrix(this._pixi.canvas.parentElement!.style.transform);
+
+            const w2 = Math.floor((rect.height / m.a) / 2);
+            const h2 = Math.floor((rect.width / m.d) / 2);
+
+            this._pixi.canvas.style.bottom = `${w2}px`;
+            this._pixi.canvas.style.right = `${h2}px`;
+        }
     }
 
     get initialized(): boolean {
         return this._initialized;
     }
 
-    get el(): HTMLCanvasElement | undefined {
-        return this._el;
-    }
-
     get grid(): GridAPI | undefined {
         return this._grid;
+    }
+
+    get cursor(): CursorAPI | undefined {
+        return this._cursor;
+    }
+
+    get width(): number {
+        return this._pixi?.canvas.width ?? 0;
+    }
+
+    get height(): number {
+        return this._pixi?.canvas.height ?? 0;
     }
 }
