@@ -66,6 +66,47 @@ export class GridAPI extends APIScope {
         }
     }
 
+    getPixelFrame(coords: PixelCoordinates, width: number, height: number): Array<[PixelCoordinates, RGBAColor]> {
+
+        // Use extract to get the pixel data
+        const pixelData = this._pixi.renderer.extract.pixels({
+            target: this._drawContainer,
+            antialias: false,
+            frame: new Rectangle(coords.x, coords.y, width, height),
+            resolution: 1
+        });
+
+        let data: Array<[PixelCoordinates, RGBAColor]> = [];
+
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                const idx = (y * height + x) * 4;
+
+                const premultiplyFactor = (pixelData.pixels[idx + 3] / 255);
+                let c: RGBAColor | undefined = undefined;
+                if (premultiplyFactor !== 0) {
+                    c = {
+                        r: Math.round(pixelData.pixels[idx] / premultiplyFactor),
+                        g: Math.round(pixelData.pixels[idx + 1] / premultiplyFactor),
+                        b: Math.round(pixelData.pixels[idx + 2] / premultiplyFactor),
+                        a: pixelData.pixels[idx + 3]
+                    }
+                } else {
+                    c = {
+                        r: 0,
+                        g: 0,
+                        b: 0,
+                        a: 0
+                    }
+                }
+
+                data.push([{x: coords.x + x, y: coords.y + y }, c]);
+            }
+        }
+
+        return data;
+    }
+
     get drawLayer(): Container {
         return this._drawLayer;
     }

@@ -32,7 +32,7 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.RECTANGLE] = new Rectangle(this.$iApi);
         this._tools[ToolType.ELLIPSE] = new Ellipse(this.$iApi);
         this._tools[ToolType.LINE] = new Line(this.$iApi);
-        // this._tools[ToolType.SHADE] = new Shade(this.$iApi);
+        this._tools[ToolType.SHADE] = new Shade(this.$iApi);
         // this._tools[ToolType.SELECT] = new Select(this.$iApi);
         // this._tools[ToolType.CLONE] = new Clone(this.$iApi);
 

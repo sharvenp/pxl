@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty, RadioProperty } from '.'
-import { GridMouseEvent, Utils, RGBAColor, ShadeMode, ToolType, Events } from '../utils';
+import { GridMouseEvent, Utils, RGBAColor, ShadeMode, ToolType, Events, CURSOR_PREVIEW_COLOR } from '../utils';
 
 export class Shade extends Tool {
 
@@ -11,7 +11,7 @@ export class Shade extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.SHADE);
 
-        this._showPreviewOnInvoke = false;
+        this._showPreviewOnInvoke = true;
         this._invokeOnMove = true;
 
         this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], ShadeMode.LIGHTEN);
@@ -33,27 +33,32 @@ export class Shade extends Tool {
             let shadeType = this._shadeTypeProperty.value;
 
             let pxWidth = this._brushWidthProperty.value;
-            let x = Math.round(mouseEvent.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(mouseEvent.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
+            let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            let currPixels = grid.getDataRect({x, y}, pxWidth, pxWidth);
+            let currPixels = grid.getPixelFrame({x, y}, pxWidth, pxWidth);
 
             currPixels.forEach(pxPair => {
                 let coords = pxPair[0];
                 let color = pxPair[1];
 
+                console.log(color);
                 if (!Utils.isEmptyColor(color)) {
                     // theres no color here, so continue
                     let colorToApply = this._calculateColor(color, strength, shadeType);
-                    grid.color = colorToApply;
-                    grid.set(coords, true);
+
+                    this._drawGraphic.blendMode = 'normal';
+                    this._drawGraphic.rect(coords.x, coords.y, 1, 1).fill(colorToApply);
                 }
             });
 
+
+
+            grid.draw(this._drawGraphic);
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
-            this.$iApi.history.push();
+            this.newGraphic();
         }
     }
 
@@ -69,15 +74,15 @@ export class Shade extends Tool {
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.cursor.grid) {
-
-            this.$iApi.cursor.clearCursor();
+        if (this.$iApi.canvas.cursor) {
 
             let pxWidth = this._brushWidthProperty.value;
-            let x = Math.round(event.coords.pixel.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.pixel.y - (pxWidth / 2.0));
+            let x = Math.round(event.coords.x - (pxWidth / 2.0));
+            let y = Math.round(event.coords.y - (pxWidth / 2.0));
 
-            this.$iApi.cursor.grid.rect({x, y}, pxWidth, pxWidth);
+            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            graphic.clear();
+            graphic.rect(x, y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
         }
     }
 }
