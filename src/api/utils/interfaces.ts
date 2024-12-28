@@ -19,7 +19,7 @@ export interface SelectedRegionData {
     originalCoords: PixelCoordinates;
     currentCoords: PixelCoordinates;
     lastCoords: PixelCoordinates;
-    color: RGBAColor;
+    color: string;
 }
 
 export interface RGBAColor {

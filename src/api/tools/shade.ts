@@ -42,17 +42,14 @@ export class Shade extends Tool {
                 let coords = pxPair[0];
                 let color = pxPair[1];
 
-                console.log(color);
                 if (!Utils.isEmptyColor(color)) {
-                    // theres no color here, so continue
+                    // calculate the resulting color
                     let colorToApply = this._calculateColor(color, strength, shadeType);
 
                     this._drawGraphic.blendMode = 'normal';
                     this._drawGraphic.rect(coords.x, coords.y, 1, 1).fill(colorToApply);
                 }
             });
-
-
 
             grid.draw(this._drawGraphic);
         }

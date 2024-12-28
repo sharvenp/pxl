@@ -1,13 +1,13 @@
-import { Application, Container, Graphics, Rectangle, RenderTexture, RgbaArray } from 'pixi.js';
+import { Application, Container, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, PixelCoordinates, RGBAColor, Utils } from './utils';
+import { PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
-    // private _color: RGBAColor | undefined;
     private _pixi: Application;
 
     private _drawContainer: Container;
+    private _previewContainer: Container;
     private _drawLayer: Container;
 
     constructor(iApi: InstanceAPI, pixi: Application) {
@@ -16,10 +16,13 @@ export class GridAPI extends APIScope {
         this._pixi = pixi;
 
         this._drawContainer = new Container({eventMode: 'none'});
-        this._drawLayer = new Container({eventMode: 'none'});
 
-        this._pixi.stage.addChild(this._drawContainer);
+        this._drawLayer = new Container({eventMode: 'none'});
         this._drawContainer.addChild(this._drawLayer);
+        this._pixi.stage.addChild(this._drawContainer);
+
+        this._previewContainer = new Container({eventMode: 'none'});
+        this._pixi.stage.addChild(this._previewContainer);
 
         this.initialize();
     }
@@ -35,6 +38,10 @@ export class GridAPI extends APIScope {
 
     draw(graphic: Graphics): void {
         this._drawLayer.addChild(graphic);
+    }
+
+    drawContainer(container: Container): void {
+        this._drawLayer.addChild(container);
     }
 
     getPixel(coords: PixelCoordinates): RGBAColor {
@@ -80,7 +87,7 @@ export class GridAPI extends APIScope {
 
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
-                const idx = (y * height + x) * 4;
+                const idx = (y * width + x) * 4;
 
                 const premultiplyFactor = (pixelData.pixels[idx + 3] / 255);
                 let c: RGBAColor | undefined = undefined;
@@ -92,12 +99,7 @@ export class GridAPI extends APIScope {
                         a: pixelData.pixels[idx + 3]
                     }
                 } else {
-                    c = {
-                        r: 0,
-                        g: 0,
-                        b: 0,
-                        a: 0
-                    }
+                    c = { r: 0, g: 0, b: 0, a: 0 }
                 }
 
                 data.push([{x: coords.x + x, y: coords.y + y }, c]);
@@ -107,8 +109,94 @@ export class GridAPI extends APIScope {
         return data;
     }
 
+    floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
+
+        const pixelData = this._pixi.renderer.extract.pixels({
+            target: this._drawContainer,
+            antialias: false,
+            frame: new Rectangle(0, 0, this.width, this.height),
+            resolution: 1
+        });
+
+        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.width && c.y >= 0 && c.y < this.height);
+        let getPixelRGBA = (c: PixelCoordinates): RGBAColor => {
+            const idx = (c.y * this.width + c.x) * 4;
+            const premultiplyFactor = (pixelData.pixels[idx + 3] / 255);
+            return {
+                r: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx] / premultiplyFactor),
+                g: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx + 1] / premultiplyFactor),
+                b: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx + 2] / premultiplyFactor),
+                a: pixelData.pixels[idx + 3]
+            }
+        };
+
+
+        // color to check similarity against
+        let targetColor = getPixelRGBA(coords);
+
+        // use bfs to fill neighboring colors
+        let fillStack: Array<PixelCoordinates> = [];
+        fillStack.push(coords);
+
+        // keep track of seen colors to prevent revisiting the same cell
+        let visited: Record<string, boolean> = {};
+
+        while(fillStack.length > 0) {
+
+            let {x, y} = fillStack.pop()!;
+            let currCellColor = getPixelRGBA({x, y});
+
+            // check current cell has been visited
+            if (visited[`${x}-${y}`]) {
+                continue;
+            }
+
+            // tolerance is the threshold for the color similarity of neighboring cells     as a percentage
+            // check current cell color is above threshold
+            // if it is, continue
+            if (Utils.getColorSimilarity(currCellColor, targetColor) > tolerance) {
+                continue;
+            }
+
+            // fill color
+            graphic.rect(x, y, 1, 1);
+            visited[`${x}-${y}`] = true;
+
+            if (validCoords({x, y: y + 1})) {
+                fillStack.push({x, y: y + 1});
+            }
+            if (validCoords({x, y: y - 1})) {
+                fillStack.push({x, y: y - 1});
+            }
+            if (validCoords({x: x + 1, y})) {
+                fillStack.push({x: x + 1, y});
+            }
+            if (validCoords({x: x - 1, y})) {
+                fillStack.push({x: x - 1, y});
+            }
+        }
+
+        this.draw(graphic);
+    }
+
+    contains(coords: PixelCoordinates) {
+        return (coords.x >= 0 && coords.x < this.width) && (coords.y >= 0 && coords.y < this.height);
+    }
+
     get drawLayer(): Container {
         return this._drawLayer;
+    }
+
+    get previewContainer(): Container {
+        return this._previewContainer;
+    }
+
+    get width(): number {
+        return this._pixi.canvas.width;
+    }
+
+    get height(): number {
+        return this._pixi.canvas.height;
     }
 
     // rect(): void {
@@ -425,76 +513,6 @@ export class GridAPI extends APIScope {
     //     }
     // }
 
-    floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
-
-        const pixelData = this._pixi.renderer.extract.pixels({
-            target: this._drawContainer,
-            antialias: false,
-            frame: new Rectangle(0, 0, this.width, this.height),
-            resolution: 1
-        });
-
-        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.width && c.y >= 0 && c.y < this.height);
-        let getPixelRGBA = (c: PixelCoordinates): RGBAColor => {
-            const idx = (c.y * this.height + c.x) * 4;
-            const premultiplyFactor = (pixelData.pixels[idx + 3] / 255);
-            return {
-                r: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx] / premultiplyFactor),
-                g: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx + 1] / premultiplyFactor),
-                b: premultiplyFactor === 0 ? 0 : Math.round(pixelData.pixels[idx + 2] / premultiplyFactor),
-                a: pixelData.pixels[idx + 3]
-            }
-        };
-
-
-        // color to check similarity against
-        let targetColor = getPixelRGBA(coords);
-
-        // use bfs to fill neighboring colors
-        let fillStack: Array<PixelCoordinates> = [];
-        fillStack.push(coords);
-
-        // keep track of seen colors to prevent revisiting the same cell
-        let visited: Record<string, boolean> = {};
-
-        while(fillStack.length > 0) {
-
-            let {x, y} = fillStack.pop()!;
-            let currCellColor = getPixelRGBA({x, y});
-
-            // check current cell has been visited
-            if (visited[`${x}-${y}`]) {
-                continue;
-            }
-
-            // tolerance is the threshold for the color similarity of neighboring cells     as a percentage
-            // check current cell color is above threshold
-            // if it is, continue
-            if (Utils.getColorSimilarity(currCellColor, targetColor) > tolerance) {
-                continue;
-            }
-
-            // fill color
-            graphic.rect(x, y, 1, 1);
-            visited[`${x}-${y}`] = true;
-
-            if (validCoords({x, y: y + 1})) {
-                fillStack.push({x, y: y + 1});
-            }
-            if (validCoords({x, y: y - 1})) {
-                fillStack.push({x, y: y - 1});
-            }
-            if (validCoords({x: x + 1, y})) {
-                fillStack.push({x: x + 1, y});
-            }
-            if (validCoords({x: x - 1, y})) {
-                fillStack.push({x: x - 1, y});
-            }
-        }
-
-        this.draw(graphic);
-    }
-
     // _setData(coords: PixelCoordinates, color: RGBAColor | undefined = undefined, overwrite: boolean = false): void {
 
     //     let colorToApply = color ?? this._color;
@@ -630,14 +648,6 @@ export class GridAPI extends APIScope {
     // get heightRatio(): number {
     //     return this._heightRatio;
     // }
-
-    get width(): number {
-        return this._pixi.canvas.width;
-    }
-
-    get height(): number {
-        return this._pixi.canvas.height;
-    }
 
     // get canvasWidth(): number {
     //     return this._canvasWidth;

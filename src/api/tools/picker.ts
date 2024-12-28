@@ -23,8 +23,6 @@ export class Picker extends Tool {
                 return;
             }
 
-            console.log(pickedColor)
-
             let paletteItem: PaletteItem = {
                 colorHex: Utils.rgbaToHex(pickedColor),
                 colorRGBA: pickedColor

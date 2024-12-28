@@ -19,7 +19,6 @@ export class CursorAPI extends APIScope {
         this._cursorLayer.addChild(this._cursorGraphic);
         this._pixi.stage.addChild(this._cursorLayer);
 
-
         this.initialize();
     }
 
