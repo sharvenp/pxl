@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, ButtonProperty} from '.'
-import { SelectedRegionData, GridMouseEvent, Utils, PixelCoordinates, Events, ToolType, SelectedRegion } from '../utils';
+import { SelectedRegionData, GridMouseEvent, Utils, Events, ToolType, SelectedRegion, CURSOR_PREVIEW_COLOR } from '../utils';
 
 export class Clone extends Tool {
 
@@ -47,8 +47,9 @@ export class Clone extends Tool {
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid;
+        let cursor = this.$iApi.canvas.cursor;
 
-        if (grid) {
+        if (grid && cursor) {
 
             if (event === Events.CANVAS_MOUSE_LEAVE) {
                 if (!this._isSelected) {
@@ -56,7 +57,7 @@ export class Clone extends Tool {
                     this._resetDrag();
                 } else {
                     // preview selected region
-                    this._previewRegion();
+                    this._updatePreview();
                 }
                 return;
             }
@@ -65,73 +66,75 @@ export class Clone extends Tool {
 
                 // STAGE 1
 
-                this.$iApi.cursor.clearCursor();
+                cursor.clearCursor();
 
                 if (mouseEvent.isDragging) {
                     if (!this._isDragging) {
-                        this._dragStartX = mouseEvent.coords.pixel.x;
+                        this._dragStartX = mouseEvent.coords.x;
                     }
                     if (!this._isDragging) {
-                        this._dragStartY = mouseEvent.coords.pixel.y;
+                        this._dragStartY = mouseEvent.coords.y;
                     }
                     this._isDragging = true;
                 }
 
-                let x = Math.min(this._dragStartX, mouseEvent.coords.pixel.x);
-                let y = Math.min(this._dragStartY, mouseEvent.coords.pixel.y);
-                let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.pixel.x) - 1);
-                let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.pixel.y) - 1);
+                let x = Math.min(this._dragStartX, mouseEvent.coords.x);
+                let y = Math.min(this._dragStartY, mouseEvent.coords.y);
+                let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.x) - 1);
+                let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
                 // draw preview rectangle
-                if (this.$iApi.cursor.grid && this._isDragging) {
-                    this.$iApi.cursor.grid.rect({x, y}, w, h, false);
+                if (this._isDragging) {
+                    cursor.cursorGraphic.rect(x, y, w, h);
+                    cursor.cursorGraphic.stroke({ width: 1, color: CURSOR_PREVIEW_COLOR, alignment: 1 });
                 }
 
                 if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                     // dragging stopped, select area
 
                     // get pixels within region
-                    let pixels: Array<SelectedRegionData> = grid.getDataRect({x: x + 1, y: y + 1}, w - 2, h - 2)
-                                                        .filter(p => !Utils.isEmptyColor(p[1]))
-                                                        .map(p => <SelectedRegionData>{
-                                                            originalCoords: p[0],
-                                                            currentCoords: {x: p[0].x, y: p[0].y}, // make copy
-                                                            lastCoords: {
-                                                                x: -1,
-                                                                y: -1
-                                                            },
-                                                            color: p[1],
-                                                        });
+                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({x, y}, w, h)
+                                                                .filter(p => !Utils.isEmptyColor(p[1]))
+                                                                .map(p => <SelectedRegionData>{
+                                                                    originalCoords: p[0],
+                                                                    currentCoords: {x: p[0].x, y: p[0].y}, // make copy
+                                                                    lastCoords: {
+                                                                        x: -1,
+                                                                        y: -1
+                                                                    },
+                                                                    color: Utils.rgbaToHex(p[1]),
+                                                                });
 
                     if (pixels.length !== 0) {
                         this._isSelected = true;
+                        this._isDragging = false;
 
                         // create region
                         this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
-
-                        this._previewRegion();
-                        this._isDragging = false;
+                        this._updatePreview();
                     } else {
                         this._resetDrag();
-                        this._previewRegion();
-                        this.$iApi.cursor.clearCursor();
+                        this._resetRegionSelect();
                     }
                 }
             } else {
 
                 // STAGE 2
 
-                // place region
-                this._selectedRegion?.pixels.forEach(px => {
-                    // only draw if coords are inside the canvas
-                    if (grid.coordsInBounds(px.currentCoords)) {
-                        grid.color = px.color;
-                        grid.set(px.currentCoords);
-                    }
-                });
+                if (mouseEvent.isDragging && mouseEvent.isOnCanvas) {
+                    // place region
+                    this._selectedRegion?.pixels.forEach(px => {
+                        // only draw if coords are inside the canvas
+                        if (grid.contains(px.currentCoords)) {
+                            this._drawGraphic.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
+                                            .fill(px.color);
+                            grid.draw(this._drawGraphic);
+                        }
+                    });
+                }
 
                 if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
-                    this.$iApi.history.push();
+                    this.newGraphic();
                 }
             }
         }
@@ -142,8 +145,8 @@ export class Clone extends Tool {
         // update region coords
         if (this._selectedRegion) {
 
-            let dx = event.coords.pixel.x - this._selectedRegion.x;
-            let dy = event.coords.pixel.y - this._selectedRegion.y;
+            let dx = event.coords.x - this._selectedRegion.x;
+            let dy = event.coords.y - this._selectedRegion.y;
 
             dx -= Math.round(this._selectedRegion.width / 2);
             dy -= Math.round(this._selectedRegion.height / 2);
@@ -151,23 +154,26 @@ export class Clone extends Tool {
             this._selectedRegion.transform(dx, dy);
             this._selectedRegion.stopTransform();
 
-            this._previewRegion();
+            this._updatePreview();
         }
 
     }
 
-    private _previewRegion(): void {
+    private _updatePreview(): void {
 
-        if (!this._selectedRegion || !this.$iApi.cursor.grid) {
+        let cursor = this.$iApi.canvas.cursor;
+
+        if (!this._selectedRegion || !cursor) {
             return;
         }
 
         // clear cursor
-        this.$iApi.cursor.clearCursor();
+        cursor.clearCursor();
 
         // draw pixel data
         this._selectedRegion.pixels.forEach(px => {
-            this.$iApi.cursor.grid!.set(px.currentCoords, true);
+            cursor.cursorGraphic!.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
+                                 .fill(px.color);
         });
     }
 
@@ -180,6 +186,6 @@ export class Clone extends Tool {
     private _resetRegionSelect(): void {
         this._isSelected = false;
         this._selectedRegion = undefined;
-        this.$iApi.cursor.clearCursor();
+        this.$iApi.canvas.cursor?.clearCursor();
     }
 }
