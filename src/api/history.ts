@@ -23,16 +23,11 @@ export class HistoryAPI extends APIScope {
 
     undo(): void {
         let grid = this.$iApi.canvas.grid;
-        if (grid) {
+        if (grid && !grid.empty) {
+            const topMostGraphic = grid.pop();
+            this._historyStack.push(topMostGraphic);
 
-            const drawLayer = grid.drawLayer;
-
-            if (drawLayer.children.length > 0) {
-                const topMostGraphic = drawLayer.removeChildAt(drawLayer.children.length - 1);
-                this._historyStack.push(topMostGraphic);
-
-                this.$iApi.event.emit(Events.UNDO);
-            }
+            this.$iApi.event.emit(Events.UNDO);
         }
     }
 
@@ -40,10 +35,9 @@ export class HistoryAPI extends APIScope {
         let grid = this.$iApi.canvas.grid;
         if (grid && this._historyStack.length > 0) {
 
-            const drawLayer = grid.drawLayer;
             const child = this._historyStack.pop()!;
 
-            drawLayer.addChild(child);
+            grid.draw(child);
 
             this.$iApi.event.emit(Events.REDO);
         }

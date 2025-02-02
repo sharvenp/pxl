@@ -123,4 +123,8 @@ export class CanvasAPI extends APIScope {
     get height(): number {
         return this._pixi?.canvas.height ?? 0;
     }
+
+    get view(): HTMLCanvasElement | undefined {
+        return this._pixi?.canvas;
+    }
 }

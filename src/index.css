@@ -27,14 +27,13 @@ html, body, #app {
 
 canvas {
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .pixel-canvas {
   position: absolute;
   transform: translate(50%, 50%);
   background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 2px 2px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
 }
 
 .layout {

@@ -131,7 +131,7 @@ export class Select extends Tool {
                     this._drawGraphic.blendMode = 'erase';
                     this._drawGraphic.rect(x, y, w, h).fill(NO_COLOR_FULL_ALPHA);
                     this._drawContainer.addChild(this._drawGraphic);
-                    grid.drawContainer(this._drawContainer);
+                    grid.draw(this._drawContainer);
                     this.newGraphic();
 
                     cursor.clearCursor();
@@ -189,6 +189,7 @@ export class Select extends Tool {
                         }
                     });
                     this._drawContainer!.addChild(this._drawGraphic);
+                    grid.draw(this._drawContainer!);
                     this.newGraphic();
 
                     this._resetDrag();

@@ -1,6 +1,6 @@
-import { Application, Container, Graphics, Rectangle } from 'pixi.js';
+import { Application, Container, ContainerChild, Graphics, ICanvas, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { PixelCoordinates, RGBAColor, Utils } from './utils';
+import { Events, PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
@@ -34,14 +34,6 @@ export class GridAPI extends APIScope {
     }
 
     clear(): void {
-    }
-
-    draw(graphic: Graphics): void {
-        this._drawLayer.addChild(graphic);
-    }
-
-    drawContainer(container: Container): void {
-        this._drawLayer.addChild(container);
     }
 
     getPixel(coords: PixelCoordinates): RGBAColor {
@@ -107,6 +99,17 @@ export class GridAPI extends APIScope {
         }
 
         return data;
+    }
+
+    draw(graphic: Graphics | Container): void {
+        this._drawLayer.addChild(graphic);
+        this._notify();
+    }
+
+    pop(): ContainerChild {
+        let child = this.drawLayer.removeChildAt(this.drawLayer.children.length - 1);
+        this._notify();
+        return child;
     }
 
     floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
@@ -183,6 +186,12 @@ export class GridAPI extends APIScope {
         return (coords.x >= 0 && coords.x < this.width) && (coords.y >= 0 && coords.y < this.height);
     }
 
+    private _notify(): void {
+        // render the update
+        this._pixi.renderer.render(this._drawContainer);
+        this.$iApi.event.emit(Events.CANVAS_UPDATE);
+    }
+
     get drawLayer(): Container {
         return this._drawLayer;
     }
@@ -197,6 +206,10 @@ export class GridAPI extends APIScope {
 
     get height(): number {
         return this._pixi.canvas.height;
+    }
+
+    get empty(): boolean {
+        return this._drawLayer.children.length === 0;
     }
 
     // rect(): void {
@@ -628,13 +641,6 @@ export class GridAPI extends APIScope {
     // private _flattenCoords(coords: PixelCoordinates): number {
     //     // flatten coordinates with offset of 4 [r,g,b,a]
     //     return (coords.y * this.pixelHeight + coords.x) * 4;
-    // }
-
-    // private _notify(): void {
-    //     this._touched = true;
-    //     if (this._notifyCanvas) {
-    //         this.$iApi.event.emit(Events.CANVAS_UPDATE);
-    //     }
     // }
 
     // coordsInBounds(coords: PixelCoordinates): boolean {
