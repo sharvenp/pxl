@@ -32,7 +32,7 @@ export class Pencil extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            let coordsToDraw = grid.reflectCoordinates({ x, y });
+            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(color.colorHex);
             });
@@ -57,10 +57,11 @@ export class Pencil extends Tool {
             const graphic = cursor.cursorGraphic
             graphic.clear();
 
-            let coordsToDraw = grid.reflectCoordinates({ x, y });
+            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 graphic.rect(c.x, c.y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
             });
+
         }
     }
 }
