@@ -101,8 +101,6 @@ export class GridAPI extends APIScope {
         return data;
     }
 
-
-
     draw(graphic: Graphics | Container): void {
         if (graphic.parent === this._drawLayer) {
             return;
@@ -196,6 +194,20 @@ export class GridAPI extends APIScope {
 
     render(): void {
         this._notify();
+    }
+
+    reflectCoordinates(coords: PixelCoordinates): Array<PixelCoordinates> {
+        let reflectedCoords = [coords];
+        if (this.$iApi.settings.mirrorX) {
+            // reflect coords along x-axis
+            reflectedCoords.push({ x: this.width - 1 - coords.x, y: coords.y });
+        }
+        if (this.$iApi.settings.mirrorY) {
+            // reflect all coords along y-axis (including previously x-axis reflected coords)
+            let newCoords = reflectedCoords.map(c => ({ x: c.x, y: this.height - 1 - c.y }));
+            reflectedCoords.push(...newCoords);
+        }
+        return reflectedCoords;
     }
 
     private _notify(): void {

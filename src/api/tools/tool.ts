@@ -19,7 +19,7 @@ export abstract class Tool extends APIScope {
     constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
         this._toolType = toolType;
-        this._drawGraphic = new Graphics({roundPixels: true});
+        this._drawGraphic = new Graphics({ roundPixels: true });
         this._toolProperties = [];
         this._showPreviewOnInvoke = false;
         this._invokeOnMove = false;
@@ -66,7 +66,7 @@ export abstract class Tool extends APIScope {
     }
 
     newGraphic(): void {
-        this._drawGraphic = new Graphics({roundPixels: true});
+        this._drawGraphic = new Graphics({ roundPixels: true });
     }
 
     // invoke the tool's action (e.g. draw a pixel)

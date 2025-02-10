@@ -20,6 +20,7 @@ export class Pencil extends Tool {
     }
 
     initialize(): void {
+        this._drawGraphic.blendMode = 'normal';
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -31,8 +32,10 @@ export class Pencil extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            this._drawGraphic.blendMode = 'normal';
-            this._drawGraphic.rect(x, y, pxWidth, pxWidth).fill(color.colorHex);
+            let coordsToDraw = grid.reflectCoordinates({ x, y });
+            coordsToDraw.forEach(c => {
+                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(color.colorHex);
+            });
             grid.draw(this._drawGraphic);
         }
 
@@ -43,15 +46,21 @@ export class Pencil extends Tool {
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.canvas.cursor) {
+        let grid = this.$iApi.canvas.grid;
+        let cursor = this.$iApi.canvas.cursor;
+        if (cursor && grid) {
 
             let pxWidth = this._brushWidthProperty.value;
             let x = Math.round(event.coords.x - (pxWidth / 2.0));
             let y = Math.round(event.coords.y - (pxWidth / 2.0));
 
-            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            const graphic = cursor.cursorGraphic
             graphic.clear();
-            graphic.rect(x, y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
+
+            let coordsToDraw = grid.reflectCoordinates({ x, y });
+            coordsToDraw.forEach(c => {
+                graphic.rect(c.x, c.y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
+            });
         }
     }
 }

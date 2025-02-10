@@ -1,6 +1,5 @@
 import { Application, Container, Graphics } from 'pixi.js';
 import { InstanceAPI, APIScope } from '.';
-import { CURSOR_PREVIEW_COLOR } from './utils';
 
 export class CursorAPI extends APIScope {
 
@@ -13,8 +12,8 @@ export class CursorAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._cursorLayer = new Container({alpha: 0.25, eventMode: 'none'});
-        this._cursorGraphic = new Graphics({roundPixels: true});
+        this._cursorLayer = new Container({ alpha: 0.25, eventMode: 'none' });
+        this._cursorGraphic = new Graphics({ roundPixels: true });
 
         this._cursorLayer.addChild(this._cursorGraphic);
         this._pixi.stage.addChild(this._cursorLayer);
