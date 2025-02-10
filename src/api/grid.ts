@@ -15,13 +15,13 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._drawContainer = new Container({eventMode: 'none'});
+        this._drawContainer = new Container({ eventMode: 'none' });
 
-        this._drawLayer = new Container({eventMode: 'none'});
+        this._drawLayer = new Container({ eventMode: 'none' });
         this._drawContainer.addChild(this._drawLayer);
         this._pixi.stage.addChild(this._drawContainer);
 
-        this._previewContainer = new Container({eventMode: 'none'});
+        this._previewContainer = new Container({ eventMode: 'none' });
         this._pixi.stage.addChild(this._previewContainer);
 
         this.initialize();
@@ -94,21 +94,25 @@ export class GridAPI extends APIScope {
                     c = { r: 0, g: 0, b: 0, a: 0 }
                 }
 
-                data.push([{x: coords.x + x, y: coords.y + y }, c]);
+                data.push([{ x: coords.x + x, y: coords.y + y }, c]);
             }
         }
 
         return data;
     }
 
+
+
     draw(graphic: Graphics | Container): void {
+        if (graphic.parent === this._drawLayer) {
+            return;
+        }
+
         this._drawLayer.addChild(graphic);
-        this._notify();
     }
 
     pop(): ContainerChild {
         let child = this.drawLayer.removeChildAt(this.drawLayer.children.length - 1);
-        this._notify();
         return child;
     }
 
@@ -144,10 +148,10 @@ export class GridAPI extends APIScope {
         // keep track of seen colors to prevent revisiting the same cell
         let visited: Record<string, boolean> = {};
 
-        while(fillStack.length > 0) {
+        while (fillStack.length > 0) {
 
-            let {x, y} = fillStack.pop()!;
-            let currCellColor = getPixelRGBA({x, y});
+            let { x, y } = fillStack.pop()!;
+            let currCellColor = getPixelRGBA({ x, y });
 
             // check current cell has been visited
             if (visited[`${x}-${y}`]) {
@@ -165,25 +169,33 @@ export class GridAPI extends APIScope {
             graphic.rect(x, y, 1, 1);
             visited[`${x}-${y}`] = true;
 
-            if (validCoords({x, y: y + 1})) {
-                fillStack.push({x, y: y + 1});
+            if (validCoords({ x, y: y + 1 })) {
+                fillStack.push({ x, y: y + 1 });
             }
-            if (validCoords({x, y: y - 1})) {
-                fillStack.push({x, y: y - 1});
+            if (validCoords({ x, y: y - 1 })) {
+                fillStack.push({ x, y: y - 1 });
             }
-            if (validCoords({x: x + 1, y})) {
-                fillStack.push({x: x + 1, y});
+            if (validCoords({ x: x + 1, y })) {
+                fillStack.push({ x: x + 1, y });
             }
-            if (validCoords({x: x - 1, y})) {
-                fillStack.push({x: x - 1, y});
+            if (validCoords({ x: x - 1, y })) {
+                fillStack.push({ x: x - 1, y });
             }
         }
 
         this.draw(graphic);
     }
 
-    contains(coords: PixelCoordinates) {
+    contains(coords: PixelCoordinates): boolean {
         return (coords.x >= 0 && coords.x < this.width) && (coords.y >= 0 && coords.y < this.height);
+    }
+
+    containsGraphic(graphic: Graphics): boolean {
+        return this._drawLayer.children.some(g => g === graphic);
+    }
+
+    render(): void {
+        this._notify();
     }
 
     private _notify(): void {

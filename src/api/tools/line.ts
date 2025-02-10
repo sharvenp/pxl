@@ -82,6 +82,7 @@ export class Line extends Tool {
 
                 this._resetDrag();
                 this.newGraphic();
+                grid?.render();
             }
 
             // draw preview line

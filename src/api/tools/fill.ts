@@ -31,6 +31,7 @@ export class Fill extends Tool {
 
         if (event === Events.MOUSE_DRAG_STOP) {
             this.newGraphic();
+            grid?.render();
         }
     }
 

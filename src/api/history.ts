@@ -25,6 +25,7 @@ export class HistoryAPI extends APIScope {
         let grid = this.$iApi.canvas.grid;
         if (grid && !grid.empty) {
             const topMostGraphic = grid.pop();
+            grid.render();
             this._historyStack.push(topMostGraphic);
 
             this.$iApi.event.emit(Events.UNDO);
@@ -38,6 +39,7 @@ export class HistoryAPI extends APIScope {
             const child = this._historyStack.pop()!;
 
             grid.draw(child);
+            grid.render();
 
             this.$iApi.event.emit(Events.REDO);
         }

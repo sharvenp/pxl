@@ -35,6 +35,7 @@ export class Eraser extends Tool {
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
             this.newGraphic();
+            grid?.render();
         }
     }
 

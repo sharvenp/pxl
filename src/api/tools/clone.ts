@@ -1,5 +1,5 @@
 import { InstanceAPI } from '..';
-import { Tool, ButtonProperty} from '.'
+import { Tool, ButtonProperty } from '.'
 import { SelectedRegionData, GridMouseEvent, Utils, Events, ToolType, SelectedRegion, CURSOR_PREVIEW_COLOR } from '../utils';
 
 export class Clone extends Tool {
@@ -93,17 +93,17 @@ export class Clone extends Tool {
                     // dragging stopped, select area
 
                     // get pixels within region
-                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({x, y}, w, h)
-                                                                .filter(p => !Utils.isEmptyColor(p[1]))
-                                                                .map(p => <SelectedRegionData>{
-                                                                    originalCoords: p[0],
-                                                                    currentCoords: {x: p[0].x, y: p[0].y}, // make copy
-                                                                    lastCoords: {
-                                                                        x: -1,
-                                                                        y: -1
-                                                                    },
-                                                                    color: Utils.rgbaToHex(p[1]),
-                                                                });
+                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({ x, y }, w, h)
+                        .filter(p => !Utils.isEmptyColor(p[1]))
+                        .map(p => <SelectedRegionData>{
+                            originalCoords: p[0],
+                            currentCoords: { x: p[0].x, y: p[0].y }, // make copy
+                            lastCoords: {
+                                x: -1,
+                                y: -1
+                            },
+                            color: Utils.rgbaToHex(p[1]),
+                        });
 
                     if (pixels.length !== 0) {
                         this._isSelected = true;
@@ -127,14 +127,15 @@ export class Clone extends Tool {
                         // only draw if coords are inside the canvas
                         if (grid.contains(px.currentCoords)) {
                             this._drawGraphic.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
-                                            .fill(px.color);
-                            grid.draw(this._drawGraphic);
+                                .fill(px.color);
                         }
                     });
+                    grid.draw(this._drawGraphic);
                 }
 
                 if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
                     this.newGraphic();
+                    grid?.render();
                 }
             }
         }
@@ -173,7 +174,7 @@ export class Clone extends Tool {
         // draw pixel data
         this._selectedRegion.pixels.forEach(px => {
             cursor.cursorGraphic!.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
-                                 .fill(px.color);
+                .fill(px.color);
         });
     }
 

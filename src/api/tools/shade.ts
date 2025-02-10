@@ -56,6 +56,7 @@ export class Shade extends Tool {
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
             this.newGraphic();
+            grid?.render();
         }
     }
 

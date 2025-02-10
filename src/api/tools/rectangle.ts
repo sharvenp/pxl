@@ -91,6 +91,7 @@ export class Rectangle extends Tool {
 
                 this._resetDrag();
                 this.newGraphic();
+                grid?.render();
             }
 
             // draw preview rectangle

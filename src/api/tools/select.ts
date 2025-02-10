@@ -133,6 +133,7 @@ export class Select extends Tool {
                     this._drawContainer.addChild(this._drawGraphic);
                     grid.draw(this._drawContainer);
                     this.newGraphic();
+                    grid?.render();
 
                     cursor.clearCursor();
                     this._createPreview();
@@ -191,6 +192,7 @@ export class Select extends Tool {
                     this._drawContainer!.addChild(this._drawGraphic);
                     grid.draw(this._drawContainer!);
                     this.newGraphic();
+                    grid?.render();
 
                     this._resetDrag();
                     this._resetRegionSelect();
