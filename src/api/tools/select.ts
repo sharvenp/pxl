@@ -1,5 +1,5 @@
 import { InstanceAPI } from '..';
-import { Tool, ButtonProperty} from '.'
+import { Tool, ButtonProperty } from '.'
 import { SelectedRegionData, GridMouseEvent, Utils, PixelCoordinates, Events, ToolType, SelectedRegion, CURSOR_PREVIEW_COLOR, NO_COLOR_FULL_ALPHA } from '../utils';
 import { Container, Graphics } from 'pixi.js';
 
@@ -20,10 +20,9 @@ export class Select extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.SELECT);
 
-        this._showPreviewOnInvoke = true;
-        this._invokeOnMove = true;
-        this._trackPixels = false;
-        this._canMirror = false;
+        this._toolConfiguration.showPreviewOnInvoke = true;
+        this._toolConfiguration.invokeOnMove = true;
+        this._toolConfiguration.trackPixels = false;
 
         this._resetButtonProperty = new ButtonProperty("Reset", Events.SELECT_TOOL_RESET);
 
@@ -48,8 +47,8 @@ export class Select extends Tool {
             this._revertRegion();
         }));
 
-        this._previewLayer = new Container({eventMode: 'none'});
-        this._previewGraphic = new Graphics({roundPixels: true});
+        this._previewLayer = new Container({ eventMode: 'none' });
+        this._previewGraphic = new Graphics({ roundPixels: true });
         this._previewLayer.addChild(this._previewGraphic);
     }
 
@@ -112,22 +111,22 @@ export class Select extends Tool {
                     this._isSelected = true;
 
                     // get pixels within region
-                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({x, y}, w, h)
-                                                                .filter(p => !Utils.isEmptyColor(p[1]))
-                                                                .map(p => <SelectedRegionData>{
-                                                                    originalCoords: p[0],
-                                                                    currentCoords: {x: p[0].x, y: p[0].y}, // make copy
-                                                                    lastCoords: {
-                                                                        x: -1,
-                                                                        y: -1
-                                                                    },
-                                                                    color: Utils.rgbaToHex(p[1]),
-                                                                });
+                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({ x, y }, w, h)
+                        .filter(p => !Utils.isEmptyColor(p[1]))
+                        .map(p => <SelectedRegionData>{
+                            originalCoords: p[0],
+                            currentCoords: { x: p[0].x, y: p[0].y }, // make copy
+                            lastCoords: {
+                                x: -1,
+                                y: -1
+                            },
+                            color: Utils.rgbaToHex(p[1]),
+                        });
                     // create region
                     this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
 
                     // erase pixels from grid
-                    this._drawContainer = new Container({eventMode: 'none'});
+                    this._drawContainer = new Container({ eventMode: 'none' });
                     this._drawGraphic.blendMode = 'erase';
                     this._drawGraphic.rect(x, y, w, h).fill(NO_COLOR_FULL_ALPHA);
                     this._drawContainer.addChild(this._drawGraphic);
@@ -186,7 +185,7 @@ export class Select extends Tool {
                         // only draw if coords are inside the canvas
                         if (grid.contains(px.currentCoords)) {
                             this._drawGraphic.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
-                                             .fill(px.color);
+                                .fill(px.color);
                         }
                     });
                     this._drawContainer!.addChild(this._drawGraphic);
@@ -240,11 +239,11 @@ export class Select extends Tool {
 
         // draw pixel data
         this._previewGraphic.rect(this._selectedRegion.x, this._selectedRegion.y, this._selectedRegion.width, this._selectedRegion.height)
-                            .stroke({ width: 1, color: CURSOR_PREVIEW_COLOR, alignment: 1, alpha: 0.2 });
+            .stroke({ width: 1, color: CURSOR_PREVIEW_COLOR, alignment: 1, alpha: 0.2 });
 
         this._selectedRegion.pixels.forEach(px => {
             this._previewGraphic!.rect(px.currentCoords.x, px.currentCoords.y, 1, 1)
-                                 .fill(px.color);
+                .fill(px.color);
         });
     }
 
@@ -261,7 +260,7 @@ export class Select extends Tool {
             this._selectedRegion?.revertTransform();
 
             this._drawContainer.removeFromParent();
-            this._drawContainer.destroy({children: true});
+            this._drawContainer.destroy({ children: true });
             this._drawContainer = undefined;
         }
 

@@ -15,10 +15,9 @@ export class Clone extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.CLONE);
 
-        this._showPreviewOnInvoke = true;
-        this._invokeOnMove = true;
-        this._trackPixels = false;
-        this._canMirror = false;
+        this._toolConfiguration.showPreviewOnInvoke = true;
+        this._toolConfiguration.invokeOnMove = true;
+        this._toolConfiguration.trackPixels = false;
 
         this._resetButtonProperty = new ButtonProperty("Reset", Events.CLONE_TOOL_RESET);
 

@@ -11,9 +11,8 @@ export class Shade extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.SHADE);
 
-        this._showPreviewOnInvoke = true;
-        this._invokeOnMove = true;
-        this._canMirror = false;
+        this._toolConfiguration.showPreviewOnInvoke = true;
+        this._toolConfiguration.invokeOnMove = true;
 
         this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], ShadeMode.LIGHTEN);
         this._strengthProperty = new SliderProperty("Strength", 0, 100, 10, '%');

@@ -28,3 +28,9 @@ export interface RGBAColor {
     b: number,
     a: number
 }
+
+export interface ToolConfiguration {
+    showPreviewOnInvoke: boolean,
+    invokeOnMove: boolean,
+    trackPixels: boolean
+}

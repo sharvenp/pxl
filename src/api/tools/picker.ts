@@ -7,9 +7,8 @@ export class Picker extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.PICKER);
 
-        this._showPreviewOnInvoke = true;
-        this._invokeOnMove = false;
-        this._canMirror = false;
+        this._toolConfiguration.showPreviewOnInvoke = true;
+        this._toolConfiguration.invokeOnMove = false;
     }
 
     invokeAction(event: GridMouseEvent): void {
@@ -32,7 +31,7 @@ export class Picker extends Tool {
             this.$iApi.palette.addColor(paletteItem);
 
             this.$iApi.palette.selectColor(this.$iApi.palette.palette
-                              .find(c => c.colorHex === paletteItem.colorHex)!);
+                .find(c => c.colorHex === paletteItem.colorHex)!);
         }
     }
 

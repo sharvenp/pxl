@@ -13,9 +13,9 @@ export class Rectangle extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.RECTANGLE);
 
-        this._showPreviewOnInvoke = false;
-        this._invokeOnMove = true;
-        this._trackPixels = false;
+        this._toolConfiguration.showPreviewOnInvoke = false;
+        this._toolConfiguration.invokeOnMove = true;
+        this._toolConfiguration.trackPixels = false;
 
         this._fillProperty = new CheckboxProperty("Fill", false);
         this._widthProperty = new SliderProperty("Width", 1, 10, 1, 'px');

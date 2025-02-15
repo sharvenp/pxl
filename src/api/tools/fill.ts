@@ -9,9 +9,8 @@ export class Fill extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.FILL);
 
-        this._showPreviewOnInvoke = true;
-        this._invokeOnMove = false;
-        this._canMirror = false;
+        this._toolConfiguration.showPreviewOnInvoke = true;
+        this._toolConfiguration.invokeOnMove = false;
 
         this._toleranceProperty = new SliderProperty("Tolerance", 0, 100, 0, '%');
 

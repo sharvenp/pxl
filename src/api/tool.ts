@@ -43,7 +43,7 @@ export class ToolAPI extends APIScope {
         // setup _handlers
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
             if (this._selectedTool && mouseEvt.isOnCanvas) {
-                if (this._selectedTool.showPreviewOnInvoke) {
+                if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
                     this.previewCursor(mouseEvt);
                 } else {
                     this.$iApi.canvas.cursor?.clearCursor();
@@ -67,10 +67,10 @@ export class ToolAPI extends APIScope {
             // invoke only if it on canvas
             if (this._selectedTool && mouseEvt.isOnCanvas) {
                 if (mouseEvt.isDragging) {
-                    if (this._selectedTool.showPreviewOnInvoke) {
+                    if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
                         this.previewCursor(mouseEvt);
                     }
-                    if (this._selectedTool.invokeOnMove) {
+                    if (this._selectedTool.toolConfiguration.invokeOnMove) {
                         this.invokeAction(mouseEvt, event);
                     }
                 } else {
@@ -137,7 +137,7 @@ export class ToolAPI extends APIScope {
 
     private _checkTracking(coords: PixelCoordinates): boolean {
 
-        if (this._selectedTool?.trackPixels === false) {
+        if (this._selectedTool?.toolConfiguration.trackPixels === false) {
             // short-circuit
             return false;
         }
@@ -151,7 +151,7 @@ export class ToolAPI extends APIScope {
 
     private _updateTracking(coords: PixelCoordinates): void {
 
-        if (this._selectedTool?.trackPixels === false) {
+        if (this._selectedTool?.toolConfiguration.trackPixels === false) {
             return;
         }
 

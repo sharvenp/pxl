@@ -2,17 +2,14 @@ import { Graphics } from "pixi.js";
 import { ToolProperty } from ".";
 import { APIScope } from "..";
 import { InstanceAPI } from "../instance";
-import { Events, GridMouseEvent, ToolType } from "../utils";
+import { Events, GridMouseEvent, ToolConfiguration, ToolType } from "../utils";
 
 export abstract class Tool extends APIScope {
 
     private _toolType: ToolType;
     protected _drawGraphic: Graphics;
     protected _toolProperties: Array<ToolProperty>;
-    protected _showPreviewOnInvoke: boolean;
-    protected _invokeOnMove: boolean;
-    protected _trackPixels: boolean;
-    protected _canMirror: boolean;
+    protected _toolConfiguration: ToolConfiguration;
 
     protected _handlers: Array<string>;
 
@@ -21,28 +18,17 @@ export abstract class Tool extends APIScope {
         this._toolType = toolType;
         this._drawGraphic = new Graphics({ roundPixels: true });
         this._toolProperties = [];
-        this._showPreviewOnInvoke = false;
-        this._invokeOnMove = false;
-        this._trackPixels = true;
-        this._canMirror = true;
+        this._toolConfiguration = {
+            showPreviewOnInvoke: false,
+            invokeOnMove: false,
+            trackPixels: true,
+        };
 
         this._handlers = [];
     }
 
-    get showPreviewOnInvoke(): boolean {
-        return this._showPreviewOnInvoke;
-    }
-
-    get invokeOnMove(): boolean {
-        return this._invokeOnMove;
-    }
-
-    get trackPixels(): boolean {
-        return this._trackPixels;
-    }
-
-    get canMirror(): boolean {
-        return this._canMirror;
+    get toolConfiguration(): ToolConfiguration {
+        return this._toolConfiguration;
     }
 
     get toolProperties(): Array<ToolProperty> {

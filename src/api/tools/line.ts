@@ -13,9 +13,9 @@ export class Line extends Tool {
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.LINE);
 
-        this._showPreviewOnInvoke = false;
-        this._invokeOnMove = true;
-        this._trackPixels = false;
+        this._toolConfiguration.showPreviewOnInvoke = false;
+        this._toolConfiguration.invokeOnMove = true;
+        this._toolConfiguration.trackPixels = false;
 
         this._thicknessProperty = new SliderProperty("Thickness", 1, 5, 1, 'px');
 
