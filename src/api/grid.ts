@@ -1,4 +1,4 @@
-import { Application, Container, ContainerChild, Graphics, ICanvas, IRenderLayer, Rectangle } from 'pixi.js';
+import { Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
 import { Events, PixelCoordinates, RGBAColor, Utils } from './utils';
 
