@@ -62,6 +62,7 @@ export class Ellipse extends Tool {
             let rev = (x < this._dragStartX) || (y < this._dragStartY);
 
             // If in alt-mode, snap to nearest square
+            // TODO: just use circle instead
             if (this.$iApi.tool.isAltMode) {
 
                 // get closest snap width/height
@@ -86,12 +87,16 @@ export class Ellipse extends Tool {
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
                 this._drawGraphic.blendMode = 'normal';
-                this._drawGraphic.ellipse(x, y, w, h);
+
+                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                reflectedCoords.forEach(c => {
+                    this._drawGraphic.ellipse(c.x, c.y, w, h);
+                });
 
                 if (this._fillProperty.value) {
                     this._drawGraphic.fill(color.colorHex);
                 } else {
-                    this._drawGraphic.stroke({ width: this._widthProperty.value, color: color.colorHex });
+                    this._drawGraphic.stroke({ width: this._widthProperty.value, color: color.colorHex, pixelLine: this._widthProperty.value === 1 });
                 }
 
                 grid.draw(this._drawGraphic);
@@ -105,12 +110,16 @@ export class Ellipse extends Tool {
             if (this._isDragging) {
 
                 cursor.clearCursor();
-                cursor.cursorGraphic.ellipse(x, y, w, h);
+
+                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                reflectedCoords.forEach(c => {
+                    cursor.cursorGraphic.ellipse(c.x, c.y, w, h);
+                });
 
                 if (this._fillProperty.value) {
                     cursor.cursorGraphic.fill(CURSOR_PREVIEW_COLOR);
                 } else {
-                    cursor.cursorGraphic.stroke({ width: this._widthProperty.value, color: CURSOR_PREVIEW_COLOR });
+                    cursor.cursorGraphic.stroke({ width: this._widthProperty.value, color: CURSOR_PREVIEW_COLOR, pixelLine: this._widthProperty.value === 1 });
                 }
             }
         }
