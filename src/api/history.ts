@@ -22,12 +22,17 @@ export class HistoryAPI extends APIScope {
     }
 
     undo(): void {
+
+        if (this._historyStack.length === MAX_HISTORY_SIZE) {
+            return;
+        }
+
         let grid = this.$iApi.canvas.grid;
         if (grid && !grid.empty) {
             const topMostGraphic = grid.pop();
-            grid.render();
             this._historyStack.push(topMostGraphic);
 
+            grid.render();
             this.$iApi.event.emit(Events.UNDO);
         }
     }
