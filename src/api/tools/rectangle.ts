@@ -79,7 +79,21 @@ export class Rectangle extends Tool {
 
                 // dragging stopped, draw rectangle
                 this._drawGraphic.blendMode = 'normal';
-                this._drawGraphic.rect(x, y, w, h);
+
+                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                reflectedCoords.forEach((c, i) => {
+                    if (i === 0) {
+                        this._drawGraphic.rect(c.x, c.y, w, h);
+                    } else if (i === 1 && this.$iApi.settings.mirrorX) {
+                        this._drawGraphic.rect(c.x - w, c.y, w, h);
+                    } else if (i === 1 && this.$iApi.settings.mirrorY) {
+                        this._drawGraphic.rect(c.x, c.y - h, w, h);
+                    } else if (i === 2) {
+                        this._drawGraphic.rect(c.x, c.y - h, w, h);
+                    } else if (i === 3) {
+                        this._drawGraphic.rect(c.x - w, c.y - h, w, h);
+                    }
+                });
 
                 if (this._fillProperty.value) {
                     this._drawGraphic.fill(color.colorHex);
@@ -98,7 +112,21 @@ export class Rectangle extends Tool {
             if (this._isDragging) {
 
                 cursor.clearCursor();
-                cursor.cursorGraphic.rect(x, y, w, h);
+
+                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                reflectedCoords.forEach((c, i) => {
+                    if (i === 0) {
+                        cursor.cursorGraphic.rect(c.x, c.y, w, h);
+                    } else if (i === 1 && this.$iApi.settings.mirrorX) {
+                        cursor.cursorGraphic.rect(c.x - w, c.y, w, h);
+                    } else if (i === 1 && this.$iApi.settings.mirrorY) {
+                        cursor.cursorGraphic.rect(c.x, c.y - h, w, h);
+                    } else if (i === 2) {
+                        cursor.cursorGraphic.rect(c.x, c.y - h, w, h);
+                    } else if (i === 3) {
+                        cursor.cursorGraphic.rect(c.x - w, c.y - h, w, h);
+                    }
+                });
 
                 if (this._fillProperty.value) {
                     cursor.cursorGraphic.fill(CURSOR_PREVIEW_COLOR);

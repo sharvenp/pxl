@@ -20,7 +20,6 @@ export class Pencil extends Tool {
     }
 
     initialize(): void {
-        this._drawGraphic.blendMode = 'normal';
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -32,6 +31,7 @@ export class Pencil extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
+            this._drawGraphic.blendMode = 'normal';
             let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(color.colorHex);

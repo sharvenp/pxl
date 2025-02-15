@@ -77,8 +77,8 @@ export class Line extends Tool {
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
 
-                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 });
-                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 });
+                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
+                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
                 let zippedCoords = coordsFrom.map(function (e, i) {
                     return { c1: e, c2: coordsTo[i] };
                 });
@@ -100,8 +100,8 @@ export class Line extends Tool {
 
                 cursor.clearCursor();
 
-                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 });
-                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 });
+                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
+                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
                 let zippedCoords = coordsFrom.map(function (e, i) {
                     return { c1: e, c2: coordsTo[i] };
                 });
