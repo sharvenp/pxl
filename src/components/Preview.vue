@@ -1,6 +1,6 @@
 <template>
     <div class="absolute rounded bg-white bg-opacity-60 border-2 top-0 right-0 m-5 z-10">
-        <canvas width="100" height="100" ref="previewCanvas"></canvas>
+        <canvas v-show="initialized" width="100" height="100" ref="previewCanvas"></canvas>
     </div>
 </template>
 
@@ -11,26 +11,31 @@ import { Events } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 const previewCanvas = ref<HTMLCanvasElement>();
+const initialized = ref(false);
 let handlers: Array<string> = [];
 
 onMounted(() => {
 
-    if (iApi?.canvas?.view && previewCanvas.value) {
-        let canvasEl = previewCanvas.value;
-        let ch = iApi.canvas.height
-        let cw = iApi.canvas.width;
+    // setup preview canvas
+    handlers.push(iApi?.event.on(Events.CANVAS_INITIALIZED, () => {
+        if (iApi?.canvas?.view && previewCanvas.value) {
+            let canvasEl = previewCanvas.value;
+            let ch = iApi.canvas.height
+            let cw = iApi.canvas.width;
 
-        let h = 128;
-        let w = 128;
-        if (ch > cw) {
-            h = (ch / cw) * w;
-        } else if (cw > ch) {
-            w = (cw / ch) * h;
+            let h = 128;
+            let w = 128;
+            if (ch > cw) {
+                w = (cw / ch) * h;
+            } else if (cw > ch) {
+                h = (ch / cw) * w;
+            }
+
+            canvasEl.width = w;
+            canvasEl.height = h;
+            initialized.value = true;
         }
-
-        canvasEl.width = w;
-        canvasEl.height = h;
-    }
+    })!);
 
     // render the preview canvas
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {

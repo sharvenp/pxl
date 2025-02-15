@@ -1,4 +1,4 @@
-import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, CursorAPI, SettingsAPI, KeyBindAPI, HistoryAPI } from '.';
+import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI } from '.';
 
 export class InstanceAPI {
 

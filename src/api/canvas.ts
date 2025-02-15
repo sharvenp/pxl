@@ -1,6 +1,7 @@
 import { APIScope, InstanceAPI, GridAPI, CursorAPI } from '.';
 import Panzoom, { PanzoomObject, ZoomOptions } from "@panzoom/panzoom";
 import { Application } from 'pixi.js';
+import { Events } from './utils';
 
 
 export class CanvasAPI extends APIScope {
@@ -55,13 +56,15 @@ export class CanvasAPI extends APIScope {
         window.onresize = this._handleResize.bind(this);
 
         // zoom in to canvas to fit into screen
-        this._panzoom.zoom(scale, {animate: true});
+        this._panzoom.zoom(scale, { animate: true });
 
         // initialize grid
         this._grid = new GridAPI(this.$iApi, this._pixi);
         this._cursor = new CursorAPI(this.$iApi, this._pixi);
 
         this._initialized = true;
+
+        this.$iApi.event.emit(Events.CANVAS_INITIALIZED);
     }
 
     destroy(): void {
