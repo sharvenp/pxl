@@ -1,4 +1,4 @@
-import { Application, Container, ContainerChild, Graphics, ICanvas, Rectangle } from 'pixi.js';
+import { Application, Container, ContainerChild, Graphics, ICanvas, IRenderLayer, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
 import { Events, PixelCoordinates, RGBAColor, Utils } from './utils';
 
@@ -110,7 +110,7 @@ export class GridAPI extends APIScope {
     }
 
     pop(): ContainerChild {
-        let child = this.drawLayer.removeChildAt(this.drawLayer.children.length - 1);
+        let child = this.drawLayer.removeChildAt<ContainerChild>(this.drawLayer.children.length - 1);
         return child;
     }
 
