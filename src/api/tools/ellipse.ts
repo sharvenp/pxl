@@ -92,6 +92,7 @@ export class Ellipse extends Tool {
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
                 this._drawGraphic.blendMode = 'normal';
+                this._drawGraphic.roundPixels = false;
 
                 let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
                 reflectedCoords.forEach(c => {
@@ -115,6 +116,7 @@ export class Ellipse extends Tool {
             if (this._isDragging) {
 
                 cursor.clearCursor();
+                cursor.cursorGraphic.roundPixels = false;
 
                 let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
                 reflectedCoords.forEach(c => {
