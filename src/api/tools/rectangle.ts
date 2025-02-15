@@ -59,19 +59,22 @@ export class Rectangle extends Tool {
             let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
             // is the user dragging in reverse?
-            let rev = (x < this._dragStartX) || (y < this._dragStartY);
+            let xRev = (x < this._dragStartX);
+            let yRev = (y < this._dragStartY);
 
             // If in alt-mode, snap to nearest square
             if (this.$iApi.tool.isAltMode) {
 
                 // get closest snap width/height
                 // adjust the x, y if in reverse
-                if (h > w) {
-                    x -= rev ? (h - w) : 0;
-                    w = h;
-                } else if (h < w) {
-                    y -= rev ? (w - h) : 0;
-                    h = w;
+                if (h !== w) {
+                    if (h > w) {
+                        x -= xRev ? (h - w) : 0;
+                        w = h;
+                    } else if (h < w) {
+                        y -= yRev ? (w - h) : 0;
+                        h = w;
+                    }
                 }
             }
 

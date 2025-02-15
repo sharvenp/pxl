@@ -1,4 +1,4 @@
-import { APIScope, InstanceAPI} from '.';
+import { APIScope, InstanceAPI } from '.';
 import { Key, KeyAction, ToolType } from './utils';
 
 class KeyBind {

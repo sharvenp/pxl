@@ -59,19 +59,19 @@ export class Ellipse extends Tool {
             let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
             // is the user dragging in reverse?
-            let rev = (x < this._dragStartX) || (y < this._dragStartY);
+            let xRev = (x < this._dragStartX);
+            let yRev = (y < this._dragStartY);
 
             // If in alt-mode, snap to nearest square
-            // TODO: just use circle instead
             if (this.$iApi.tool.isAltMode) {
 
                 // get closest snap width/height
                 // adjust the x, y if in reverse
                 if (h > w) {
-                    x -= rev ? (h - w) : 0;
+                    x -= xRev ? (h - w) : 0;
                     w = h;
                 } else if (h < w) {
-                    y -= rev ? (w - h) : 0;
+                    y -= yRev ? (w - h) : 0;
                     h = w;
                 }
             }
@@ -83,6 +83,11 @@ export class Ellipse extends Tool {
             // offset x and y
             x += w;
             y += h;
+
+            // dont draw if width or height is 0
+            if (w === 0 || h === 0) {
+                return;
+            }
 
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw ellipse
