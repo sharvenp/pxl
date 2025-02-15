@@ -33,6 +33,7 @@ export class KeyBindAPI extends APIScope {
     initialize(): void {
         document.addEventListener('keydown', this._processInputDown.bind(this));
         document.addEventListener('keyup', this._processInputUp.bind(this));
+        window.addEventListener('blur', this._processBlur.bind(this));
 
         this._initiailizeDefaultKeyBinds()
     }
@@ -40,6 +41,7 @@ export class KeyBindAPI extends APIScope {
     destroy(): void {
         document.removeEventListener('keydown', this._processInputDown.bind(this));
         document.removeEventListener('keyup', this._processInputUp.bind(this));
+        window.removeEventListener('blur', this._processBlur.bind(this));
     }
 
     private _findKeyBind(keyBindName: string): KeyBind | undefined {
@@ -113,6 +115,11 @@ export class KeyBindAPI extends APIScope {
         if (index > -1) {
             this._keys.splice(index, 1);
         }
+    }
+
+    private _processBlur(): void {
+        // clear the keys
+        this._keys.length = 0;
     }
 
     private _initiailizeDefaultKeyBinds(): void {
