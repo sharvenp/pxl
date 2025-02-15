@@ -77,7 +77,17 @@ export class Line extends Tool {
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
 
-                this._drawGraphic.moveTo(x0, y0).lineTo(x1, y1).stroke({ width: pxWidth, color: color.colorHex, pixelLine: pxWidth === 1 });
+                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 });
+                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 });
+                let zippedCoords = coordsFrom.map(function (e, i) {
+                    return { c1: e, c2: coordsTo[i] };
+                });
+                zippedCoords.forEach(coordPairs => {
+                    this._drawGraphic.moveTo(coordPairs.c1.x, coordPairs.c1.y)
+                        .lineTo(coordPairs.c2.x, coordPairs.c2.y)
+                        .stroke({ width: pxWidth, color: color.colorHex, pixelLine: pxWidth === 1 });
+                });
+
                 grid.draw(this._drawGraphic);
 
                 this._resetDrag();
@@ -89,7 +99,18 @@ export class Line extends Tool {
             if (this._isDragging) {
 
                 cursor.clearCursor();
-                cursor.cursorGraphic.moveTo(x0, y0).lineTo(x1, y1).stroke({ width: pxWidth, color: CURSOR_PREVIEW_COLOR, pixelLine: pxWidth === 1 });
+
+                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 });
+                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 });
+                let zippedCoords = coordsFrom.map(function (e, i) {
+                    return { c1: e, c2: coordsTo[i] };
+                });
+                zippedCoords.forEach(coordPairs => {
+                    cursor.cursorGraphic.moveTo(coordPairs.c1.x, coordPairs.c1.y)
+                        .lineTo(coordPairs.c2.x, coordPairs.c2.y)
+                        .stroke({ width: pxWidth, color: CURSOR_PREVIEW_COLOR, pixelLine: pxWidth === 1 });
+                });
+
             }
         }
     }

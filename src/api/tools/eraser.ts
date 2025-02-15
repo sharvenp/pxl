@@ -1,5 +1,5 @@
 import { InstanceAPI } from '..';
-import { Tool, SliderProperty} from '.'
+import { Tool, SliderProperty } from '.'
 import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, NO_COLOR_FULL_ALPHA, ToolType } from '../utils';
 
 export class Eraser extends Tool {
@@ -19,6 +19,10 @@ export class Eraser extends Tool {
         ]
     }
 
+    initialize(): void {
+        this._drawGraphic.blendMode = 'erase';
+    }
+
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         let grid = this.$iApi.canvas.grid!;
         if (grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
@@ -28,8 +32,11 @@ export class Eraser extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            this._drawGraphic.blendMode = 'erase';
-            this._drawGraphic.rect(x, y, pxWidth, pxWidth).fill(NO_COLOR_FULL_ALPHA);
+
+            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            coordsToDraw.forEach(c => {
+                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(NO_COLOR_FULL_ALPHA);
+            });
             grid.draw(this._drawGraphic);
         }
 
@@ -40,15 +47,21 @@ export class Eraser extends Tool {
     }
 
     previewCursor(event: GridMouseEvent): void {
-        if (this.$iApi.canvas.cursor) {
+        let grid = this.$iApi.canvas.grid;
+        let cursor = this.$iApi.canvas.cursor;
+        if (grid && cursor) {
 
             let pxWidth = this._eraserWidthProperty.value;
             let x = Math.round(event.coords.x - (pxWidth / 2.0));
             let y = Math.round(event.coords.y - (pxWidth / 2.0));
 
-            const graphic = this.$iApi.canvas.cursor.cursorGraphic
+            const graphic = cursor.cursorGraphic
             graphic.clear();
-            graphic.rect(x, y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
+
+            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            coordsToDraw.forEach(c => {
+                graphic.rect(c.x, c.y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
+            });
         }
     }
 }

@@ -13,6 +13,7 @@ export class Shade extends Tool {
 
         this._showPreviewOnInvoke = true;
         this._invokeOnMove = true;
+        this._canMirror = false;
 
         this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], ShadeMode.LIGHTEN);
         this._strengthProperty = new SliderProperty("Strength", 0, 100, 10, '%');
@@ -36,7 +37,7 @@ export class Shade extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            let currPixels = grid.getPixelFrame({x, y}, pxWidth, pxWidth);
+            let currPixels = grid.getPixelFrame({ x, y }, pxWidth, pxWidth);
 
             currPixels.forEach(pxPair => {
                 let coords = pxPair[0];
