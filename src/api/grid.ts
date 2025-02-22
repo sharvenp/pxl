@@ -17,9 +17,9 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._drawContainer = new Container({ eventMode: 'none' });
+        this._drawContainer = new Container({ eventMode: 'none', blendMode: 'normal' });
 
-        this._activeLayer = new Container({ eventMode: 'none' });
+        this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
         this._drawContainer.addChild(this._activeLayer);
         this._pixi.stage.addChild(this._drawContainer);
 
@@ -231,6 +231,12 @@ export class GridAPI extends APIScope {
         }
 
         let newLayer = new Container({ eventMode: 'none' });
+        let id = Utils.getRandomId();
+        while (this._drawLayers.some(l => l.label === id)) {
+            // ensure unique id
+            id = Utils.getRandomId();
+        }
+        newLayer.label = id
         this._drawContainer.addChild(newLayer);
         this._drawLayers.push(newLayer);
 
@@ -260,10 +266,27 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    getLayerPreview(): HTMLCanvasElement {
+    reorderLayers(layerOrder: Array<Container>): void {
+
+        // remove all children
+        this._drawContainer.removeChildren(0, this._drawContainer.children.length);
+        this._drawLayers = [];
+
+        // add them back in the new order
+        layerOrder.forEach(l => {
+            this._drawContainer.addChild(l);
+            this._drawLayers.push(l);
+        });
+
+        this.$iApi.event.emit(Events.CANVAS_LAYER_REORDERED);
+
+        this._notify();
+    }
+
+    getLayerPreview(layer: Container): HTMLCanvasElement {
         return this._pixi.renderer.extract.canvas(
             {
-                target: this._activeLayer,
+                target: layer,
                 antialias: false,
                 frame: new Rectangle(0, 0, this._pixi.canvas.width, this._pixi.canvas.height),
                 resolution: 1

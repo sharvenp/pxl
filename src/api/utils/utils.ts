@@ -41,20 +41,20 @@ export class Utils {
 
     static isSameColor(color: RGBAColor, other: RGBAColor): boolean {
         return other.r === color.r
-                && other.g === color.g
-                && other.b === color.b
-                && other.a === color.a
+            && other.g === color.g
+            && other.b === color.b
+            && other.a === color.a
     }
 
     static getColorSimilarity(color: RGBAColor, other: RGBAColor): number {
         // TODO: make this more efficient?
         // calculate color "distance"
         let dis = Math.sqrt(
-                    Math.pow(color.r - other.r, 2) +
-                    Math.pow(color.g - other.g, 2) +
-                    Math.pow(color.b - other.b, 2) +
-                    Math.pow(color.a - other.a, 2)
-                    )
+            Math.pow(color.r - other.r, 2) +
+            Math.pow(color.g - other.g, 2) +
+            Math.pow(color.b - other.b, 2) +
+            Math.pow(color.a - other.a, 2)
+        )
         // divide by max distance
         let norm = dis / 441.67295593
         return norm;
@@ -78,7 +78,7 @@ export class Utils {
         let letters = '0123456789abcdef';
         let color = '#';
         for (let i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+            color += letters[Math.floor(Math.random() * 16)];
         }
 
         if (Math.random() < solidRate) {
@@ -88,5 +88,9 @@ export class Utils {
         }
 
         return color;
+    }
+
+    static getRandomId(): string {
+        return Math.random().toString(16).slice(2);
     }
 }

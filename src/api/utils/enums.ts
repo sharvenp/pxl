@@ -10,6 +10,7 @@ export enum Events {
     CANVAS_LAYER_ADDED = "canvas_layer_added",
     CANVAS_LAYER_REMOVED = "canvas_layer_removed",
     CANVAS_LAYER_SELECTED = "canvas_layer_selected",
+    CANVAS_LAYER_REORDERED = "canvas_layer_reordered",
     TOOL_SELECT = "tool_select",
     TOOL_ALT_MODE_UPDATE = "tool_alt_mode_update",
     PALETTE_COLOR_SELECT = "palette_color_select",

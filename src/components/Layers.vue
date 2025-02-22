@@ -1,13 +1,15 @@
 <template>
     <div class="canvas-layers absolute border bg-white m-5 flex flex-col p-1 z-10">
         <div class="flex flex-col text-xs h-72 overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
-            <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${selectedIdx === i ? 'bg-stone-100' : ''}`">
-                <div class="flex flex-row items-center">
-                    <input type="checkbox" class="ms-1 me-2" v-model="layer.visible">
-                    <canvas :id="`layer-${i}`" width="30" height="30" class="border bg-white" v-on:dblclick="selectLayer(i)"></canvas>
-                    <span class="ml-2">Layer {{ i + 1 }}</span>
+            <draggable class="dragArea list-group w-full" :list="layers" @change="syncOrder">
+                <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${selectedIdx === i ? 'bg-stone-100' : ''}`">
+                    <div class="flex flex-row items-center">
+                        <input type="checkbox" class="ms-1 me-2" v-model="layer.visible">
+                        <canvas :id="layer.label" width="30" height="30" class="border bg-white" v-on:dblclick="selectLayer(i)"></canvas>
+                        <span class="ml-2">Layer {{ i + 1 }}</span>
+                    </div>
                 </div>
-            </div>
+            </draggable>
         </div>
     </div>
     <div class="canvas-layers-actions absolute border bg-white m-5 flex flex-col z-10">
@@ -25,6 +27,7 @@ import { ref, inject, onUnmounted, onMounted } from 'vue'
 import { InstanceAPI } from '../api';
 import { Events, MAX_LAYER_COUNT } from '../api/utils';
 import { Container } from 'pixi.js';
+import { VueDraggableNext as draggable} from "vue-draggable-next";
 
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];
@@ -44,20 +47,29 @@ onMounted(() => {
         updateLayerList();
     })!);
 
+    handlers.push(iApi?.event.on(Events.CANVAS_LAYER_REORDERED, () => {
+        updateLayerList();
+    })!);
+
     handlers.push(iApi?.event.on(Events.CANVAS_INITIALIZED, () => {
         updateLayerList();
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
         let grid = iApi?.canvas.grid;
-        let activeLayerCanvas = document.getElementById(`layer-${selectedIdx.value}`) as HTMLCanvasElement;
-        if (grid && activeLayerCanvas) {
-            let ctx = activeLayerCanvas.getContext('2d')!;
-            ctx.imageSmoothingEnabled = false;
-            if (ctx) {
-                ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
-                ctx.drawImage(grid.getLayerPreview(), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
-            }
+        if (grid) {
+            grid.drawLayers.forEach(l => {
+                let activeLayerCanvas = document.getElementById(l.label) as HTMLCanvasElement;
+                if (activeLayerCanvas) {
+                    let ctx = activeLayerCanvas.getContext('2d')!;
+                    ctx.imageSmoothingEnabled = false;
+                    if (ctx) {
+                        ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+                        ctx.drawImage(grid.getLayerPreview(l), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+                    }
+                }
+            });
+            selectedIdx.value = grid.activeIndex;
         }
     })!);
 })
@@ -88,6 +100,13 @@ function removeLayer() {
     let grid = iApi?.canvas.grid;
     if (grid) {
         grid.removeLayer();
+    }
+}
+
+function syncOrder() {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        grid.reorderLayers(layers.value as Array<Container>);
     }
 }
 
