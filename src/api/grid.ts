@@ -260,6 +260,16 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
+    getLayerPreview(): HTMLCanvasElement {
+        return this._pixi.renderer.extract.canvas(
+            {
+                target: this._activeLayer,
+                antialias: false,
+                frame: new Rectangle(0, 0, this._pixi.canvas.width, this._pixi.canvas.height),
+                resolution: 1
+            }) as HTMLCanvasElement;
+    }
+
     private _notify(): void {
         // render the update
         this._pixi.renderer.render(this._drawContainer);

@@ -4,7 +4,7 @@
             <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${selectedIdx === i ? 'bg-stone-100' : ''}`">
                 <div class="flex flex-row items-center">
                     <input type="checkbox" class="ms-1 me-2" v-model="layer.visible">
-                    <canvas width="30" height="30" class="border bg-white" v-on:dblclick="selectLayer(i)"></canvas>
+                    <canvas :id="`layer-${i}`" width="30" height="30" class="border bg-white" v-on:dblclick="selectLayer(i)"></canvas>
                     <span class="ml-2">Layer {{ i + 1 }}</span>
                 </div>
             </div>
@@ -49,7 +49,16 @@ onMounted(() => {
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        // todo: update active layer canvas
+        let grid = iApi?.canvas.grid;
+        let activeLayerCanvas = document.getElementById(`layer-${selectedIdx.value}`) as HTMLCanvasElement;
+        if (grid && activeLayerCanvas) {
+            let ctx = activeLayerCanvas.getContext('2d')!;
+            ctx.imageSmoothingEnabled = false;
+            if (ctx) {
+                ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+                ctx.drawImage(grid.getLayerPreview(), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+            }
+        }
     })!);
 })
 
