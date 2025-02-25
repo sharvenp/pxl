@@ -273,9 +273,13 @@ export class GridAPI extends APIScope {
         this._drawLayers = [];
 
         // add them back in the new order
-        layerOrder.forEach(l => {
+        layerOrder.forEach((l, i) => {
             this._drawContainer.addChild(l);
             this._drawLayers.push(l);
+
+            if (l === this._activeLayer) {
+                this._activeIndex = i;
+            }
         });
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_REORDERED);

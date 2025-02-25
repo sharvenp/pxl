@@ -2,10 +2,10 @@
     <div class="canvas-layers absolute border bg-white m-5 flex flex-col p-1 z-10">
         <div class="flex flex-col text-xs h-72 overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
             <draggable class="dragArea list-group w-full" :list="layers" @change="syncOrder">
-                <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${selectedIdx === i ? 'bg-stone-100' : ''}`">
-                    <div class="flex flex-row items-center">
+                <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${layer.label === selectedId ? 'bg-stone-100' : ''}`">
+                    <div class="flex flex-row items-center" v-on:dblclick="selectLayer(i)">
                         <input type="checkbox" class="ms-1 me-2" v-model="layer.visible">
-                        <canvas :id="layer.label" width="30" height="30" class="border bg-white" v-on:dblclick="selectLayer(i)"></canvas>
+                        <canvas :id="layer.label" width="30" height="30" class="border bg-white"></canvas>
                         <span class="ml-2">Layer {{ i + 1 }}</span>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onUnmounted, onMounted } from 'vue'
+import { ref, inject, onUnmounted, onMounted, nextTick } from 'vue'
 import { InstanceAPI } from '../api';
 import { Events, MAX_LAYER_COUNT } from '../api/utils';
 import { Container } from 'pixi.js';
@@ -31,12 +31,12 @@ import { VueDraggableNext as draggable} from "vue-draggable-next";
 
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];
-let selectedIdx = ref<number>(0);
+let selectedId = ref<string>('');
 let layers = ref<Array<Container>>([]);
 
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
-        selectedIdx.value = iApi?.canvas.grid?.activeIndex!;
+        selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_ADDED, () => {
@@ -56,21 +56,7 @@ onMounted(() => {
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        let grid = iApi?.canvas.grid;
-        if (grid) {
-            grid.drawLayers.forEach(l => {
-                let activeLayerCanvas = document.getElementById(l.label) as HTMLCanvasElement;
-                if (activeLayerCanvas) {
-                    let ctx = activeLayerCanvas.getContext('2d')!;
-                    ctx.imageSmoothingEnabled = false;
-                    if (ctx) {
-                        ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
-                        ctx.drawImage(grid.getLayerPreview(l), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
-                    }
-                }
-            });
-            selectedIdx.value = grid.activeIndex;
-        }
+        updateLayerPreview(iApi?.canvas.grid?.activeLayer as Container);
     })!);
 })
 
@@ -79,12 +65,43 @@ onUnmounted(() => {
 })
 
 function updateLayerList() {
-    layers.value = [...iApi?.canvas.grid?.drawLayers!];
+    layers.value = [...iApi?.canvas.grid?.drawLayers!].reverse();
+    selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
+    nextTick().then(() => {
+        // need to do this on next tick to ensure canvas is rendered
+        updateLayerPreviews();
+    });
+}
+
+function updateLayerPreviews() {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        layers.value.forEach(l => {
+            updateLayerPreview(l as Container);
+        });
+    }
+}
+
+function updateLayerPreview(layer: Container) {
+    let grid = iApi?.canvas.grid;
+    if (grid && layer) {
+        let activeLayerCanvas = document.getElementById(layer.label) as HTMLCanvasElement;
+        if (activeLayerCanvas) {
+            let ctx = activeLayerCanvas.getContext('2d')!;
+            ctx.imageSmoothingEnabled = false;
+            if (ctx) {
+                ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+                ctx.drawImage(grid.getLayerPreview(layer), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+            }
+        }
+    }
 }
 
 function selectLayer(layerIdx: number) {
     let grid = iApi?.canvas.grid;
     if (grid) {
+        // reverse layerIdx
+        layerIdx = layers.value.length - layerIdx - 1;
         grid.setActiveLayer(layerIdx);
     }
 }
@@ -106,7 +123,8 @@ function removeLayer() {
 function syncOrder() {
     let grid = iApi?.canvas.grid;
     if (grid) {
-        grid.reorderLayers(layers.value as Array<Container>);
+        grid.reorderLayers(layers.value.reverse() as Array<Container>);
+        selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
     }
 }
 
