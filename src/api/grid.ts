@@ -9,6 +9,7 @@ export class GridAPI extends APIScope {
     private _drawContainer: Container;
     private _previewContainer: Container;
     private _drawLayers: Array<Container>;
+    private _drawLayerMasks: { [id: string]: Container };
     private _activeLayer: Container;
     private _activeIndex: number;
 
@@ -24,7 +25,12 @@ export class GridAPI extends APIScope {
         this._pixi.stage.addChild(this._drawContainer);
 
         this._drawLayers = [this._activeLayer];
+        this._drawLayerMasks = {};
         this._activeIndex = 0;
+
+        let activeLayerMask = new Container({ eventMode: 'none', label: `${this._activeLayer.label}-mask` });
+        this._activeLayer.setMask({ mask: activeLayerMask, inverse: true });
+        this._drawLayerMasks[this._activeLayer.label] = activeLayerMask;
 
         this._previewContainer = new Container({ eventMode: 'none' });
         this._pixi.stage.addChild(this._previewContainer);
@@ -104,6 +110,16 @@ export class GridAPI extends APIScope {
         }
 
         return data;
+    }
+
+    getActiveMask(): Container {
+        return this._drawLayerMasks[this._activeLayer.label];
+    }
+
+    mask(graphic: Graphics | Container): void {
+        let activeMask = this._drawLayerMasks[this._activeLayer.label];
+        activeMask.addChild(graphic);
+        this._activeLayer.addChild(activeMask);
     }
 
     draw(graphic: Graphics | Container): void {
@@ -237,6 +253,11 @@ export class GridAPI extends APIScope {
             id = Utils.getRandomId();
         }
         newLayer.label = id
+
+        let newLayerMask = new Container({ eventMode: 'none', label: `${newLayer.label}-mask` });
+        newLayer.setMask({ mask: newLayerMask, inverse: true });
+        this._drawLayerMasks[id] = newLayerMask;
+
         this._drawContainer.addChild(newLayer);
         this._drawLayers.push(newLayer);
 
@@ -254,12 +275,15 @@ export class GridAPI extends APIScope {
 
         let indexToRemove = this._activeIndex;
         let layerToRemove = this._activeLayer;
+        let maskToRemove = this._drawLayerMasks[layerToRemove.label];
 
         this.setActiveLayer(this._activeIndex - 1);
 
         this._drawContainer.removeChild(layerToRemove);
         this._drawLayers.splice(indexToRemove, 1);
+        delete this._drawLayerMasks[layerToRemove.label];
         layerToRemove.destroy();
+        maskToRemove.destroy();
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_REMOVED);
 

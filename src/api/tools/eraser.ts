@@ -1,6 +1,6 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty } from '.'
-import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, NO_COLOR_FULL_ALPHA, ToolType } from '../utils';
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, NO_COLOR, NO_COLOR_FULL_ALPHA, ToolType } from '../utils';
 
 export class Eraser extends Tool {
 
@@ -31,12 +31,11 @@ export class Eraser extends Tool {
             let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            this._drawGraphic.blendMode = 'erase';
             let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(NO_COLOR_FULL_ALPHA);
             });
-            grid.draw(this._drawGraphic);
+            grid.mask(this._drawGraphic);
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
