@@ -32,10 +32,11 @@ export class Eraser extends Tool {
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
             let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            this._drawGraphic.blendMode = 'min';
             coordsToDraw.forEach(c => {
-                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(NO_COLOR_FULL_ALPHA);
+                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill([0, 0, 0, 0]);
             });
-            grid.mask(this._drawGraphic);
+            grid.draw(this._drawGraphic);
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
