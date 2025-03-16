@@ -1,4 +1,4 @@
-import { Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
+import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
 import { Events, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
 
@@ -20,6 +20,7 @@ export class GridAPI extends APIScope {
         this._drawContainer = new Container({ eventMode: 'none', blendMode: 'normal' });
 
         this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+        this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
         this._drawContainer.addChild(this._activeLayer);
         this._pixi.stage.addChild(this._drawContainer);
 
@@ -237,6 +238,7 @@ export class GridAPI extends APIScope {
             id = Utils.getRandomId();
         }
         newLayer.label = id
+        newLayer.filters = [new AlphaFilter({ alpha: 1 })];
 
         this._drawContainer.addChild(newLayer);
         this._drawLayers.push(newLayer);

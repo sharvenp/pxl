@@ -1,10 +1,11 @@
 import { InstanceAPI } from '..';
 import { Tool, SliderProperty } from '.'
-import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, NO_COLOR, NO_COLOR_FULL_ALPHA, ToolType } from '../utils';
+import { CURSOR_PREVIEW_COLOR, Events, GridMouseEvent, ToolType } from '../utils';
 
 export class Eraser extends Tool {
 
     private _eraserWidthProperty: SliderProperty;
+    private _eraserOpacityProperty: SliderProperty;
 
     constructor(iApi: InstanceAPI) {
         super(iApi, ToolType.ERASER);
@@ -13,9 +14,11 @@ export class Eraser extends Tool {
         this._toolConfiguration.invokeOnMove = true;
 
         this._eraserWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px')
+        this._eraserOpacityProperty = new SliderProperty("Strength", 0, 100, 100, '%')
 
         this._toolProperties = [
-            this._eraserWidthProperty
+            this._eraserWidthProperty,
+            this._eraserOpacityProperty
         ]
     }
 
@@ -32,9 +35,9 @@ export class Eraser extends Tool {
             let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
             let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
-            this._drawGraphic.blendMode = 'min';
+            this._drawGraphic.blendMode = 'erase';
             coordsToDraw.forEach(c => {
-                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill([0, 0, 0, 0]);
+                this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill({ color: 0, alpha: this._eraserOpacityProperty.value / 100 });
             });
             grid.draw(this._drawGraphic);
         }
