@@ -51,16 +51,16 @@ canvas {
 }
 
 .canvas-layers {
-  top: 0px;
-  right: 140px;
-  width: 152px;
-  height: 176px;
+  top: 224px;
+  right: 0px;
+  width: 155px;
+  height: 250px;
 }
 
 .canvas-layers-actions {
-  top: 178px;
-  right: 140px;
-  width: 152px;
+  top: 475px;
+  right: 0px;
+  width: 155px;
 }
 
 .transparent-swatch {

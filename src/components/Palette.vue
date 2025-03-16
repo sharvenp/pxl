@@ -5,7 +5,7 @@
     <div class="absolute bottom-32 right-5 mb-16 z-10">
         <div :key="currentColor?.colorHex" @click="() => togglePicker()" class="p-5 w-1 h-4 rounded-lg border-4 border-gray-200 z-10" :style="{backgroundColor: currentColor?.colorHex}"></div>
     </div>
-    <div v-show="showPicker" class="absolute border shadow-md m-5 z-10 bottom-60 right-0">
+    <div v-show="showPicker" class="absolute border shadow-md m-5 bottom-60 right-0 z-20">
         <ColorPicker
             default-format="hex"
             :color="currentColor?.colorHex"
