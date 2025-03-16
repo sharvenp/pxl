@@ -4,7 +4,7 @@
             <draggable class="dragArea list-group w-full" :list="layers" @change="syncOrder">
                 <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${layer.label === selectedId ? 'bg-stone-100' : ''}`">
                     <div class="flex flex-row items-center" v-on:dblclick="selectLayer(i)">
-                        <input type="checkbox" class="ms-1 me-2" v-model="layer.visible">
+                        <input type="checkbox" class="ms-1 me-2" v-model="layer.visible" @change="notifyVisibilityChange()">
                         <canvas :id="layer.label" width="30" height="30" class="border bg-white"></canvas>
                         <span class="ml-2">Layer {{ i + 1 }}</span>
                     </div>
@@ -134,6 +134,14 @@ function toggleAll(value: boolean) {
         layers.value.forEach(layer => {
             layer.visible = value;
         })
+        notifyVisibilityChange();
+    }
+}
+
+function notifyVisibilityChange() {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        grid.render();
     }
 }
 
