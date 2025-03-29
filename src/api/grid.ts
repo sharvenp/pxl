@@ -123,7 +123,7 @@ export class GridAPI extends APIScope {
     floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
 
         const pixelData = this._pixi.renderer.extract.pixels({
-            target: this._drawContainer,
+            target: this._activeLayer,
             antialias: false,
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
