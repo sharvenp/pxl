@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute rounded top-0 left-0 m-5 z-10">
+    <div class="tools-menu absolute rounded m-5 z-10">
         <!-- Tool buttons -->
         <div class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border">
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.PENCIL)">P</button>

@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute rounded bg-white bg-opacity-60 border top-0 right-0 m-5 z-10">
+    <div class="preview-canvas absolute rounded bg-white bg-opacity-60 border m-5 z-10">
         <canvas v-show="initialized" width="100" height="100" ref="previewCanvas"></canvas>
     </div>
 </template>

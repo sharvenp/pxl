@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row">
+    <div class="status-bar absolute w-full flex flex-row z-10">
         <p class="p-1 text-right ms-auto text-xs h-6">
             <template v-if="isOnCanvas">
                 X: {{x}} Y: {{y}}

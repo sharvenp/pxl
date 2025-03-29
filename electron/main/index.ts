@@ -47,6 +47,7 @@ async function createWindow() {
     minWidth: 700,
     minHeight: 1000,
     title: '.pxl',
+    titleBarStyle: 'hidden',
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
     webPreferences: {
       preload,

@@ -40,25 +40,47 @@ canvas {
   background-color: var(--secondary-color);
 }
 
-.status-bar {
+.title-bar  {
+  background-color: var(--accent-color);
+  top: 0;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+.title-bar button  {
+  -webkit-app-region: no-drag;
+}
+
+.status-bar  {
+  bottom: 0px;
   background-color: var(--accent-color);
 }
 
+.tools-menu {
+  top: 40px;
+  left: 0;
+}
+
+.preview-canvas {
+  top: 40px;
+  right: 0;
+}
+
 .canvas-settings {
-  top: 140px;
+  top: 180px;
   right: 0px;
   width: 132px;
 }
 
 .canvas-layers {
-  top: 224px;
+  top: 264px;
   right: 0px;
   width: 155px;
   height: 250px;
 }
 
 .canvas-layers-actions {
-  top: 475px;
+  top: 515px;
   right: 0px;
   width: 155px;
 }
