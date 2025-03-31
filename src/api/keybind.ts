@@ -124,8 +124,6 @@ export class KeyBindAPI extends APIScope {
 
     private _initiailizeDefaultKeyBinds(): void {
 
-        // TODO: make these customizable and load them from user preferences
-
         // Tools
         this.on("pencil-select", KeyAction.DOWN, [Key.Digit1], () => this.$iApi.tool.selectTool(ToolType.PENCIL));
         this.on("eraser-select", KeyAction.DOWN, [Key.Digit2], () => this.$iApi.tool.selectTool(ToolType.ERASER));

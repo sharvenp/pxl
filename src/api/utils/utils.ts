@@ -47,7 +47,6 @@ export class Utils {
     }
 
     static getColorSimilarity(color: RGBAColor, other: RGBAColor): number {
-        // TODO: make this more efficient?
         // calculate color "distance"
         let dis = Math.sqrt(
             Math.pow(color.r - other.r, 2) +
