@@ -49,4 +49,8 @@ export class HistoryAPI extends APIScope {
             this.$iApi.event.emit(Events.REDO);
         }
     }
+
+    get canRedo(): boolean {
+        return this._historyStack.length > 0;
+    }
 }

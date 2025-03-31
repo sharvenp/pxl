@@ -34,3 +34,10 @@ export interface ToolConfiguration {
     invokeOnMove: boolean,
     trackPixels: boolean
 }
+
+export interface MenuOption {
+    key: string,
+    label: string,
+    hotkey: string,
+    disabled(): boolean
+}

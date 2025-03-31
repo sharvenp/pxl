@@ -159,7 +159,25 @@ export class KeyBindAPI extends APIScope {
         // Redo
         this.on("redo", KeyAction.DOWN, [Key.Control, Key.y], () => this.$iApi.history.redo());
 
+        // TODO: New
+        this.on("new", KeyAction.DOWN, [Key.Control, Key.n], () => { });
+
         // TODO: Open
         this.on("open", KeyAction.DOWN, [Key.Control, Key.o], () => { });
+
+        // TODO: Save
+        this.on("save", KeyAction.DOWN, [Key.Control, Key.s], () => { });
+
+        // TODO: Export
+        this.on("export", KeyAction.DOWN, [Key.Control, Key.e], () => { });
+
+        // TODO: Zoom in
+        this.on("zoom-in", KeyAction.DOWN, [Key.Control, Key.Plus], () => { });
+
+        // TODO: Zoom out
+        this.on("zoom-out", KeyAction.DOWN, [Key.Control, Key.Minus], () => { });
+
+        // TODO: Help
+        this.on("open-help", KeyAction.DOWN, [Key.F1], () => { });
     }
 }
