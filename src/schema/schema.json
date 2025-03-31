@@ -1,10 +1,9 @@
 {
-    "$id": "https://example.com/address.schema.json",
+    "$id": "https://github.com/sharvenp/pxl/blob/main/src/schema/schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Schema for .pxl project save state",
     "type": "object",
     "properties": {
     },
     "required": []
-  }
-
+}
