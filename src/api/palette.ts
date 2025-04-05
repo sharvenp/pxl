@@ -12,7 +12,7 @@ export class PaletteAPI extends APIScope {
         // TODO: load correct palette from save state
         let startingColor = {
             colorHex: '#000000ff',
-            colorRGBA: { r: 0, g: 0, b: 0, a: 255},
+            colorRGBA: { r: 0, g: 0, b: 0, a: 255 },
         }
         this._palette = [
             startingColor
@@ -45,7 +45,7 @@ export class PaletteAPI extends APIScope {
 
     addColor(color: PaletteItem): void {
         if (!this._palette.some(c => c.colorHex === color.colorHex)) {
-            this._palette.push(color);
+            this._palette.unshift(color);
             this.$iApi.event.emit(Events.PALETTE_COLOR_ADD, color);
         }
     }
@@ -55,7 +55,7 @@ export class PaletteAPI extends APIScope {
         this.$iApi.event.emit(Events.PALETTE_COLOR_REMOVE, color);
     }
 
-    set palette(newPalette: Array<PaletteItem>)  {
+    set palette(newPalette: Array<PaletteItem>) {
         this._palette = newPalette;
     }
 
