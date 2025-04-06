@@ -8,6 +8,11 @@
             "type": "string",
             "description": "Version of the save state"
         },
+        "preferences": {
+            "type": "object",
+            "description": "TODO: User preferences",
+            "additionalProperties": false
+        },
         "tools": {
             "type": "object",
             "properties": {
@@ -60,11 +65,24 @@
                 }
             },
             "additionalProperties": false
+        },
+        "palette": {
+            "type": "object",
+            "description": "TODO: State of the palette",
+            "additionalProperties": false
+        },
+        "canvas": {
+            "type": "object",
+            "description": "TODO: State of the canvas",
+            "additionalProperties": false
         }
     },
     "required": [
         "version",
-        "tools"
+        "preferences",
+        "tools",
+        "palette",
+        "canvas"
     ],
     "additionalProperties": false,
     "$defs": {
