@@ -13,8 +13,15 @@ export class CanvasAPI extends APIScope {
     private _panzoom: PanzoomObject | undefined;
     private _pixi: Application | undefined;
 
+    private _mirrorX: boolean;
+    private _mirrorY: boolean;
+
     constructor(iApi: InstanceAPI) {
         super(iApi);
+
+        // TODO: properly load from state
+        this._mirrorX = false;
+        this._mirrorY = false;
 
         this._initialized = false;
     }
@@ -129,5 +136,21 @@ export class CanvasAPI extends APIScope {
 
     get view(): HTMLCanvasElement | undefined {
         return this._pixi?.canvas;
+    }
+
+    get mirrorX(): boolean {
+        return this._mirrorX;
+    }
+
+    set mirrorX(val: boolean) {
+        this._mirrorX = val;
+    }
+
+    get mirrorY(): boolean {
+        return this._mirrorY;
+    }
+
+    set mirrorY(val: boolean) {
+        this._mirrorY = val;
     }
 }

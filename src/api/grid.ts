@@ -204,11 +204,11 @@ export class GridAPI extends APIScope {
 
     reflectCoordinates(coords: PixelCoordinates, offsetX: number = 0, offsetY: number = 0): Array<PixelCoordinates> {
         let reflectedCoords = [coords];
-        if (this.$iApi.settings.mirrorX) {
+        if (this.$iApi.canvas.mirrorX) {
             // reflect coords along x-axis
             reflectedCoords.push({ x: this.width - 1 + offsetX - coords.x, y: coords.y });
         }
-        if (this.$iApi.settings.mirrorY) {
+        if (this.$iApi.canvas.mirrorY) {
             // reflect all coords along y-axis (including previously x-axis reflected coords)
             let newCoords = reflectedCoords.map(c => ({ x: c.x, y: this.height - 1 + offsetY - c.y }));
             reflectedCoords.push(...newCoords);

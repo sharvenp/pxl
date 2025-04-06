@@ -87,9 +87,9 @@ export class Rectangle extends Tool {
                 reflectedCoords.forEach((c, i) => {
                     if (i === 0) {
                         this._drawGraphic.rect(c.x, c.y, w, h);
-                    } else if (i === 1 && this.$iApi.settings.mirrorX) {
+                    } else if (i === 1 && this.$iApi.canvas.mirrorX) {
                         this._drawGraphic.rect(c.x - w, c.y, w, h);
-                    } else if (i === 1 && this.$iApi.settings.mirrorY) {
+                    } else if (i === 1 && this.$iApi.canvas.mirrorY) {
                         this._drawGraphic.rect(c.x, c.y - h, w, h);
                     } else if (i === 2) {
                         this._drawGraphic.rect(c.x, c.y - h, w, h);
@@ -120,9 +120,9 @@ export class Rectangle extends Tool {
                 reflectedCoords.forEach((c, i) => {
                     if (i === 0) {
                         cursor.cursorGraphic.rect(c.x, c.y, w, h);
-                    } else if (i === 1 && this.$iApi.settings.mirrorX) {
+                    } else if (i === 1 && this.$iApi.canvas.mirrorX) {
                         cursor.cursorGraphic.rect(c.x - w, c.y, w, h);
-                    } else if (i === 1 && this.$iApi.settings.mirrorY) {
+                    } else if (i === 1 && this.$iApi.canvas.mirrorY) {
                         cursor.cursorGraphic.rect(c.x, c.y - h, w, h);
                     } else if (i === 2) {
                         cursor.cursorGraphic.rect(c.x, c.y - h, w, h);

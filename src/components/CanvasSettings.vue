@@ -16,18 +16,18 @@ import { ref, inject } from 'vue'
 import { InstanceAPI } from '../api';
 
 const iApi = inject<InstanceAPI>('iApi');
-const mirrorX = ref<boolean>(iApi?.settings.mirrorX ?? false);
-const mirrorY = ref<boolean>(iApi?.settings.mirrorY ?? false);
+const mirrorX = ref<boolean>(iApi?.canvas.mirrorX ?? false);
+const mirrorY = ref<boolean>(iApi?.canvas.mirrorY ?? false);
 
 const updateMirrorX = () => {
     if (iApi) {
-        iApi.settings.mirrorX = mirrorX.value;
+        iApi.canvas.mirrorX = mirrorX.value;
     }
 };
 
 const updateMirrorY = () => {
     if (iApi) {
-        iApi.settings.mirrorY = mirrorY.value;
+        iApi.canvas.mirrorY = mirrorY.value;
     }
 };
 
