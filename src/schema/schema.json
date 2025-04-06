@@ -6,11 +6,12 @@
     "properties": {
         "version": {
             "type": "string",
-            "description": "Version of the save state"
+            "description": "Version of the save state",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
         },
         "preferences": {
             "type": "object",
-            "description": "TODO: User preferences",
+            "description": "TODO: State of the project and preferences",
             "additionalProperties": false
         },
         "tools": {
@@ -94,6 +95,92 @@
         "canvas": {
             "type": "object",
             "description": "TODO: State of the canvas",
+            "properties": {
+                "settings": {
+                    "type": "object",
+                    "description": "Settings of the canvas",
+                    "properties": {
+                        "width": {
+                            "type": "number",
+                            "description": "Width of the canvas",
+                            "minimum": 1,
+                            "maximum": 10000,
+                            "multipleOf": 1
+                        },
+                        "height": {
+                            "type": "number",
+                            "description": "Height of the canvas",
+                            "minimum": 1,
+                            "maximum": 10000,
+                            "multipleOf": 1
+                        },
+                        "mirror-x": {
+                            "type": "boolean",
+                            "description": "Whether to mirror the canvas on the x-axis or not"
+                        },
+                        "mirror-y": {
+                            "type": "boolean",
+                            "description": "Whether to mirror the canvas on the y-axis or not"
+                        }
+                    },
+                    "required": [
+                        "width",
+                        "height",
+                        "mirror-x",
+                        "mirror-y"
+                    ],
+                    "additionalProperties": false
+                },
+                "layers": {
+                    "type": "object",
+                    "description": "State of canvas layer",
+                    "properties": {
+                        "selected-layer": {
+                            "type": "number",
+                            "description": "Index of the selected layer",
+                            "minimum": 0,
+                            "multipleOf": 1
+                        },
+                        "states": {
+                            "type": "array",
+                            "description": "TODO: Layer data of the canvas",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "label": {
+                                        "type": "string",
+                                        "description": "Name of the layer"
+                                    },
+                                    "visible": {
+                                        "type": "boolean",
+                                        "description": "Whether the layer is visible or not"
+                                    },
+                                    "data": {
+                                        "type": "object",
+                                        "description": "TODO: Layer data of the canvas",
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": [
+                                    "label",
+                                    "visible",
+                                    "data"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": [
+                        "selected-layer",
+                        "states"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "settings",
+                "layers"
+            ],
             "additionalProperties": false
         }
     },
