@@ -46,7 +46,7 @@ function initializeCanvas() {
         autoDensity: true
     }).then(() => {
         container.value.appendChild(pixi.canvas);
-        pixi.canvas.classList.add("pixel-canvas"); // add the style class
+        pixi.canvas.classList.add("pxl-canvas"); // add the style class
 
         let isDragging = false;
         let lastCell: PixelCoordinates | undefined = undefined;
