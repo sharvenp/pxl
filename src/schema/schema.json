@@ -11,7 +11,17 @@
         },
         "preferences": {
             "type": "object",
-            "description": "TODO: State of the project and preferences",
+            "description": "State of the project and preferences",
+            "properties": {
+                "theme": {
+                    "type": "string",
+                    "description": "Theme of the project",
+                    "enum": [
+                        "Light",
+                        "Dark"
+                    ]
+                }
+            },
             "additionalProperties": false
         },
         "tools": {
@@ -94,7 +104,7 @@
         },
         "canvas": {
             "type": "object",
-            "description": "TODO: State of the canvas",
+            "description": "State of the canvas",
             "properties": {
                 "settings": {
                     "type": "object",
@@ -143,7 +153,7 @@
                         },
                         "states": {
                             "type": "array",
-                            "description": "TODO: Layer data of the canvas",
+                            "description": "Layer data of the canvas",
                             "items": {
                                 "type": "object",
                                 "properties": {
@@ -156,9 +166,13 @@
                                         "description": "Whether the layer is visible or not"
                                     },
                                     "data": {
-                                        "type": "object",
-                                        "description": "TODO: Layer data of the canvas",
-                                        "additionalProperties": false
+                                        "type": "aray",
+                                        "description": "Graphic data of the layer",
+                                        "items": [
+                                            {
+                                                "$ref": "#/$defs/layer-graphic"
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
@@ -366,6 +380,13 @@
                 "strength",
                 "width"
             ],
+            "additionalProperties": false
+        },
+        "layer-graphic": {
+            "type": "object",
+            "description": "TODO: Graphic data",
+            "properties": {},
+            "required": [],
             "additionalProperties": false
         }
     }
