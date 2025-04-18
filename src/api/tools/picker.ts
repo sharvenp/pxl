@@ -12,17 +12,17 @@ export class Picker extends Tool {
     }
 
     invokeAction(event: GridMouseEvent): void {
-        let grid = this.$iApi.canvas.grid!;
+        const grid = this.$iApi.canvas.grid!;
         if (grid && event.isDragging && event.isOnCanvas) {
 
-            let pickedColor = grid.getPixel(event.coords);
+            const pickedColor = grid.getPixel(event.coords);
 
             if (Utils.isEmptyColor(pickedColor)) {
                 // no color
                 return;
             }
 
-            let paletteItem: PaletteItem = {
+            const paletteItem: PaletteItem = {
                 colorHex: Utils.rgbaToHex(pickedColor),
                 colorRGBA: pickedColor
             }

@@ -5,6 +5,7 @@ export * from './ipc';
 export * from './history';
 export * from './keybind';
 export * from './canvas';
+export * from './pxl-graphic';
 export * from './grid';
 export * from './cursor';
 export * from './settings';

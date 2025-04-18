@@ -15,7 +15,7 @@ class EventHandler {
 
 export class EventAPI extends APIScope {
 
-    private readonly _eventBus: any;
+    private readonly _eventBus: TinyEmitter;
 
     private readonly _eventRegister: Array<EventHandler>;
 
@@ -57,7 +57,7 @@ export class EventAPI extends APIScope {
     ons(events: Array<string>, callback: Function, handlerNames: Array<string> = []): Array<string> {
 
         events.forEach((e, i) => {
-            let hName = this.on(e, callback, handlerNames.length === 0 ? '' : handlerNames[i]);
+            const hName = this.on(e, callback, handlerNames.length === 0 ? '' : handlerNames[i]);
 
             if (handlerNames.length === 0) {
                 handlerNames.push(hName);

@@ -41,3 +41,8 @@ export interface MenuOption {
     hotkey: string,
     disabled(): boolean
 }
+
+export interface PxlGraphicLogEntry {
+    method: string;
+    params: Array<any>;
+}

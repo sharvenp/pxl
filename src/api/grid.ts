@@ -1,5 +1,5 @@
-import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
-import { APIScope, InstanceAPI } from '.';
+import { AlphaFilter, Application, Container, ContainerChild, Rectangle } from 'pixi.js';
+import { APIScope, InstanceAPI, PxlGraphic } from '.';
 import { Events, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
@@ -81,7 +81,7 @@ export class GridAPI extends APIScope {
             resolution: 1
         });
 
-        let data: Array<[PixelCoordinates, RGBAColor]> = [];
+        const data: Array<[PixelCoordinates, RGBAColor]> = [];
 
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
@@ -107,7 +107,7 @@ export class GridAPI extends APIScope {
         return data;
     }
 
-    draw(graphic: Graphics | Container): void {
+    draw(graphic: PxlGraphic | Container): void {
         if (graphic.parent === this._activeLayer) {
             return;
         }
@@ -116,11 +116,11 @@ export class GridAPI extends APIScope {
     }
 
     pop(): ContainerChild {
-        let child = this._activeLayer.removeChildAt<ContainerChild>(this._activeLayer.children.length - 1);
+        const child = this._activeLayer.removeChildAt<ContainerChild>(this._activeLayer.children.length - 1);
         return child;
     }
 
-    floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
+    floodFill(graphic: PxlGraphic, coords: PixelCoordinates, tolerance: number): void {
 
         const pixelData = this._pixi.renderer.extract.pixels({
             target: this._activeLayer,
@@ -129,8 +129,8 @@ export class GridAPI extends APIScope {
             resolution: 1
         });
 
-        let validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.width && c.y >= 0 && c.y < this.height);
-        let getPixelRGBA = (c: PixelCoordinates): RGBAColor => {
+        const validCoords = (c: PixelCoordinates) => (c.x >= 0 && c.x < this.width && c.y >= 0 && c.y < this.height);
+        const getPixelRGBA = (c: PixelCoordinates): RGBAColor => {
             const idx = (c.y * this.width + c.x) * 4;
             const premultiplyFactor = (pixelData.pixels[idx + 3] / 255);
             return {
@@ -143,19 +143,19 @@ export class GridAPI extends APIScope {
 
 
         // color to check similarity against
-        let targetColor = getPixelRGBA(coords);
+        const targetColor = getPixelRGBA(coords);
 
         // use bfs to fill neighboring colors
-        let fillStack: Array<PixelCoordinates> = [];
+        const fillStack: Array<PixelCoordinates> = [];
         fillStack.push(coords);
 
         // keep track of seen colors to prevent revisiting the same cell
-        let visited: Record<string, boolean> = {};
+        const visited: Record<string, boolean> = {};
 
         while (fillStack.length > 0) {
 
-            let { x, y } = fillStack.pop()!;
-            let currCellColor = getPixelRGBA({ x, y });
+            const { x, y } = fillStack.pop()!;
+            const currCellColor = getPixelRGBA({ x, y });
 
             // check current cell has been visited
             if (visited[`${x}-${y}`]) {
@@ -194,7 +194,7 @@ export class GridAPI extends APIScope {
         return (coords.x >= 0 && coords.x < this.width) && (coords.y >= 0 && coords.y < this.height);
     }
 
-    containsGraphic(graphic: Graphics): boolean {
+    containsGraphic(graphic: PxlGraphic): boolean {
         return this._activeLayer.children.some(g => g === graphic);
     }
 
@@ -203,14 +203,14 @@ export class GridAPI extends APIScope {
     }
 
     reflectCoordinates(coords: PixelCoordinates, offsetX: number = 0, offsetY: number = 0): Array<PixelCoordinates> {
-        let reflectedCoords = [coords];
+        const reflectedCoords = [coords];
         if (this.$iApi.canvas.mirrorX) {
             // reflect coords along x-axis
             reflectedCoords.push({ x: this.width - 1 + offsetX - coords.x, y: coords.y });
         }
         if (this.$iApi.canvas.mirrorY) {
             // reflect all coords along y-axis (including previously x-axis reflected coords)
-            let newCoords = reflectedCoords.map(c => ({ x: c.x, y: this.height - 1 + offsetY - c.y }));
+            const newCoords = reflectedCoords.map(c => ({ x: c.x, y: this.height - 1 + offsetY - c.y }));
             reflectedCoords.push(...newCoords);
         }
         return reflectedCoords;
@@ -231,7 +231,7 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        let newLayer = new Container({ eventMode: 'none' });
+        const newLayer = new Container({ eventMode: 'none' });
         let id = Utils.getRandomId();
         while (this._drawLayers.some(l => l.label === id)) {
             // ensure unique id
@@ -255,8 +255,8 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        let indexToRemove = this._activeIndex;
-        let layerToRemove = this._activeLayer;
+        const indexToRemove = this._activeIndex;
+        const layerToRemove = this._activeLayer;
 
         this.setActiveLayer(this._activeIndex - 1);
 

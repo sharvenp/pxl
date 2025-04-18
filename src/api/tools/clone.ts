@@ -45,8 +45,8 @@ export class Clone extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid;
-        let cursor = this.$iApi.canvas.cursor;
+        const grid = this.$iApi.canvas.grid;
+        const cursor = this.$iApi.canvas.cursor;
 
         if (grid && cursor) {
 
@@ -77,10 +77,10 @@ export class Clone extends Tool {
                     this._isDragging = true;
                 }
 
-                let x = Math.min(this._dragStartX, mouseEvent.coords.x);
-                let y = Math.min(this._dragStartY, mouseEvent.coords.y);
-                let w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.x) - 1);
-                let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
+                const x = Math.min(this._dragStartX, mouseEvent.coords.x);
+                const y = Math.min(this._dragStartY, mouseEvent.coords.y);
+                const w = Math.abs(x - Math.max(this._dragStartX, mouseEvent.coords.x) - 1);
+                const h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
                 // draw preview rectangle
                 if (this._isDragging) {
@@ -92,7 +92,7 @@ export class Clone extends Tool {
                     // dragging stopped, select area
 
                     // get pixels within region
-                    let pixels: Array<SelectedRegionData> = grid.getPixelFrame({ x, y }, w, h)
+                    const pixels: Array<SelectedRegionData> = grid.getPixelFrame({ x, y }, w, h)
                         .filter(p => !Utils.isEmptyColor(p[1]))
                         .map(p => <SelectedRegionData>{
                             originalCoords: p[0],
@@ -161,7 +161,7 @@ export class Clone extends Tool {
 
     private _updatePreview(): void {
 
-        let cursor = this.$iApi.canvas.cursor;
+        const cursor = this.$iApi.canvas.cursor;
 
         if (!this._selectedRegion || !cursor) {
             return;

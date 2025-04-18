@@ -8,7 +8,7 @@ export class Utils {
         b: number,
         a: number
     } {
-        var r = parseInt(hex.slice(1, 3), 16),
+        const r = parseInt(hex.slice(1, 3), 16),
             g = parseInt(hex.slice(3, 5), 16),
             b = parseInt(hex.slice(5, 7), 16),
             a = parseInt(hex.slice(7, 9), 16);
@@ -48,14 +48,14 @@ export class Utils {
 
     static getColorSimilarity(color: RGBAColor, other: RGBAColor): number {
         // calculate color "distance"
-        let dis = Math.sqrt(
+        const dis = Math.sqrt(
             Math.pow(color.r - other.r, 2) +
             Math.pow(color.g - other.g, 2) +
             Math.pow(color.b - other.b, 2) +
             Math.pow(color.a - other.a, 2)
         )
         // divide by max distance
-        let norm = dis / 441.67295593
+        const norm = dis / 441.67295593
         return norm;
     }
 
@@ -74,7 +74,7 @@ export class Utils {
 
     // for dummy data
     static getRandomColor(solidRate: number): string {
-        let letters = '0123456789abcdef';
+        const letters = '0123456789abcdef';
         let color = '#';
         for (let i = 0; i < 6; i++) {
             color += letters[Math.floor(Math.random() * 16)];

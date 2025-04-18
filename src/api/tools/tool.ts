@@ -1,13 +1,12 @@
-import { Graphics } from "pixi.js";
 import { ToolProperty } from ".";
-import { APIScope } from "..";
+import { APIScope, PxlGraphic } from "..";
 import { InstanceAPI } from "../instance";
 import { Events, GridMouseEvent, ToolConfiguration, ToolType } from "../utils";
 
 export abstract class Tool extends APIScope {
 
     private _toolType: ToolType;
-    protected _drawGraphic: Graphics;
+    protected _drawGraphic: PxlGraphic;
     protected _toolProperties: Array<ToolProperty>;
     protected _toolConfiguration: ToolConfiguration;
 
@@ -16,7 +15,7 @@ export abstract class Tool extends APIScope {
     constructor(iApi: InstanceAPI, toolType: ToolType) {
         super(iApi);
         this._toolType = toolType;
-        this._drawGraphic = new Graphics({ roundPixels: true });
+        this._drawGraphic = new PxlGraphic({ roundPixels: true });
         this._toolProperties = [];
         this._toolConfiguration = {
             showPreviewOnInvoke: false,
@@ -52,7 +51,7 @@ export abstract class Tool extends APIScope {
     }
 
     newGraphic(): void {
-        this._drawGraphic = new Graphics({ roundPixels: true });
+        this._drawGraphic = new PxlGraphic({ roundPixels: true });
     }
 
     // invoke the tool's action (e.g. draw a pixel)

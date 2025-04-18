@@ -10,7 +10,7 @@ export class PaletteAPI extends APIScope {
         super(iApi);
 
         // TODO: load correct palette from save state
-        let startingColor = {
+        const startingColor = {
             colorHex: '#000000ff',
             colorRGBA: { r: 0, g: 0, b: 0, a: 255 },
         }
@@ -20,7 +20,7 @@ export class PaletteAPI extends APIScope {
 
         // TODO: remove this for debugging
         for (let x = 0; x < 10; x++) {
-            let rcolor = Utils.getRandomColor(0.5);
+            const rcolor = Utils.getRandomColor(0.5);
             this._palette.push({
                 colorHex: rcolor,
                 colorRGBA: Utils.hexToRGBA(rcolor)

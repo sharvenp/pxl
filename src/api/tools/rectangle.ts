@@ -31,9 +31,9 @@ export class Rectangle extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid;
-        let cursor = this.$iApi.canvas.cursor;
-        let color = this.$iApi.palette.selectedColor;
+        const grid = this.$iApi.canvas.grid;
+        const cursor = this.$iApi.canvas.cursor;
+        const color = this.$iApi.palette.selectedColor;
         if (color && grid && cursor) {
 
             if (!mouseEvent.isOnCanvas) {
@@ -59,8 +59,8 @@ export class Rectangle extends Tool {
             let h = Math.abs(y - Math.max(this._dragStartY, mouseEvent.coords.y) - 1);
 
             // is the user dragging in reverse?
-            let xRev = (x < this._dragStartX);
-            let yRev = (y < this._dragStartY);
+            const xRev = (x < this._dragStartX);
+            const yRev = (y < this._dragStartY);
 
             // If in alt-mode, snap to nearest square
             if (this.$iApi.tool.isAltMode) {
@@ -83,7 +83,7 @@ export class Rectangle extends Tool {
                 // dragging stopped, draw rectangle
                 this._drawGraphic.blendMode = 'normal';
 
-                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                const reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
                 reflectedCoords.forEach((c, i) => {
                     if (i === 0) {
                         this._drawGraphic.rect(c.x, c.y, w, h);
@@ -116,7 +116,7 @@ export class Rectangle extends Tool {
 
                 cursor.clearCursor();
 
-                let reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
+                const reflectedCoords = grid.reflectCoordinates({ x, y }, 1, 1);
                 reflectedCoords.forEach((c, i) => {
                     if (i === 0) {
                         cursor.cursorGraphic.rect(c.x, c.y, w, h);

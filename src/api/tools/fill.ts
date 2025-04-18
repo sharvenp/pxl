@@ -20,8 +20,8 @@ export class Fill extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid;
-        let color = this.$iApi.palette.selectedColor;
+        const grid = this.$iApi.canvas.grid;
+        const color = this.$iApi.palette.selectedColor;
         if (color && grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
             this._drawGraphic.blendMode = 'normal';
             grid.floodFill(this._drawGraphic, mouseEvent.coords, this._toleranceProperty.value / 100.0);

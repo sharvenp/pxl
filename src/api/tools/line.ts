@@ -29,9 +29,9 @@ export class Line extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid;
-        let cursor = this.$iApi.canvas.cursor;
-        let color = this.$iApi.palette.selectedColor;
+        const grid = this.$iApi.canvas.grid;
+        const cursor = this.$iApi.canvas.cursor;
+        const color = this.$iApi.palette.selectedColor;
         if (color && grid && cursor) {
 
             if (!mouseEvent.isOnCanvas) {
@@ -51,8 +51,8 @@ export class Line extends Tool {
                 this._isDragging = true;
             }
 
-            let x0 = this._dragStartX;
-            let y0 = this._dragStartY;
+            const x0 = this._dragStartX;
+            const y0 = this._dragStartY;
             let x1 = mouseEvent.coords.x;
             let y1 = mouseEvent.coords.y;
 
@@ -72,14 +72,14 @@ export class Line extends Tool {
                 // else, snap to diagonal
             }
 
-            let pxWidth = this._thicknessProperty.value;
+            const pxWidth = this._thicknessProperty.value;
 
             if (!mouseEvent.isDragging && this._isDragging && event === Events.MOUSE_DRAG_STOP) {
                 // dragging stopped, draw line
 
-                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
-                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
-                let zippedCoords = coordsFrom.map(function (e, i) {
+                const coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
+                const coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
+                const zippedCoords = coordsFrom.map(function (e, i) {
                     return { c1: e, c2: coordsTo[i] };
                 });
                 zippedCoords.forEach(coordPairs => {
@@ -100,9 +100,9 @@ export class Line extends Tool {
 
                 cursor.clearCursor();
 
-                let coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
-                let coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
-                let zippedCoords = coordsFrom.map(function (e, i) {
+                const coordsFrom = grid.reflectCoordinates({ x: x0, y: y0 }, 1, 1);
+                const coordsTo = grid.reflectCoordinates({ x: x1, y: y1 }, 1, 1);
+                const zippedCoords = coordsFrom.map(function (e, i) {
                     return { c1: e, c2: coordsTo[i] };
                 });
                 zippedCoords.forEach(coordPairs => {

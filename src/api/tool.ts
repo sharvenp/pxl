@@ -142,7 +142,7 @@ export class ToolAPI extends APIScope {
             return false;
         }
 
-        let canvas = this.$iApi.canvas;
+        const canvas = this.$iApi.canvas;
         if (canvas) {
             return this._trackedPixels.has(coords.y * canvas.height + coords.x);
         }
@@ -155,7 +155,7 @@ export class ToolAPI extends APIScope {
             return;
         }
 
-        let canvas = this.$iApi.canvas;
+        const canvas = this.$iApi.canvas;
         if (canvas) {
             this._trackedPixels.add(coords.y * canvas.height + coords.x);
         }

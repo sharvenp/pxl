@@ -23,16 +23,16 @@ export class Pencil extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid;
-        let color = this.$iApi.palette.selectedColor;
+        const grid = this.$iApi.canvas.grid;
+        const color = this.$iApi.palette.selectedColor;
         if (color && grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
-            let pxWidth = this._brushWidthProperty.value;
+            const pxWidth = this._brushWidthProperty.value;
 
-            let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
-            let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
+            const x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
+            const y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
             this._drawGraphic.blendMode = 'normal';
-            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            const coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill(color.colorHex);
             });
@@ -40,24 +40,25 @@ export class Pencil extends Tool {
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
+            console.log(this._drawGraphic)
             this.newGraphic();
             grid?.render();
         }
     }
 
     previewCursor(event: GridMouseEvent): void {
-        let grid = this.$iApi.canvas.grid;
-        let cursor = this.$iApi.canvas.cursor;
+        const grid = this.$iApi.canvas.grid;
+        const cursor = this.$iApi.canvas.cursor;
         if (cursor && grid) {
 
-            let pxWidth = this._brushWidthProperty.value;
-            let x = Math.round(event.coords.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.y - (pxWidth / 2.0));
+            const pxWidth = this._brushWidthProperty.value;
+            const x = Math.round(event.coords.x - (pxWidth / 2.0));
+            const y = Math.round(event.coords.y - (pxWidth / 2.0));
 
             const graphic = cursor.cursorGraphic
             graphic.clear();
 
-            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            const coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 graphic.rect(c.x, c.y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
             });

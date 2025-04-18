@@ -38,8 +38,8 @@ export class CanvasAPI extends APIScope {
 
         // set up panzoom
 
-        let canvasParent = pixi.canvas.parentElement!;
-        let pbr = canvasParent.getBoundingClientRect();
+        const canvasParent = pixi.canvas.parentElement!;
+        const pbr = canvasParent.getBoundingClientRect();
 
         const scaleX = pbr.width / pixi.canvas.width;
         const scaleY = pbr.height / pixi.canvas.height;

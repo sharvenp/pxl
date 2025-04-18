@@ -52,6 +52,15 @@ export enum KeyAction {
     UP = 'up'
 }
 
+export enum PxlGraphicMethodType {
+    RECT = 'rect',
+    ELLIPSE = 'ellipse',
+    MOVE_TO = 'moveTo',
+    LINE_TO = 'lineTo',
+    STROKE = 'stroke',
+    FILL = 'fill'
+}
+
 export enum Key {
     Backspace = 'Backspace',
     Tab = 'Tab',

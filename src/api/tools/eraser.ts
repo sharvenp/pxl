@@ -26,15 +26,15 @@ export class Eraser extends Tool {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        let grid = this.$iApi.canvas.grid!;
+        const grid = this.$iApi.canvas.grid!;
         if (grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {
 
-            let pxWidth = this._eraserWidthProperty.value;
+            const pxWidth = this._eraserWidthProperty.value;
 
-            let x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
-            let y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
+            const x = Math.round(mouseEvent.coords.x - (pxWidth / 2.0));
+            const y = Math.round(mouseEvent.coords.y - (pxWidth / 2.0));
 
-            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            const coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             this._drawGraphic.blendMode = 'erase';
             coordsToDraw.forEach(c => {
                 this._drawGraphic.rect(c.x, c.y, pxWidth, pxWidth).fill({ color: 0, alpha: this._eraserOpacityProperty.value / 100 });
@@ -49,18 +49,18 @@ export class Eraser extends Tool {
     }
 
     previewCursor(event: GridMouseEvent): void {
-        let grid = this.$iApi.canvas.grid;
-        let cursor = this.$iApi.canvas.cursor;
+        const grid = this.$iApi.canvas.grid;
+        const cursor = this.$iApi.canvas.cursor;
         if (grid && cursor) {
 
-            let pxWidth = this._eraserWidthProperty.value;
-            let x = Math.round(event.coords.x - (pxWidth / 2.0));
-            let y = Math.round(event.coords.y - (pxWidth / 2.0));
+            const pxWidth = this._eraserWidthProperty.value;
+            const x = Math.round(event.coords.x - (pxWidth / 2.0));
+            const y = Math.round(event.coords.y - (pxWidth / 2.0));
 
             const graphic = cursor.cursorGraphic
             graphic.clear();
 
-            let coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
+            const coordsToDraw = grid.reflectCoordinates({ x, y }, -(pxWidth - 1), -(pxWidth - 1));
             coordsToDraw.forEach(c => {
                 graphic.rect(c.x, c.y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
             });

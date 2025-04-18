@@ -75,11 +75,11 @@ export class KeyBindAPI extends APIScope {
             return
         }
 
-        let key = <Key>evt.key;
+        const key = <Key>evt.key;
 
         this._keys.push(key);
 
-        let matchKeys = (keys: Array<Key>) => {
+        const matchKeys = (keys: Array<Key>) => {
             if (keys.length != this._keys.length) {
                 return false;
             }
@@ -102,9 +102,9 @@ export class KeyBindAPI extends APIScope {
 
     private _processInputUp(evt: KeyboardEvent): void {
 
-        let key = <Key>evt.key;
+        const key = <Key>evt.key;
 
-        let candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.UP && k.keys.includes(key));
+        const candidateKeyBinds = this._keyBinds.filter(k => k.onAction === KeyAction.UP && k.keys.includes(key));
 
         // trigger actions
         candidateKeyBinds.forEach(kb => {
