@@ -1,5 +1,8 @@
 <template>
     <div class="status-bar absolute w-full flex flex-row z-10">
+        <p>
+            <span class="text-xs px-2 text-gray-500">{{ version }}</span>
+        </p>
         <p class="p-1 text-right ms-auto text-xs h-6">
             <template v-if="isOnCanvas">
                 X: {{x}} Y: {{y}}
@@ -13,6 +16,7 @@ import { ref, onMounted, inject, onUnmounted } from 'vue'
 import { InstanceAPI } from '../api';
 import { Events, GridMouseEvent } from '../api/utils';
 
+const version = __APP_VERSION__;
 const iApi = inject<InstanceAPI>('iApi');
 let handlers: Array<string> = [];
 let x = ref<number>(0);

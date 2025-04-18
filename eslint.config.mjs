@@ -22,5 +22,12 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-optional-chaining': 'off',
       'vue/multi-word-component-names': 'off',
     },
+  },
+  {
+    languageOptions: {
+      globals: {
+        __APP_VERSION__: 'readonly',
+      },
+    }
   }
 ]);

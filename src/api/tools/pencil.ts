@@ -40,7 +40,6 @@ export class Pencil extends Tool {
         }
 
         if (event === Events.MOUSE_DRAG_STOP && mouseEvent.isOnCanvas) {
-            console.log(this._drawGraphic)
             this.newGraphic();
             grid?.render();
         }
