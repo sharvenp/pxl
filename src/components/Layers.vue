@@ -65,7 +65,7 @@ onUnmounted(() => {
 })
 
 function updateLayerList() {
-    layers.value = [...iApi?.canvas.grid?.drawLayers!].reverse();
+    layers.value = [...(iApi?.canvas.grid?.drawLayers ?? [])].reverse();
     selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
     nextTick().then(() => {
         // need to do this on next tick to ensure canvas is rendered

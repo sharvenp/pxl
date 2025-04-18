@@ -16,7 +16,7 @@
         <!-- Tool Property -->
         <div v-if="currentTool" class="bg-white mt-5 flex flex-col p-4 border w-40" :key="currentTool.toolType">
             <span class="text-base">{{ currentTool.toolType }}</span>
-            <template v-for="prop in currentTool.toolProperties">
+            <template v-for="(prop, idx) in currentTool.toolProperties" :key="idx">
                 <template v-if="prop.propertyType === 'slider'">
                     <div class="flex flex-row justify-between text-sm mt-2">
                         <span>{{ prop.propertyLabel }}</span>
@@ -34,7 +34,7 @@
                     <div class="text-sm mt-2">
                         <span>{{ prop.propertyLabel }}</span>
                         <div class="mt-1 text-xs">
-                            <div v-for="option in prop.options" class="flex flex-row mt-1">
+                            <div v-for="(option, oidx) in prop.options" :key="oidx"  class="flex flex-row mt-1">
                                 <input type="radio" :value="option" v-model="prop.value">
                                 <label class="ms-2">{{ option }}</label>
                             </div>

@@ -18,7 +18,7 @@
     </div>
     <div class="absolute h-36 bottom-5 right-0 m-5 z-10 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
         <div class="grid grid-cols-5 gap-2 p-2">
-            <template v-for="item in palette">
+            <template v-for="item in palette" :key="item.colorHex">
                 <div class="rounded-lg transparent-swatch">
                     <button v-if="item.colorHex !== currentColor?.colorHex" class="p-4 w-1 h-1 rounded-lg border-gray-100 border-4 hover:border-gray-300" :style="{backgroundColor: item.colorHex}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
                     <button v-else class="p-4 w-1 h-1 rounded-lg border-orange-200 border-4" :style="{backgroundColor: item.colorHex}" @click.left="selectColor(item)" @click.right="removeColor(item)"></button>
@@ -35,7 +35,7 @@ import { ColorPicker } from 'vue-accessible-color-picker'
 import { Events, MAX_PALETTE_SIZE, PaletteItem, Utils } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
-const showPicker = ref<Boolean>(false);
+const showPicker = ref<boolean>(false);
 const lastPickerColor = ref<PaletteItem>();
 let handlers: Array<string> = [];
 const palette = ref<Array<PaletteItem>>([]);
@@ -48,12 +48,12 @@ onMounted(() => {
 
     handlers.push(iApi?.event.on(Events.PALETTE_COLOR_ADD, () => {
         // refresh
-        palette.value = [...iApi?.palette.palette];
+        palette.value = [...iApi?.palette.palette ?? []];
     })!);
 
     handlers.push(iApi?.event.on(Events.PALETTE_COLOR_REMOVE, () => {
         // refresh
-        palette.value = [...iApi?.palette.palette];
+        palette.value = [...iApi?.palette.palette ?? []];
     })!);
 
     currentColor.value = iApi?.palette.selectedColor;

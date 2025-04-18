@@ -1,6 +1,6 @@
 import { AlphaFilter, Application, Container, ContainerChild, Rectangle } from 'pixi.js';
-import { APIScope, InstanceAPI, PxlGraphic } from '.';
-import { Events, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
+import { APIScope, InstanceAPI } from '.';
+import { Events, MAX_LAYER_COUNT, PixelCoordinates, PxlGraphic, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 

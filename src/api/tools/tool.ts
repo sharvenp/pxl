@@ -1,7 +1,7 @@
 import { ToolProperty } from ".";
-import { APIScope, PxlGraphic } from "..";
+import { APIScope } from "..";
 import { InstanceAPI } from "../instance";
-import { Events, GridMouseEvent, ToolConfiguration, ToolType } from "../utils";
+import { Events, GridMouseEvent, PxlGraphic, ToolConfiguration, ToolType } from "../utils";
 
 export abstract class Tool extends APIScope {
 

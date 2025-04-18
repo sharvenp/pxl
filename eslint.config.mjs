@@ -18,6 +18,9 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
+      '@typescript-eslint/no-unsafe-optional-chaining': 'off',
+      'vue/multi-word-component-names': 'off',
     },
   }
 ]);
