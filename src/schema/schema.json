@@ -1,6 +1,6 @@
 {
     "$id": "https://github.com/sharvenp/pxl/blob/main/src/schema/schema.json",
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "Schema for .pxl project save state",
     "type": "object",
     "properties": {
@@ -166,13 +166,11 @@
                                         "description": "Whether the layer is visible or not"
                                     },
                                     "data": {
-                                        "type": "aray",
+                                        "type": "array",
                                         "description": "Graphic data of the layer",
-                                        "items": [
-                                            {
-                                                "$ref": "#/$defs/layer-graphic"
-                                            }
-                                        ]
+                                        "items": {
+                                            "$ref": "#/$defs/layer-pxl-graphic"
+                                        }
                                     }
                                 },
                                 "required": [
@@ -208,9 +206,54 @@
     "additionalProperties": false,
     "$defs": {
         "color": {
-            "type": "string",
-            "description": "Color in hex format",
-            "pattern": "^#([0-9a-fA-F]{8})$"
+            "oneOf": [
+                {
+                    "type": "string",
+                    "description": "Color in hex format",
+                    "pattern": "^#([0-9a-fA-F]{8})$"
+                },
+                {
+                    "type": "number",
+                    "description": "Color in number format",
+                    "minimum": 0,
+                    "maximum": 4294967295,
+                    "multipleOf": 1
+                },
+                {
+                    "type": "object",
+                    "description": "Color in RGBA format",
+                    "properties": {
+                        "r": {
+                            "type": "number",
+                            "description": "Red value",
+                            "minimum": 0,
+                            "maximum": 255,
+                            "multipleOf": 1
+                        },
+                        "g": {
+                            "type": "number",
+                            "description": "Green value",
+                            "minimum": 0,
+                            "maximum": 255,
+                            "multipleOf": 1
+                        },
+                        "b": {
+                            "type": "number",
+                            "description": "Blue value",
+                            "minimum": 0,
+                            "maximum": 255,
+                            "multipleOf": 1
+                        },
+                        "a": {
+                            "type": "number",
+                            "description": "Alpha value",
+                            "minimum": 0,
+                            "maximum": 255,
+                            "multipleOf": 1
+                        }
+                    }
+                }
+            ]
         },
         "tool-id": {
             "type": "string",
@@ -382,12 +425,239 @@
             ],
             "additionalProperties": false
         },
-        "layer-graphic": {
+        "layer-pxl-graphic": {
             "type": "object",
-            "description": "TODO: Graphic data",
-            "properties": {},
-            "required": [],
+            "description": "Graphic data",
+            "properties": {
+                "blendMode": {
+                    "type": "string",
+                    "description": "Blend mode of the graphic",
+                    "enum": [
+                        "inherit",
+                        "normal",
+                        "add",
+                        "multiply",
+                        "screen",
+                        "darken",
+                        "lighten",
+                        "erase",
+                        "color-dodge",
+                        "color-burn",
+                        "linear-burn",
+                        "linear-dodge",
+                        "linear-light",
+                        "hard-light",
+                        "soft-light",
+                        "pin-light",
+                        "difference",
+                        "exclusion",
+                        "overlay",
+                        "saturation",
+                        "color",
+                        "luminosity",
+                        "normal-npm",
+                        "add-npm",
+                        "screen-npm",
+                        "none",
+                        "subtract",
+                        "divide",
+                        "vivid-light",
+                        "hard-mix",
+                        "negation",
+                        "min",
+                        "max"
+                    ]
+                },
+                "alpha": {
+                    "type": "number",
+                    "description": "Alpha of the graphic",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "drawLog": {
+                    "type": "array",
+                    "description": "Draw log for this graphic",
+                    "items": {
+                        "$ref": "#/$defs/pxl-graphic-log-item"
+                    }
+                }
+            },
+            "required": [
+                "blendMode",
+                "alpha",
+                "drawLog"
+            ],
             "additionalProperties": false
+        },
+        "pxl-graphic-log-item": {
+            "type": "object",
+            "description": "Internal graphic log item",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "method": {
+                            "type": "string",
+                            "description": "Rectangle or Ellipse log item",
+                            "enum": [
+                                "rect",
+                                "ellipse"
+                            ]
+                        },
+                        "params": {
+                            "type": "array",
+                            "description": "X, Y, Width, Height of the log item",
+                            "items": {
+                                "type": "number",
+                                "minimum": 0
+                            },
+                            "minItems": 4,
+                            "maxItems": 4
+                        }
+                    },
+                    "required": [
+                        "method",
+                        "params"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "method": {
+                            "type": "string",
+                            "description": "MoveTo or LineTo log item",
+                            "enum": [
+                                "moveTo",
+                                "lineTo"
+                            ]
+                        },
+                        "params": {
+                            "type": "array",
+                            "description": "X, Y of the log item",
+                            "items": {
+                                "type": "number",
+                                "minimum": 0
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                        }
+                    },
+                    "required": [
+                        "method",
+                        "params"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "method": {
+                            "type": "string",
+                            "description": "Stroke log item",
+                            "enum": [
+                                "stroke"
+                            ]
+                        },
+                        "params": {
+                            "type": "array",
+                            "description": "Stroke style of the log item",
+                            "items": {
+                                "type": "object",
+                                "description": "Stroke style",
+                                "properties": {
+                                    "width": {
+                                        "type": "number",
+                                        "description": "Width of the stroke",
+                                        "minimum": 1,
+                                        "multipleOf": 1
+                                    },
+                                    "color": {
+                                        "$ref": "#/$defs/color"
+                                    },
+                                    "alignment": {
+                                        "type": "number",
+                                        "description": "Alignment of the stroke",
+                                        "minimum": 1,
+                                        "maximum": 1
+                                    },
+                                    "pixelLine": {
+                                        "type": "boolean",
+                                        "description": "Whether to use pixel line or not"
+                                    },
+                                    "alpha": {
+                                        "type": "number",
+                                        "description": "Alpha of the stroke",
+                                        "minimum": 0,
+                                        "maximum": 1
+                                    }
+                                },
+                                "required": [
+                                    "width",
+                                    "color"
+                                ],
+                                "additionalProperties": false
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    },
+                    "required": [
+                        "method",
+                        "params"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "method": {
+                            "type": "string",
+                            "description": "Fill log item",
+                            "enum": [
+                                "fill"
+                            ]
+                        },
+                        "params": {
+                            "type": "array",
+                            "description": "Fill style of the log item",
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/$defs/color"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "description": "Fill style",
+                                        "properties": {
+                                            "color": {
+                                                "$ref": "#/$defs/color"
+                                            },
+                                            "alpha": {
+                                                "type": "number",
+                                                "description": "Alpha of the stroke",
+                                                "minimum": 0,
+                                                "maximum": 1
+                                            }
+                                        },
+                                        "required": [
+                                            "color"
+                                        ],
+                                        "additionalProperties": false
+                                    }
+                                ]
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    },
+                    "required": [
+                        "method",
+                        "params"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
         }
     }
 }

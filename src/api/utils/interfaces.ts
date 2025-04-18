@@ -1,3 +1,4 @@
+import { PxlGraphicMethodType } from ".";
 
 export interface PixelCoordinates {
     x: number;
@@ -43,6 +44,6 @@ export interface MenuOption {
 }
 
 export interface PxlGraphicLogEntry {
-    method: string;
+    method: PxlGraphicMethodType;
     params: Array<any>;
 }

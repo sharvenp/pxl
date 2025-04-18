@@ -41,7 +41,7 @@ export class PxlGraphic extends Graphics {
         return super.fill(style);
     }
 
-    private _logDrawCall(method: string, params: any[]) {
+    private _logDrawCall(method: PxlGraphicMethodType, params: any[]) {
         this._callLog.push({ method, params });
     }
 
