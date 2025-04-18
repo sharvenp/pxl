@@ -42,7 +42,7 @@
                             "state": {
                                 "type": "object",
                                 "description": "State of the tool",
-                                "oneOf": [
+                                "anyOf": [
                                     {
                                         "$ref": "#/$defs/pencil-state"
                                     },
@@ -63,6 +63,12 @@
                                     },
                                     {
                                         "$ref": "#/$defs/shade-state"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "description": "Blank state",
+                                        "properties": {},
+                                        "additionalProperties": false
                                     }
                                 ]
                             }
@@ -233,29 +239,25 @@
                             "type": "number",
                             "description": "Red value",
                             "minimum": 0,
-                            "maximum": 255,
-                            "multipleOf": 1
+                            "maximum": 255
                         },
                         "g": {
                             "type": "number",
                             "description": "Green value",
                             "minimum": 0,
-                            "maximum": 255,
-                            "multipleOf": 1
+                            "maximum": 255
                         },
                         "b": {
                             "type": "number",
                             "description": "Blue value",
                             "minimum": 0,
-                            "maximum": 255,
-                            "multipleOf": 1
+                            "maximum": 255
                         },
                         "a": {
                             "type": "number",
                             "description": "Alpha value",
                             "minimum": 0,
-                            "maximum": 255,
-                            "multipleOf": 1
+                            "maximum": 255
                         }
                     }
                 }

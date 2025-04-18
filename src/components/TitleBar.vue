@@ -109,10 +109,11 @@ function handleOption(key: string) {
         case 'open-project':
             // TODO
             break;
-        case 'save':
+        case 'save-project':
             // TODO
+            console.log(iApi?.state.getState());
             break;
-        case 'save-as':
+        case 'save-project-as':
             // TODO
             break;
         case 'exit':
