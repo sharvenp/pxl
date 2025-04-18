@@ -17,8 +17,8 @@
                     "type": "string",
                     "description": "Theme of the project",
                     "enum": [
-                        "Light",
-                        "Dark"
+                        "light",
+                        "dark"
                     ]
                 }
             },
@@ -164,6 +164,12 @@
                                     "visible": {
                                         "type": "boolean",
                                         "description": "Whether the layer is visible or not"
+                                    },
+                                    "alpha": {
+                                        "type": "number",
+                                        "description": "Alpha of the layer",
+                                        "minimum": 0,
+                                        "maximum": 1
                                     },
                                     "data": {
                                         "type": "array",

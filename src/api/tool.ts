@@ -172,4 +172,8 @@ export class ToolAPI extends APIScope {
     get isAltMode(): boolean {
         return this._isAltMode;
     }
+
+    get tools(): Array<Tool> {
+        return Object.values(this._tools);
+    }
 }

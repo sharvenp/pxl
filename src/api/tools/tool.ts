@@ -56,4 +56,8 @@ export abstract class Tool extends APIScope {
 
     // invoke the tool's action (e.g. draw a pixel)
     abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void;
+
+    // get state of tool
+    abstract toolState(): any;
+
 }

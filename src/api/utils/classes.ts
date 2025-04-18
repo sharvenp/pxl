@@ -102,12 +102,12 @@ export class SelectedRegion {
 
 export class PxlGraphic extends Graphics {
 
-    private _callLog: Array<PxlGraphicLogEntry>;
+    private _drawLog: Array<PxlGraphicLogEntry>;
 
     constructor(...args: ConstructorParameters<typeof Graphics>) {
         super(...args);
 
-        this._callLog = [];
+        this._drawLog = [];
     }
 
     rect(x: number, y: number, width: number, height: number): this {
@@ -141,10 +141,10 @@ export class PxlGraphic extends Graphics {
     }
 
     private _logDrawCall(method: PxlGraphicMethodType, params: any[]) {
-        this._callLog.push({ method, params });
+        this._drawLog.push({ method, params });
     }
 
-    get callLog(): Array<PxlGraphicLogEntry> {
-        return this._callLog;
+    get drawLog(): Array<PxlGraphicLogEntry> {
+        return this._drawLog;
     }
 }

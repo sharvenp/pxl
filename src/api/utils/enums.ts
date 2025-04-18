@@ -61,6 +61,11 @@ export enum PxlGraphicMethodType {
     FILL = 'fill'
 }
 
+export enum UITheme {
+    LIGHT = 'light',
+    DARK = 'dark'
+}
+
 export enum Key {
     Backspace = 'Backspace',
     Tab = 'Tab',
