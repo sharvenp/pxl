@@ -64,4 +64,10 @@ export class Pencil extends Tool {
 
         }
     }
+
+    getToolState(): any {
+        return {
+            width: this._brushWidthProperty.value
+        }
+    }
 }

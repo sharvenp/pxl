@@ -305,9 +305,9 @@
                     "maximum": 10,
                     "multipleOf": 1
                 },
-                "opacity": {
+                "strength": {
                     "type": "number",
-                    "description": "Opacity of the eraser",
+                    "description": "Strength of the eraser",
                     "minimum": 0,
                     "maximum": 100,
                     "multipleOf": 1
@@ -315,7 +315,7 @@
             },
             "required": [
                 "width",
-                "opacity"
+                "strength"
             ],
             "additionalProperties": false
         },

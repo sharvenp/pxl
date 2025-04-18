@@ -124,4 +124,10 @@ export class Line extends Tool {
         this._dragStartY = -1;
         this._isDragging = false;
     }
+
+    getToolState(): any {
+        return {
+            thickness: this._thicknessProperty.value
+        }
+    }
 }

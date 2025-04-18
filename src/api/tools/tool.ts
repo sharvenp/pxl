@@ -58,6 +58,6 @@ export abstract class Tool extends APIScope {
     abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void;
 
     // get state of tool
-    abstract toolState(): any;
+    abstract getToolState(): any;
 
 }

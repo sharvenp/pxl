@@ -37,7 +37,7 @@ export class StateAPI extends APIScope {
             states: tools.map(tool =>
             ({
                 tool: tool.toolType,
-                state: tool.toolState()
+                state: tool.getToolState()
             })),
         };
 

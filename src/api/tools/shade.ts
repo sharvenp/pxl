@@ -83,4 +83,12 @@ export class Shade extends Tool {
             graphic.rect(x, y, pxWidth, pxWidth).fill(CURSOR_PREVIEW_COLOR);
         }
     }
+
+    getToolState(): any {
+        return {
+            mode: this._shadeTypeProperty.value,
+            strength: this._strengthProperty.value,
+            width: this._brushWidthProperty.value
+        }
+    }
 }

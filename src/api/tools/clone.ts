@@ -188,4 +188,8 @@ export class Clone extends Tool {
         this._selectedRegion = undefined;
         this.$iApi.canvas.cursor?.clearCursor();
     }
+
+    getToolState(): any {
+        return {}
+    }
 }

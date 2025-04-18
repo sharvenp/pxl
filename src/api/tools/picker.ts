@@ -42,4 +42,8 @@ export class Picker extends Tool {
             graphic.rect(event.coords.x, event.coords.y, 1, 1).fill(CURSOR_PREVIEW_COLOR);
         }
     }
+
+    getToolState(): any {
+        return {}
+    }
 }

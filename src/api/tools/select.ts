@@ -272,4 +272,8 @@ export class Select extends Tool {
         this._selectedRegion = undefined;
         this._previewGraphic?.clear();
     }
+
+    getToolState(): any {
+        return {}
+    }
 }

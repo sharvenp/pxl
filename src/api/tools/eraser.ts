@@ -66,4 +66,11 @@ export class Eraser extends Tool {
             });
         }
     }
+
+    getToolState(): any {
+        return {
+            width: this._eraserWidthProperty.value,
+            strength: this._eraserOpacityProperty.value
+        }
+    }
 }

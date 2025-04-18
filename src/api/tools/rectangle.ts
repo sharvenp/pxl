@@ -149,4 +149,11 @@ export class Rectangle extends Tool {
         this._dragStartY = -1;
         this._isDragging = false;
     }
+
+    getToolState(): any {
+        return {
+            width: this._widthProperty.value,
+            fill: this._fillProperty.value
+        }
+    }
 }
