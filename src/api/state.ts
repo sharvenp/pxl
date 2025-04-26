@@ -1,5 +1,6 @@
+import { AlphaFilter, Filter, Graphics } from 'pixi.js';
 import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
-import { PxlGraphic, ToolType } from './utils';
+import { ToolType } from './utils';
 
 export class StateAPI extends APIScope {
 
@@ -55,6 +56,24 @@ export class StateAPI extends APIScope {
     }
 
     private _processCanvas(canvasApi: CanvasAPI): any {
+
+        // helper to map filters to a serializable format
+        const _processFilters = (filter: Filter | Array<Filter>) => {
+            if (filter instanceof Filter) {
+                return _processFilters([filter]);
+            }
+            else {
+                return filter.map((filter: Filter) => {
+                    switch (filter.constructor) {
+                        case AlphaFilter:
+                            return { type: "alpha", alpha: (filter as AlphaFilter).alpha };
+                        default:
+                            return undefined;
+                    }
+                }).filter((f: any) => f !== undefined);
+            }
+        };
+
         const canvasState = {
             settings: {
                 width: canvasApi.width,
@@ -64,15 +83,13 @@ export class StateAPI extends APIScope {
             },
             layers: {
                 "selected-layer": canvasApi.grid?.activeIndex ?? 0,
-                states: canvasApi.grid?.drawLayers.map(layer => ({
+                states: canvasApi.grid?.drawLayers.map((layer, i) => ({
                     label: layer.label,
                     visible: layer.visible,
                     alpha: layer.alpha,
-                    data: layer.children.map(graphic => graphic as PxlGraphic).map(pxlGraphic => ({
-                        blendMode: pxlGraphic.blendMode,
-                        alpha: pxlGraphic.alpha,
-                        drawLog: pxlGraphic.drawLog
-                    }))
+                    blendMode: layer.blendMode,
+                    filters: _processFilters(layer.filters),
+                    data: canvasApi.grid?.extractPixels(i)
                 }))
             }
         };

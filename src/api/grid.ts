@@ -1,6 +1,6 @@
-import { AlphaFilter, Application, Container, ContainerChild, Rectangle } from 'pixi.js';
+import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, MAX_LAYER_COUNT, PixelCoordinates, PxlGraphic, RGBAColor, Utils } from './utils';
+import { Events, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
@@ -34,12 +34,11 @@ export class GridAPI extends APIScope {
     }
 
     initialize(): void {
+        // TODO
     }
 
     destroy(): void {
-    }
-
-    clear(): void {
+        // TODO
     }
 
     getPixel(coords: PixelCoordinates): RGBAColor {
@@ -69,6 +68,17 @@ export class GridAPI extends APIScope {
                 a: 0
             }
         }
+    }
+
+    extractPixels(layerIdx: number | undefined = undefined): Uint8ClampedArray {
+        const pixelData = this._pixi.renderer.extract.pixels({
+            target: layerIdx === undefined ? this._activeLayer : this._drawLayers[layerIdx],
+            antialias: false,
+            frame: new Rectangle(0, 0, this.width, this.height),
+            resolution: 1
+        });
+
+        return pixelData.pixels;
     }
 
     getPixelFrame(coords: PixelCoordinates, width: number, height: number): Array<[PixelCoordinates, RGBAColor]> {
@@ -107,7 +117,7 @@ export class GridAPI extends APIScope {
         return data;
     }
 
-    draw(graphic: PxlGraphic | Container): void {
+    draw(graphic: Graphics | Container): void {
         if (graphic.parent === this._activeLayer) {
             return;
         }
@@ -120,7 +130,7 @@ export class GridAPI extends APIScope {
         return child;
     }
 
-    floodFill(graphic: PxlGraphic, coords: PixelCoordinates, tolerance: number): void {
+    floodFill(graphic: Graphics, coords: PixelCoordinates, tolerance: number): void {
 
         const pixelData = this._pixi.renderer.extract.pixels({
             target: this._activeLayer,
@@ -194,7 +204,7 @@ export class GridAPI extends APIScope {
         return (coords.x >= 0 && coords.x < this.width) && (coords.y >= 0 && coords.y < this.height);
     }
 
-    containsGraphic(graphic: PxlGraphic): boolean {
+    containsGraphic(graphic: Graphics): boolean {
         return this._activeLayer.children.some(g => g === graphic);
     }
 
