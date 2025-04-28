@@ -1,6 +1,7 @@
-import { AlphaFilter, Filter, Graphics } from 'pixi.js';
+import { AlphaFilter, Filter } from 'pixi.js';
 import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
 import { ToolType } from './utils';
+import { encode } from 'cbor2';
 
 export class StateAPI extends APIScope {
 
@@ -11,6 +12,10 @@ export class StateAPI extends APIScope {
     /**
      * Process the current state of the application and return it as a JSON object.
     **/
+
+    getStateCbor(): Uint8Array {
+        return encode(this.getState());
+    }
 
     getState(): any {
         return {

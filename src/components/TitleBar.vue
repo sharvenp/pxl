@@ -110,11 +110,10 @@ function handleOption(key: string) {
             // TODO
             break;
         case 'save-project':
-            // TODO
-            console.log(iApi?.state.getState());
+            _saveFile();
             break;
         case 'save-project-as':
-            // TODO
+            _saveFile();
             break;
         case 'exit':
             // TODO
@@ -142,4 +141,30 @@ function handleOption(key: string) {
     // close the menu
     activeMenu.value = undefined;
 }
+
+function _saveFile() {
+    var stateBuffer = iApi?.state.getStateCbor();
+    if (stateBuffer) {
+        const uint8Array = new Uint8Array(stateBuffer);
+
+        const blob = new Blob([uint8Array], { type: 'application/cbor' });
+
+        const url = URL.createObjectURL(blob);
+
+        // TODO: needs to be set to the project name
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'project.pxl'; // Set the desired file name
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+}
+
+function _openFile() {
+    // TODO
+}
+
 </script>
