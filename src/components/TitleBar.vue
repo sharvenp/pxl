@@ -55,7 +55,7 @@ const menuOptions = ref<Record<string, MenuOption[]>>({
         { key: 'about', label: 'About', hotkey: 'F1', disabled: () => false }
     ]
 });
-const ipcRequired = new Set(['exit']);
+const ipcRequired = new Set(['exit', 'save-project']);
 
 const ipcSupported = computed(() => {
   return iApi?.ipc.ipcAPISupported() ?? false;
@@ -107,7 +107,7 @@ function handleOption(key: string) {
             // TODO
             break;
         case 'open-project':
-            // TODO
+            _openFile();
             break;
         case 'save-project':
             _saveFile();
@@ -165,6 +165,7 @@ function _saveFile() {
 
 function _openFile() {
     // TODO
+
 }
 
 </script>

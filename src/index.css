@@ -33,7 +33,10 @@ canvas {
 .pxl-canvas {
   position: absolute;
   transform: translate(50%, 50%);
-  background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 2px 2px;
+  background-image: url('./assets/2x2.png');
+  background-repeat: repeat;
+  background-size: 2px 2px;
+  image-rendering: pixelated;
 }
 
 .layout {
