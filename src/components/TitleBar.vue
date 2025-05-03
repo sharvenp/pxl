@@ -164,8 +164,21 @@ function _saveFile() {
 }
 
 function _openFile() {
-    // TODO
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pxl';
 
+    input.addEventListener('change', async (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+            const arrayBuffer = await file.arrayBuffer();
+            iApi?.state.setStateCbor(new Uint8Array(arrayBuffer));
+        }
+    });
+
+    // trigger dialog and remove it
+    input.click();
+    input.remove();
 }
 
 </script>
