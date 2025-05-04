@@ -17,7 +17,8 @@ export class Line extends Tool {
         this._toolConfiguration.invokeOnMove = true;
         this._toolConfiguration.trackPixels = false;
 
-        this._thicknessProperty = new SliderProperty("Thickness", 1, 5, 1, 'px');
+        const toolState = this.loadToolState();
+        this._thicknessProperty = new SliderProperty("Thickness", 1, 5, toolState?.thickness ?? 1, 'px');
 
         this._toolProperties = [
             this._thicknessProperty,

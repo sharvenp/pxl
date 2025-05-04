@@ -12,7 +12,8 @@ export class Fill extends Tool {
         this._toolConfiguration.showPreviewOnInvoke = true;
         this._toolConfiguration.invokeOnMove = false;
 
-        this._toleranceProperty = new SliderProperty("Tolerance", 0, 100, 0, '%');
+        const toolState = this.loadToolState();
+        this._toleranceProperty = new SliderProperty("Tolerance", 0, 100, toolState?.tolerance ?? 0, '%');
 
         this._toolProperties = [
             this._toleranceProperty,

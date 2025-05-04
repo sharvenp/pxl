@@ -13,8 +13,9 @@ export class Eraser extends Tool {
         this._toolConfiguration.showPreviewOnInvoke = true;
         this._toolConfiguration.invokeOnMove = true;
 
-        this._eraserWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px')
-        this._eraserOpacityProperty = new SliderProperty("Strength", 0, 100, 100, '%')
+        const toolState = this.loadToolState();
+        this._eraserWidthProperty = new SliderProperty("Size", 1, 10, toolState?.width ?? 1, 'px')
+        this._eraserOpacityProperty = new SliderProperty("Strength", 0, 100, toolState?.strength ?? 100, '%')
 
         this._toolProperties = [
             this._eraserWidthProperty,

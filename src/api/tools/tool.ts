@@ -39,7 +39,6 @@ export abstract class Tool extends APIScope {
         this._drawGraphic = new Graphics({ roundPixels: true });
     }
 
-
     get toolConfiguration(): ToolConfiguration {
         return this._toolConfiguration;
     }
@@ -54,6 +53,11 @@ export abstract class Tool extends APIScope {
 
     get drawGraphic(): Graphics {
         return this._drawGraphic;
+    }
+
+    protected loadToolState(): any {
+        const toolState = this.$iApi.state.loadedState?.tools.states.find((tool: any) => tool.tool === this._toolType)?.state;
+        return toolState;
     }
 
     // invoke the tool's action (e.g. draw a pixel)

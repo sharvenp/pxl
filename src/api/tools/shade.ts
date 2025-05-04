@@ -14,9 +14,10 @@ export class Shade extends Tool {
         this._toolConfiguration.showPreviewOnInvoke = true;
         this._toolConfiguration.invokeOnMove = true;
 
-        this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], ShadeMode.LIGHTEN);
-        this._strengthProperty = new SliderProperty("Strength", 0, 100, 10, '%');
-        this._brushWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px');
+        const toolState = this.loadToolState();
+        this._shadeTypeProperty = new RadioProperty("Mode", [ShadeMode.LIGHTEN, ShadeMode.DARKEN], toolState?.mode ?? ShadeMode.LIGHTEN);
+        this._strengthProperty = new SliderProperty("Strength", 0, 100, toolState?.strength ?? 10, '%');
+        this._brushWidthProperty = new SliderProperty("Size", 1, 10, toolState?.width ?? 1, 'px');
 
         this._toolProperties = [
             this._shadeTypeProperty,

@@ -12,7 +12,8 @@ export class Pencil extends Tool {
         this._toolConfiguration.showPreviewOnInvoke = false;
         this._toolConfiguration.invokeOnMove = true;
 
-        this._brushWidthProperty = new SliderProperty("Size", 1, 10, 1, 'px');
+        const toolState = this.loadToolState();
+        this._brushWidthProperty = new SliderProperty("Size", 1, 10, toolState?.width ?? 1, 'px');
 
         this._toolProperties = [
             this._brushWidthProperty,

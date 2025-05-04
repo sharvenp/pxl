@@ -17,8 +17,9 @@ export class Rectangle extends Tool {
         this._toolConfiguration.invokeOnMove = true;
         this._toolConfiguration.trackPixels = false;
 
-        this._fillProperty = new CheckboxProperty("Fill", false);
-        this._widthProperty = new SliderProperty("Width", 1, 10, 1, 'px');
+        const toolState = this.loadToolState();
+        this._fillProperty = new CheckboxProperty("Fill", toolState?.fill ?? false);
+        this._widthProperty = new SliderProperty("Width", 1, 10, toolState?.width ?? 1, 'px');
 
         this._toolProperties = [
             this._fillProperty,
