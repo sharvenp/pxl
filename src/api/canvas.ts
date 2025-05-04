@@ -19,7 +19,6 @@ export class CanvasAPI extends APIScope {
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        // TODO: properly load from state
         this._mirrorX = false;
         this._mirrorY = false;
 
@@ -118,6 +117,11 @@ export class CanvasAPI extends APIScope {
         // initialize grid
         this._grid = new GridAPI(this.$iApi, this._pixi);
         this._cursor = new CursorAPI(this.$iApi, this._pixi);
+
+        if (this.$iApi.state.loadedState?.canvas) {
+            this._mirrorX = this.$iApi.state.loadedState.canvas.settings.mirrorX ?? false;
+            this._mirrorY = this.$iApi.state.loadedState.canvas.settings.mirrorY ?? false;
+        }
 
         this._initialized = true;
 

@@ -8,7 +8,11 @@ export class SettingsAPI extends APIScope {
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this._theme = UITheme.LIGHT; // TODO: load from settings
+        if (this.$iApi.state.loadedState?.preferences) {
+            this._theme = this.$iApi.state.loadedState.preferences.theme;
+        } else {
+            this._theme = UITheme.LIGHT;
+        }
     }
 
     destroy(): void {

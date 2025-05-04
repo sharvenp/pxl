@@ -27,7 +27,7 @@
         "tools": {
             "type": "object",
             "properties": {
-                "selected-tool": {
+                "selectedTool": {
                     "$ref": "#/$defs/tool-id"
                 },
                 "states": {
@@ -82,7 +82,7 @@
                 }
             },
             "required": [
-                "selected-tool",
+                "selectedTool",
                 "states"
             ],
             "additionalProperties": false
@@ -91,19 +91,47 @@
             "type": "object",
             "description": "State of the palette",
             "properties": {
-                "selected-color": {
-                    "$ref": "#/$defs/color"
+                "selectedColor": {
+                    "type": "object",
+                    "description": "Palette color",
+                    "properties": {
+                        "colorHex": {
+                            "$ref": "#/$defs/colorHex"
+                        },
+                        "colorRGBA": {
+                            "$ref": "#/$defs/colorRGBA"
+                        }
+                    },
+                    "required": [
+                        "colorHex",
+                        "colorRGBA"
+                    ],
+                    "additionalProperties": false
                 },
                 "colors": {
                     "type": "array",
                     "description": "Colors in the palette",
                     "items": {
-                        "$ref": "#/$defs/color"
+                        "type": "object",
+                        "description": "Palette color",
+                        "properties": {
+                            "colorHex": {
+                                "$ref": "#/$defs/colorHex"
+                            },
+                            "colorRGBA": {
+                                "$ref": "#/$defs/colorRGBA"
+                            }
+                        },
+                        "required": [
+                            "colorHex",
+                            "colorRGBA"
+                        ],
+                        "additionalProperties": false
                     }
                 }
             },
             "required": [
-                "selected-color",
+                "selectedColor",
                 "colors"
             ],
             "additionalProperties": false
@@ -130,11 +158,11 @@
                             "maximum": 10000,
                             "multipleOf": 1
                         },
-                        "mirror-x": {
+                        "mirrorX": {
                             "type": "boolean",
                             "description": "Whether to mirror the canvas on the x-axis or not"
                         },
-                        "mirror-y": {
+                        "mirrorY": {
                             "type": "boolean",
                             "description": "Whether to mirror the canvas on the y-axis or not"
                         }
@@ -142,8 +170,8 @@
                     "required": [
                         "width",
                         "height",
-                        "mirror-x",
-                        "mirror-y"
+                        "mirrorX",
+                        "mirrorY"
                     ],
                     "additionalProperties": false
                 },
@@ -151,7 +179,7 @@
                     "type": "object",
                     "description": "State of canvas layer",
                     "properties": {
-                        "selected-layer": {
+                        "selectedLayer": {
                             "type": "number",
                             "description": "Index of the selected layer",
                             "minimum": 0,
@@ -272,7 +300,7 @@
                         }
                     },
                     "required": [
-                        "selected-layer",
+                        "selectedLayer",
                         "states"
                     ],
                     "additionalProperties": false
@@ -294,51 +322,47 @@
     ],
     "additionalProperties": false,
     "$defs": {
-        "color": {
-            "oneOf": [
-                {
-                    "type": "string",
-                    "description": "Color in hex format",
-                    "pattern": "^#([0-9a-fA-F]{8})$"
-                },
-                {
+        "colorHex": {
+            "type": "string",
+            "description": "Color in hex format",
+            "pattern": "^#([0-9a-fA-F]{8})$"
+        },
+        "colorRGBA": {
+            "type": "object",
+            "description": "Color in RGBA format",
+            "properties": {
+                "r": {
                     "type": "number",
-                    "description": "Color in number format",
+                    "description": "Red value",
                     "minimum": 0,
-                    "maximum": 4294967295,
-                    "multipleOf": 1
+                    "maximum": 255
                 },
-                {
-                    "type": "object",
-                    "description": "Color in RGBA format",
-                    "properties": {
-                        "r": {
-                            "type": "number",
-                            "description": "Red value",
-                            "minimum": 0,
-                            "maximum": 255
-                        },
-                        "g": {
-                            "type": "number",
-                            "description": "Green value",
-                            "minimum": 0,
-                            "maximum": 255
-                        },
-                        "b": {
-                            "type": "number",
-                            "description": "Blue value",
-                            "minimum": 0,
-                            "maximum": 255
-                        },
-                        "a": {
-                            "type": "number",
-                            "description": "Alpha value",
-                            "minimum": 0,
-                            "maximum": 255
-                        }
-                    }
+                "g": {
+                    "type": "number",
+                    "description": "Green value",
+                    "minimum": 0,
+                    "maximum": 255
+                },
+                "b": {
+                    "type": "number",
+                    "description": "Blue value",
+                    "minimum": 0,
+                    "maximum": 255
+                },
+                "a": {
+                    "type": "number",
+                    "description": "Alpha value",
+                    "minimum": 0,
+                    "maximum": 255
                 }
-            ]
+            },
+            "required": [
+                "r",
+                "g",
+                "b",
+                "a"
+            ],
+            "additionalProperties": false
         },
         "tool-id": {
             "type": "string",

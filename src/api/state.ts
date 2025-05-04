@@ -4,16 +4,16 @@ import { ToolType } from './utils';
 
 export class StateAPI extends APIScope {
 
-    private currentState: any | undefined;
+    private _loadedState: any | undefined;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this.currentState = undefined;
+        this._loadedState = undefined;
     }
 
     destroy(): void {
-        this.currentState = undefined;
+        this._loadedState = undefined;
     }
 
     /**
@@ -30,12 +30,12 @@ export class StateAPI extends APIScope {
         };
     }
 
-    getCurrentState(): any {
-        if (this.currentState === undefined) {
-            this.currentState = this.getState();
+    get loadedState(): any {
+        if (this._loadedState === undefined) {
+            this._loadedState = this.getState();
         }
 
-        return this.currentState;
+        return this._loadedState;
     }
 
     private _processSettings(settingsApi: SettingsAPI): any {
@@ -50,7 +50,7 @@ export class StateAPI extends APIScope {
         const tools = toolApi.tools;
 
         const toolState = {
-            "selected-tool": toolApi.selectedTool?.toolType ?? ToolType.PENCIL,
+            selectedTool: toolApi.selectedTool?.toolType ?? ToolType.PENCIL,
             states: tools.map(tool =>
             ({
                 tool: tool.toolType,
@@ -64,8 +64,22 @@ export class StateAPI extends APIScope {
     private _processPalette(paletteApi: PaletteAPI): any {
 
         const paletteState = {
-            "selected-color": paletteApi.selectedColor?.colorHex ?? "#000000ff",
-            colors: paletteApi.palette.map(c => c.colorHex)
+            selectedColor:
+            {
+                colorHex: paletteApi.selectedColor?.colorHex ?? "#000000ff",
+                colorRGBA: paletteApi.selectedColor?.colorRGBA ?? { r: 0, g: 0, b: 0, a: 255 }
+            },
+            colors: paletteApi.palette.map((color) => {
+                return {
+                    colorHex: color.colorHex,
+                    colorRGBA: {
+                        r: color.colorRGBA.r,
+                        g: color.colorRGBA.g,
+                        b: color.colorRGBA.b,
+                        a: color.colorRGBA.a
+                    }
+                };
+            })
         };
 
         return paletteState;
@@ -94,11 +108,11 @@ export class StateAPI extends APIScope {
             settings: {
                 width: canvasApi.width,
                 height: canvasApi.height,
-                "mirror-x": canvasApi.mirrorX,
-                "mirror-y": canvasApi.mirrorY
+                mirrorX: canvasApi.mirrorX,
+                mirrorY: canvasApi.mirrorY
             },
             layers: {
-                "selected-layer": canvasApi.grid?.activeIndex ?? 0,
+                selectedLayer: canvasApi.grid?.activeIndex ?? 0,
                 states: canvasApi.grid?.drawLayers.map((layer, i) => ({
                     label: layer.label,
                     visible: layer.visible,
@@ -117,7 +131,7 @@ export class StateAPI extends APIScope {
      * Consume the state config and apply it to the current instance.
     **/
 
-    setState(state: any): void {
-        this.currentState = state;
+    set loadedState(state: any) {
+        this._loadedState = state;
     }
 }

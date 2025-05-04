@@ -9,13 +9,25 @@ export class PaletteAPI extends APIScope {
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this._selectedColor = {
-            colorHex: '#000000ff',
-            colorRGBA: { r: 0, g: 0, b: 0, a: 255 },
+        if (this.$iApi.state.loadedState?.palette) {
+            // load from state
+            this._palette = this.$iApi.state.loadedState.palette.colors.map((color: PaletteItem) => {
+                return {
+                    colorHex: color.colorHex,
+                    colorRGBA: color.colorRGBA,
+                };
+            });
+            this._selectedColor = this.$iApi.state.loadedState.palette.selectedColor;
+        } else {
+            // default palette to black
+            this._selectedColor = {
+                colorHex: '#000000ff',
+                colorRGBA: { r: 0, g: 0, b: 0, a: 255 },
+            }
+            this._palette = [
+                this._selectedColor
+            ];
         }
-        this._palette = [
-            this._selectedColor
-        ];
     }
 
     destroy(): void {

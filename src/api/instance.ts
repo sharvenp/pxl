@@ -42,7 +42,7 @@ export class InstanceAPI {
             container.appendChild(pixi.canvas);
 
             this.state = new StateAPI(this);
-            this.state.setState(config);
+            this.state.loadedState = config;
 
             this.ipc = new IPCAPI(this);
             this.palette = new PaletteAPI(this);

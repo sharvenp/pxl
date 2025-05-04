@@ -79,9 +79,9 @@ export class ToolAPI extends APIScope {
             this._stopTracking();
         }));
 
-        // default to pencil
-        // TODO: load correct tool from save state
-        this._selectedTool = this._tools[ToolType.PENCIL];
+        // default to pencil if not set
+        // TODO: load individual tool state
+        this._selectedTool = this._tools[this.$iApi.state.loadedState?.selectedTool ?? ToolType.PENCIL];
         this._selectedTool.init();
     }
 
