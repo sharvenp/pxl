@@ -36,7 +36,7 @@ export class Select extends Tool {
         this._isSelected = false;
     }
 
-    initialize(): void {
+    init(): void {
         this._handlers.push(this.$iApi.event.on(Events.SELECT_TOOL_RESET, () => {
             this._resetDrag();
             this._revertRegion();
@@ -52,7 +52,7 @@ export class Select extends Tool {
         this._previewLayer.addChild(this._previewGraphic);
     }
 
-    dispose(): void {
+    destroy(): void {
         this._handlers.forEach(h => this.$iApi.event.off(h));
         this._resetDrag();
         this._revertRegion();
@@ -60,6 +60,7 @@ export class Select extends Tool {
         this._previewLayer?.destroy({ children: true });
         this._previewGraphic = undefined;
         this._previewLayer = undefined;
+
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {

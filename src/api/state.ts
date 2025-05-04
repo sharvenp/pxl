@@ -1,23 +1,24 @@
 import { AlphaFilter, Filter } from 'pixi.js';
 import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
 import { ToolType } from './utils';
-import { encode, decode } from 'cbor2';
 
 export class StateAPI extends APIScope {
 
-    private currentState: any = undefined;
+    private currentState: any | undefined;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
+
+        this.currentState = undefined;
+    }
+
+    destroy(): void {
+        this.currentState = undefined;
     }
 
     /**
      * Process the current state of the application and return it as a JSON object.
     **/
-
-    getStateCbor(): Uint8Array {
-        return encode(this.getState());
-    }
 
     getState(): any {
         return {
@@ -112,13 +113,11 @@ export class StateAPI extends APIScope {
         return canvasState;
     }
 
-    // TODO
     /**
      * Consume the state config and apply it to the current instance.
     **/
 
-    setStateCbor(buffer: Uint8Array): void {
-        const state = decode(buffer);
+    setState(state: any): void {
         this.currentState = state;
     }
 }

@@ -3,16 +3,25 @@
 
         <!-- PIXI Canvas will get injected here -->
 
-        <div v-if="!initialized" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 w-80 text-center p-5 rounded-xl">
-            <p>Enter canvas dimensions</p>
-            <div class="flex flex-row justify-center mt-2">
-                <input v-model="width" class="appearance-none border rounde m-2 p-2 focus:outline-none" type="number" min="1" max="256" placeholder="Width">
-                <input  class="appearance-none border rounded m-2 p-2 focus:outline-none" type="number" min="1" max="256" placeholder="Height">
+        <div v-if="!initialized" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 border-stone-300 border-2 w-96 text-center p-5 rounded-xl">
+            <h2 class="text-lg font-bold mb-4">Canvas Setup</h2>
+            <p class="text-sm text-gray-600 mb-4">Enter the dimensions for your canvas below</p>
+            <div class="flex flex-col space-y-3">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <label for="width" class="text-sm font-medium text-gray-700 mb-1">Width</label>
+                        <input id="width" v-model="width" class="appearance-none border rounded-lg p-2 w-full" type="number" min="2" max="512" placeholder="Width">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="height" class="text-sm font-medium text-gray-700 mb-1">Height</label>
+                        <input id="height" v-model="height" class="appearance-none border rounded-lg p-2 w-full" type="number" min="2" max="512" placeholder="Height">
+                    </div>
+                </div>
             </div>
-            <button class="bg-indigo-300 hover:bg-indigo-400 font-bold py-2 px-4 rounded mt-2" @click="initializeCanvas">
-                Create
+            <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-4 w-full" @click="initializeCanvas">
+                Create Canvas
             </button>
-            <p class="text-red-400 mt-5">{{ error }}</p>
+            <p v-if="error" class="text-red-600 font-bold text-sm mt-3">{{ error }}</p>
         </div>
     </div>
 </template>
@@ -20,93 +29,54 @@
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from 'vue'
 import { InstanceAPI } from '../api';
-import { Events, PixelCoordinates } from '../api/utils';
-import { Application, FederatedMouseEvent } from 'pixi.js';
 
 const container = ref();
 const iApi = inject<InstanceAPI>('iApi');
-let width = ref(32);
-let height = ref(32);
+let width = ref(undefined);
+let height = ref(undefined);
 let error = ref("");
 let initialized = ref(false);
 
 function initializeCanvas() {
-    error.value = "";
-    if (!width.value || width.value < 0 || !height.value || height.value < 0) {
-        error.value = "Please enter valid dimensions";
+    if (!validateDimensions()) {
         return;
     }
 
-    let pixi = new Application();
-    pixi.init({
-        width: width.value,
-        height: height.value,
-        backgroundAlpha: 0,
-        eventMode: 'static',
-        autoDensity: true
-    }).then(() => {
-        container.value.appendChild(pixi.canvas);
-        pixi.canvas.classList.add("pxl-canvas"); // add the style class
-
-        let isDragging = false;
-        let lastCell: PixelCoordinates | undefined = undefined;
-        let getCoords = (event: FederatedMouseEvent) => {
-            const localPos = event.getLocalPosition(pixi.stage, { x: event.globalX, y: event.globalY })
-            return {x: Math.abs(Math.floor(localPos.x)), y: Math.abs(Math.floor(localPos.y))};
+    const config = {
+        canvas: {
+            settings: {
+                width: width.value,
+                height: height.value
+            }
         }
-
-        pixi.stage.eventMode = 'static';
-        pixi.stage.hitArea = pixi.screen;
-
-        pixi.stage
-        .on('pointerdown', (event) => {
-            const coords = getCoords(event);
-            if (event.button === 0) {
-                isDragging = true;
-                iApi?.event.emit(Events.MOUSE_DRAG_START, { coords , isDragging, isOnCanvas: true });
-                lastCell = {x: coords.x, y: coords.y};
-            }
-        })
-        .on('pointerup', (event) => {
-            const coords = getCoords(event);
-            if (event.button === 0) {
-                isDragging = false;
-                iApi?.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas: true });
-            }
-        })
-        .on('pointerupoutside', (event) => {
-            const coords = getCoords(event);
-            if (event.button === 0) {
-                isDragging = false;
-                iApi?.event.emit(Events.MOUSE_DRAG_STOP, {coords, isDragging, isOnCanvas: false });
-            }
-        })
-        .on('pointermove', (event) => {
-            let coords = getCoords(event);
-            if (!(coords.x === lastCell?.x && coords.y === lastCell?.y)) {
-                iApi?.event.emit(Events.MOUSE_MOVE, { coords, isDragging, isOnCanvas: true });
-                lastCell = {x: coords.x, y: coords.y};
-            }
-        })
-        .on('pointerout', (event) => {
-            iApi?.event.emit(Events.CANVAS_MOUSE_LEAVE);
-        })
-        .on('pointerenter', (event) => {
-            iApi?.event.emit(Events.CANVAS_MOUSE_ENTER);
-        });
-
-        iApi?.canvas.initialize(pixi);
-
+    }
+    iApi?.new(container.value, config).then(()=> {
         initialized.value = true;
-    });
+    })
+}
+
+function validateDimensions(): boolean {
+    error.value = "";
+    if (!width.value || width.value < 0 || !height.value || height.value < 0) {
+        error.value = "Please enter valid dimensions.";
+        return false;
+    }
+    if (width.value < 2 || height.value < 2) {
+        error.value = "Canvas size must be at least 2x2 pixels.";
+        return false;
+    }
+    if (width.value > 512 || height.value > 512) {
+        error.value = "Canvas size must be at most 512x512 pixels.";
+        return false;
+    }
+    return true;
 }
 
 onMounted(() => {
-    initializeCanvas();
 })
 
 onUnmounted(() => {
-    iApi?.canvas.destroy();
+    iApi?.destroy();
     initialized.value = false;
 })
 

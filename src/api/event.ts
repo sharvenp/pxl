@@ -31,6 +31,12 @@ export class EventAPI extends APIScope {
         this._funCounter = 1;
     }
 
+    destroy(): void {
+        this._eventRegister.forEach(eh => this.off(eh.handlerName));
+        this._eventRegister.length = 0;
+        this._nameRegister.length = 0;
+    }
+
     private findHandler(handlerName: string): EventHandler | undefined {
         return this._eventRegister.find(eh => eh.handlerName === handlerName);
     }

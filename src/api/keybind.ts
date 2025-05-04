@@ -27,21 +27,22 @@ export class KeyBindAPI extends APIScope {
         this._keyBinds = [];
         this._keys = [];
 
-        this.initialize();
-    }
-
-    initialize(): void {
         document.addEventListener('keydown', this._processInputDown.bind(this));
         document.addEventListener('keyup', this._processInputUp.bind(this));
         window.addEventListener('blur', this._processBlur.bind(this));
 
         this._initiailizeDefaultKeyBinds()
+
     }
 
     destroy(): void {
+
         document.removeEventListener('keydown', this._processInputDown.bind(this));
         document.removeEventListener('keyup', this._processInputUp.bind(this));
         window.removeEventListener('blur', this._processBlur.bind(this));
+
+        this._keyBinds.length = 0;
+        this._keys.length = 0;
     }
 
     private _findKeyBind(keyBindName: string): KeyBind | undefined {

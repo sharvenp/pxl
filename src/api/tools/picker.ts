@@ -11,6 +11,9 @@ export class Picker extends Tool {
         this._toolConfiguration.invokeOnMove = false;
     }
 
+    destroy(): void {
+    }
+
     invokeAction(event: GridMouseEvent): void {
         const grid = this.$iApi.canvas.grid!;
         if (grid && event.isDragging && event.isOnCanvas) {

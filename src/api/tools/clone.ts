@@ -31,14 +31,14 @@ export class Clone extends Tool {
         this._isSelected = false;
     }
 
-    initialize(): void {
+    init(): void {
         this._handlers.push(this.$iApi.event.on(Events.CLONE_TOOL_RESET, () => {
             this._resetDrag();
             this._resetRegionSelect();
         }));
     }
 
-    dispose(): void {
+    destroy(): void {
         this._handlers.forEach(h => this.$iApi.event.off(h));
         this._resetDrag();
         this._resetRegionSelect();

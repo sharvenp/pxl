@@ -22,7 +22,7 @@ export class Eraser extends Tool {
         ]
     }
 
-    initialize(): void {
+    destroy(): void {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {

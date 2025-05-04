@@ -19,6 +19,9 @@ export class Fill extends Tool {
         ]
     }
 
+    destroy(): void {
+    }
+
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         const grid = this.$iApi.canvas.grid;
         const color = this.$iApi.palette.selectedColor;

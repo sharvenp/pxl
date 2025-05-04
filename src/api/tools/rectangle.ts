@@ -30,6 +30,10 @@ export class Rectangle extends Tool {
         this._isDragging = false;
     }
 
+    destroy(): void {
+        this._resetDrag();
+    }
+
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         const grid = this.$iApi.canvas.grid;
         const cursor = this.$iApi.canvas.cursor;
@@ -138,10 +142,6 @@ export class Rectangle extends Tool {
                 }
             }
         }
-    }
-
-    dispose(): void {
-        this._resetDrag();
     }
 
     private _resetDrag(): void {

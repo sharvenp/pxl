@@ -29,16 +29,14 @@ export class GridAPI extends APIScope {
 
         this._previewContainer = new Container({ eventMode: 'none' });
         this._pixi.stage.addChild(this._previewContainer);
-
-        this.initialize();
-    }
-
-    initialize(): void {
-        // TODO
     }
 
     destroy(): void {
-        // TODO
+        this._previewContainer.destroy();
+
+        this._drawContainer.destroy({ children: true });
+        this._activeIndex = 0;
+        this._drawLayers.length = 0;
     }
 
     getPixel(coords: PixelCoordinates): RGBAColor {

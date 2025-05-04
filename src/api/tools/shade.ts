@@ -25,6 +25,9 @@ export class Shade extends Tool {
         ]
     }
 
+    destroy(): void {
+    }
+
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
         const grid = this.$iApi.canvas.grid;
         if (grid && mouseEvent.isDragging && mouseEvent.isOnCanvas) {

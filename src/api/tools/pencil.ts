@@ -19,7 +19,7 @@ export class Pencil extends Tool {
         ]
     }
 
-    initialize(): void {
+    destroy(): void {
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {

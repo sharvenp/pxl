@@ -27,6 +27,19 @@ export abstract class Tool extends APIScope {
         this._handlers = [];
     }
 
+    init(): void {
+        // will be implemented by tool
+    }
+
+    previewCursor(event: GridMouseEvent): void {
+        // will be implemented by tool
+    }
+
+    newGraphic(): void {
+        this._drawGraphic = new Graphics({ roundPixels: true });
+    }
+
+
     get toolConfiguration(): ToolConfiguration {
         return this._toolConfiguration;
     }
@@ -39,20 +52,8 @@ export abstract class Tool extends APIScope {
         return this._toolType;
     }
 
-    initialize(): void {
-        // will be implemented by tool
-    }
-
-    dispose(): void {
-        // will be implemented by tool
-    }
-
-    previewCursor(event: GridMouseEvent): void {
-        // will be implemented by tool
-    }
-
-    newGraphic(): void {
-        this._drawGraphic = new Graphics({ roundPixels: true });
+    get drawGraphic(): Graphics {
+        return this._drawGraphic;
     }
 
     // invoke the tool's action (e.g. draw a pixel)

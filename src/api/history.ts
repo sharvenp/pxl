@@ -12,12 +12,15 @@ export class HistoryAPI extends APIScope {
         this._historyStack = [];
     }
 
+    destroy(): void {
+        this._clearHistory();
+    }
+
     update(): void {
 
         // erase redo history since we've started drawing again
         if (this._historyStack.length > 0) {
-            this._historyStack.forEach(c => c.destroy());
-            this._historyStack.length = 0;
+            this._clearHistory();
         }
     }
 
@@ -48,6 +51,11 @@ export class HistoryAPI extends APIScope {
 
             this.$iApi.event.emit(Events.REDO);
         }
+    }
+
+    private _clearHistory(): void {
+        this._historyStack.forEach(c => c.destroy());
+        this._historyStack.length = 0;
     }
 
     get canRedo(): boolean {

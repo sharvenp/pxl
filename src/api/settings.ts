@@ -9,16 +9,9 @@ export class SettingsAPI extends APIScope {
         super(iApi);
 
         this._theme = UITheme.LIGHT; // TODO: load from settings
-
-        this.initialize();
-    }
-
-    initialize(): void {
-
     }
 
     destroy(): void {
-
     }
 
     get theme(): UITheme {

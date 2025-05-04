@@ -1,5 +1,5 @@
 import { APIScope, InstanceAPI } from '.';
-import { Events, PaletteItem, Utils } from './utils';
+import { Events, PaletteItem } from './utils';
 
 export class PaletteAPI extends APIScope {
 
@@ -9,33 +9,17 @@ export class PaletteAPI extends APIScope {
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        // TODO: load correct palette from save state
-        const startingColor = {
+        this._selectedColor = {
             colorHex: '#000000ff',
             colorRGBA: { r: 0, g: 0, b: 0, a: 255 },
         }
         this._palette = [
-            startingColor
+            this._selectedColor
         ];
-
-        // TODO: remove this for debugging
-        for (let x = 0; x < 10; x++) {
-            const rcolor = Utils.getRandomColor(0.5);
-            this._palette.push({
-                colorHex: rcolor,
-                colorRGBA: Utils.hexToRGBA(rcolor)
-            })
-        }
-
-        this._selectedColor = this.palette[5];
-
-        this.initialize();
-    }
-
-    initialize(): void {
     }
 
     destroy(): void {
+        this._palette.length = 0;
     }
 
     selectColor(color: PaletteItem): void {

@@ -30,6 +30,7 @@
 import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
 import { InstanceAPI } from '../api';
 import { MenuOption } from '../api/utils';
+import { encode, decode } from 'cbor2';
 
 const iApi = inject<InstanceAPI>('iApi');
 const activeMenu = ref<string | undefined>(undefined);
@@ -58,7 +59,7 @@ const menuOptions = ref<Record<string, MenuOption[]>>({
 const ipcRequired = new Set(['exit', 'save-project']);
 
 const ipcSupported = computed(() => {
-  return iApi?.ipc.ipcAPISupported() ?? false;
+  return iApi?.ipc?.ipcAPISupported() ?? false;
 })
 
 function openMenu(menu: string) {
@@ -143,9 +144,9 @@ function handleOption(key: string) {
 }
 
 function _saveFile() {
-    var stateBuffer = iApi?.state.getStateCbor();
-    if (stateBuffer) {
-        const uint8Array = new Uint8Array(stateBuffer);
+    var state = iApi?.state.getState();
+    if (state) {
+        const uint8Array = new Uint8Array(encode(state));
 
         const blob = new Blob([uint8Array], { type: 'application/cbor' });
 
@@ -172,7 +173,16 @@ function _openFile() {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (file) {
             const arrayBuffer = await file.arrayBuffer();
-            iApi?.state.setStateCbor(new Uint8Array(arrayBuffer));
+            const configState =decode(new Uint8Array(arrayBuffer));
+            // destroy api
+            // iApi?.destroy();
+
+            // // create new api
+            // iApi?.new(configState)
+
+            // set the state
+            // iApi?.state.setState(configState);
+            console.log(configState);
         }
     });
 

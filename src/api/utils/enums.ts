@@ -1,5 +1,6 @@
 
 export enum Events {
+    APP_INITIALIZED = "app_initialized",
     MOUSE_MOVE = "canvas_mouse_move",
     MOUSE_DRAG_START = "canvas_mouse_drag_start",
     MOUSE_DRAG_STOP = "canvas_mouse_drag_stop",

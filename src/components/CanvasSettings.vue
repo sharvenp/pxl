@@ -1,5 +1,5 @@
 <template>
-    <div class="canvas-settings absolute border bg-white m-5 flex flex-col p-4 z-10">
+    <div v-show="initialized" class="canvas-settings absolute border bg-white m-5 flex flex-col p-4 z-10">
         <div class="flex flex-row items-center text-xs">
             <input type="checkbox" v-model="mirrorX" @change="updateMirrorX">
             <span class="ms-2">Mirror X</span>
@@ -12,12 +12,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { InstanceAPI } from '../api';
+import { Events } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
-const mirrorX = ref<boolean>(iApi?.canvas.mirrorX ?? false);
-const mirrorY = ref<boolean>(iApi?.canvas.mirrorY ?? false);
+const mirrorX = ref<boolean>(false);
+const mirrorY = ref<boolean>(false);
+const handlers: Array<string> = [];
+let initialized = ref(false);
 
 const updateMirrorX = () => {
     if (iApi) {
@@ -31,4 +34,15 @@ const updateMirrorY = () => {
     }
 };
 
+onMounted(() => {
+    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
+        mirrorX.value = iApi?.canvas.mirrorX ?? false;
+        mirrorY.value = iApi?.canvas.mirrorY ?? false;
+        initialized.value = true;
+    })!);
+})
+
+onUnmounted(() => {
+    handlers.forEach(h => iApi?.event.off(h));
+})
 </script>

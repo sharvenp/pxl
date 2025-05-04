@@ -6,6 +6,10 @@ export class IPCAPI extends APIScope {
         super(iApi);
     }
 
+    destroy(): void {
+        // do nothing
+    }
+
     call(channel: string, ...data: any): void {
         if (this.ipcAPISupported()) {
             //@ts-ignore

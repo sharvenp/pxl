@@ -1,5 +1,5 @@
 <template>
-    <div class="tools-menu absolute rounded m-5 z-10">
+    <div v-show="initialized" class="tools-menu absolute rounded m-5 z-10">
         <!-- Tool buttons -->
         <div class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border">
             <button class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500" @click="selectTool(ToolType.PENCIL)">P</button>
@@ -60,19 +60,23 @@ import { InstanceAPI } from '../api';
 import { Events, ToolType } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
-let handlers: Array<string> = [];
-let currentTool = ref<any>();
+const handlers: Array<string> = [];
+const currentTool = ref<any>();
+const initialized = ref(false);
 
 function selectTool(tool: ToolType) {
     iApi?.tool.selectTool(tool);
 }
 
 onMounted(() => {
+    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
+        initialized.value = true;
+        currentTool.value = iApi?.tool.selectedTool;
+    })!)
+
     handlers.push(iApi?.event.on(Events.TOOL_SELECT, () => {
         currentTool.value = iApi?.tool.selectedTool;
     })!);
-
-    currentTool.value = iApi?.tool.selectedTool;
 })
 
 onUnmounted(() => {

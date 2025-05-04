@@ -19,11 +19,6 @@ export class ToolAPI extends APIScope {
         this._handlers = [];
         this._isAltMode = false;
 
-        this.initialize();
-    }
-
-    initialize(): void {
-
         // populate tools
         this._tools[ToolType.PENCIL] = new Pencil(this.$iApi);
         this._tools[ToolType.ERASER] = new Eraser(this.$iApi);
@@ -35,10 +30,6 @@ export class ToolAPI extends APIScope {
         this._tools[ToolType.SHADE] = new Shade(this.$iApi);
         this._tools[ToolType.SELECT] = new Select(this.$iApi);
         this._tools[ToolType.CLONE] = new Clone(this.$iApi);
-
-        // default to pencil
-        // TODO: load correct tool from save state
-        this.selectTool(ToolType.PENCIL);
 
         // setup _handlers
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
@@ -84,17 +75,22 @@ export class ToolAPI extends APIScope {
             // clear the cursor
             this.$iApi.canvas.cursor?.clearCursor();
 
-            // if (this._selectedTool) {
-            //     this.invokeAction(mouseEvt, event);
-            // }
-
             // clear tracking set
             this._stopTracking();
         }));
+
+        // default to pencil
+        // TODO: load correct tool from save state
+        this._selectedTool = this._tools[ToolType.PENCIL];
+        this._selectedTool.init();
     }
 
     destroy(): void {
         this._handlers.forEach(h => this.$iApi.event.off(h));
+        Object.values(this._tools).forEach(tool => {
+            tool.drawGraphic.destroy();
+            tool.destroy()
+        });
     }
 
     invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
@@ -120,12 +116,12 @@ export class ToolAPI extends APIScope {
 
     selectTool(tool: ToolType): void {
         if (this._selectedTool) {
-            this._selectedTool.dispose();
+            this._selectedTool.destroy();
             this.$iApi.canvas.cursor?.clearCursor();
         }
 
         this._selectedTool = this._tools[tool];
-        this._selectedTool.initialize();
+        this._selectedTool.init();
 
         this.$iApi.event.emit(Events.TOOL_SELECT, tool);
     }

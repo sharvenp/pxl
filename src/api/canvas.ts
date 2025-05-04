@@ -1,7 +1,7 @@
 import { APIScope, InstanceAPI, GridAPI, CursorAPI } from '.';
 import Panzoom, { PanzoomObject, ZoomOptions } from "@panzoom/panzoom";
-import { Application } from 'pixi.js';
-import { Events } from './utils';
+import { Application, FederatedMouseEvent } from 'pixi.js';
+import { Events, PixelCoordinates } from './utils';
 
 
 export class CanvasAPI extends APIScope {
@@ -35,6 +35,56 @@ export class CanvasAPI extends APIScope {
         this._pixi = pixi;
 
         this._pixi.renderer.clear();
+
+        // set up pixi handlers
+        pixi.canvas.classList.add("pxl-canvas"); // add the style class
+
+        let isDragging = false;
+        let lastCell: PixelCoordinates | undefined = undefined;
+        const getCoords = (event: FederatedMouseEvent) => {
+            const localPos = event.getLocalPosition(pixi.stage, { x: event.globalX, y: event.globalY })
+            return { x: Math.abs(Math.floor(localPos.x)), y: Math.abs(Math.floor(localPos.y)) };
+        }
+
+        pixi.stage.eventMode = 'static';
+        pixi.stage.hitArea = pixi.screen;
+
+        pixi.stage
+            .on('pointerdown', (event) => {
+                const coords = getCoords(event);
+                if (event.button === 0) {
+                    isDragging = true;
+                    this.$iApi.event.emit(Events.MOUSE_DRAG_START, { coords, isDragging, isOnCanvas: true });
+                    lastCell = { x: coords.x, y: coords.y };
+                }
+            })
+            .on('pointerup', (event) => {
+                const coords = getCoords(event);
+                if (event.button === 0) {
+                    isDragging = false;
+                    this.$iApi.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas: true });
+                }
+            })
+            .on('pointerupoutside', (event) => {
+                const coords = getCoords(event);
+                if (event.button === 0) {
+                    isDragging = false;
+                    this.$iApi.event.emit(Events.MOUSE_DRAG_STOP, { coords, isDragging, isOnCanvas: false });
+                }
+            })
+            .on('pointermove', (event) => {
+                const coords = getCoords(event);
+                if (!(coords.x === lastCell?.x && coords.y === lastCell?.y)) {
+                    this.$iApi.event.emit(Events.MOUSE_MOVE, { coords, isDragging, isOnCanvas: true });
+                    lastCell = { x: coords.x, y: coords.y };
+                }
+            })
+            .on('pointerout', (event) => {
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_LEAVE);
+            })
+            .on('pointerenter', (event) => {
+                this.$iApi.event.emit(Events.CANVAS_MOUSE_ENTER);
+            });
 
         // set up panzoom
 
@@ -87,7 +137,11 @@ export class CanvasAPI extends APIScope {
         this._cursor?.destroy();
         this._cursor = undefined;
 
+        this._panzoom?.destroy();
+        this._panzoom = undefined;
+
         this._pixi?.destroy();
+        this._pixi = undefined;
     }
 
     private _handlePan(event: PointerEvent) {
