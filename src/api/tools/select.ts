@@ -214,7 +214,7 @@ export class Select extends Tool {
 
     private _createPreview(): void {
 
-        const previewContainer = this.$iApi.canvas.grid?.previewContainer;
+        const previewContainer = this.$iApi.canvas.grid.previewContainer;
 
         if (!this._selectedRegion || !previewContainer || !this._previewLayer || !this._previewGraphic) {
             return;

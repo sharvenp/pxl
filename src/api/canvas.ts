@@ -3,33 +3,22 @@ import Panzoom, { PanzoomObject, ZoomOptions } from "@panzoom/panzoom";
 import { Application, FederatedMouseEvent } from 'pixi.js';
 import { Events, PixelCoordinates } from './utils';
 
-
 export class CanvasAPI extends APIScope {
 
-    private _grid: GridAPI | undefined;
-    private _cursor: CursorAPI | undefined;
+    private _grid: GridAPI;
+    private _cursor: CursorAPI;
 
-    private _initialized: boolean;
-    private _panzoom: PanzoomObject | undefined;
-    private _pixi: Application | undefined;
+    private _panzoom: PanzoomObject;
+    private _pixi: Application;
 
     private _mirrorX: boolean;
     private _mirrorY: boolean;
 
-    constructor(iApi: InstanceAPI) {
+    constructor(iApi: InstanceAPI, pixi: Application) {
         super(iApi);
 
         this._mirrorX = false;
         this._mirrorY = false;
-
-        this._initialized = false;
-    }
-
-    initialize(pixi: Application): void {
-        if (this._initialized) {
-            console.warn("Canvas already intialized");
-            return;
-        }
 
         this._pixi = pixi;
 
@@ -123,29 +112,22 @@ export class CanvasAPI extends APIScope {
             this._mirrorY = this.$iApi.state.loadedState.canvas.settings.mirrorY ?? false;
         }
 
-        this._initialized = true;
-
         this.$iApi.event.emit(Events.CANVAS_INITIALIZED);
     }
 
     destroy(): void {
-        this._initialized = false;
 
         window.onresize = null;
         window.onwheel = null;
         window.onpointerdown = null;
 
-        this._grid?.destroy();
-        this._grid = undefined;
+        this._grid.destroy();
 
-        this._cursor?.destroy();
-        this._cursor = undefined;
+        this._cursor.destroy();
 
-        this._panzoom?.destroy();
-        this._panzoom = undefined;
+        this._panzoom.destroy();
 
-        this._pixi?.destroy();
-        this._pixi = undefined;
+        this._pixi.destroy();
     }
 
     private _handlePan(event: PointerEvent) {
@@ -172,28 +154,24 @@ export class CanvasAPI extends APIScope {
         }
     }
 
-    get initialized(): boolean {
-        return this._initialized;
-    }
-
-    get grid(): GridAPI | undefined {
+    get grid(): GridAPI {
         return this._grid;
     }
 
-    get cursor(): CursorAPI | undefined {
+    get cursor(): CursorAPI {
         return this._cursor;
     }
 
     get width(): number {
-        return this._pixi?.canvas.width ?? 0;
+        return this._pixi.canvas.width;
     }
 
     get height(): number {
-        return this._pixi?.canvas.height ?? 0;
+        return this._pixi.canvas.height;
     }
 
-    get view(): HTMLCanvasElement | undefined {
-        return this._pixi?.canvas;
+    get view(): HTMLCanvasElement {
+        return this._pixi.canvas;
     }
 
     get mirrorX(): boolean {

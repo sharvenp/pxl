@@ -4,7 +4,7 @@ import { Events, GridMouseEvent, PixelCoordinates, ToolType } from "./utils";
 
 export class ToolAPI extends APIScope {
 
-    private _selectedTool: Tool | undefined;
+    private _selectedTool: Tool;
     private _isAltMode: boolean;
     private readonly _tools: Record<string, Tool>;
 
@@ -37,7 +37,7 @@ export class ToolAPI extends APIScope {
                 if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
                     this.previewCursor(mouseEvt);
                 } else {
-                    this.$iApi.canvas.cursor?.clearCursor();
+                    this.$iApi.canvas.cursor.clearCursor();
                 }
                 this.invokeAction(mouseEvt, event);
             }
@@ -73,7 +73,7 @@ export class ToolAPI extends APIScope {
         this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (event: Events) => {
 
             // clear the cursor
-            this.$iApi.canvas.cursor?.clearCursor();
+            this.$iApi.canvas.cursor.clearCursor();
 
             // clear tracking set
             this._stopTracking();
@@ -116,7 +116,7 @@ export class ToolAPI extends APIScope {
     selectTool(tool: ToolType): void {
         if (this._selectedTool) {
             this._selectedTool.destroy();
-            this.$iApi.canvas.cursor?.clearCursor();
+            this.$iApi.canvas.cursor.clearCursor();
         }
 
         this._selectedTool = this._tools[tool];
@@ -160,7 +160,7 @@ export class ToolAPI extends APIScope {
         this._trackedPixels.clear();
     }
 
-    get selectedTool(): Tool | undefined {
+    get selectedTool(): Tool {
         return this._selectedTool;
     }
 

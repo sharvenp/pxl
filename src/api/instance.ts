@@ -1,4 +1,3 @@
-import { i, P } from 'cbor2/lib/options-BZO68bQ0';
 import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI } from '.';
 import { Application } from 'pixi.js';
 import { Events } from './utils';
@@ -47,8 +46,7 @@ export class InstanceAPI {
             this.ipc = new IPCAPI(this);
             this.palette = new PaletteAPI(this);
 
-            this.canvas = new CanvasAPI(this);
-            this.canvas.initialize(pixi);
+            this.canvas = new CanvasAPI(this, pixi);
 
             this.tool = new ToolAPI(this);
             this.keybind = new KeyBindAPI(this);

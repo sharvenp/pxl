@@ -139,7 +139,7 @@ export class KeyBindAPI extends APIScope {
         // Picker alt-click
         let currTool: ToolType | undefined = undefined;
         this.on("picker-alt-down", KeyAction.DOWN, [Key.Backquote], () => {
-            currTool = this.$iApi.tool.selectedTool?.toolType;
+            currTool = this.$iApi.tool.selectedTool.toolType;
             this.$iApi.tool.selectTool(ToolType.PICKER);
         });
         this.on("picker-alt-up", KeyAction.UP, [Key.Backquote], () => {

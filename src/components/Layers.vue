@@ -41,7 +41,7 @@ onMounted(() => {
     })!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
-        selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
+        selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_ADDED, () => {
@@ -61,7 +61,7 @@ onMounted(() => {
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        updateLayerPreview(iApi?.canvas.grid?.activeLayer as Container);
+        updateLayerPreview(iApi?.canvas.grid.activeLayer as Container);
     })!);
 })
 
@@ -70,8 +70,8 @@ onUnmounted(() => {
 })
 
 function updateLayerList() {
-    layers.value = [...(iApi?.canvas.grid?.drawLayers ?? [])].reverse();
-    selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
+    layers.value = [...(iApi?.canvas.grid.drawLayers ?? [])].reverse();
+    selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     nextTick().then(() => {
         // need to do this on next tick to ensure canvas is rendered
         updateLayerPreviews();
@@ -129,7 +129,7 @@ function syncOrder() {
     let grid = iApi?.canvas.grid;
     if (grid) {
         grid.reorderLayers(layers.value.reverse() as Array<Container>);
-        selectedId.value = iApi?.canvas.grid?.activeLayer.label!;
+        selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     }
 }
 

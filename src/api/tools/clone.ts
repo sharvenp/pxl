@@ -186,7 +186,7 @@ export class Clone extends Tool {
     private _resetRegionSelect(): void {
         this._isSelected = false;
         this._selectedRegion = undefined;
-        this.$iApi.canvas.cursor?.clearCursor();
+        this.$iApi.canvas.cursor.clearCursor();
     }
 
     getToolState(): any {

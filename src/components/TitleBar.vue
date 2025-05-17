@@ -44,7 +44,7 @@ const menuOptions = ref<Record<string, MenuOption[]>>({
         { key: 'exit', label: 'Exit', hotkey: '', disabled: () => false }
     ],
     Edit: [
-        { key: 'undo', label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas.grid?.empty ?? true },
+        { key: 'undo', label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas.grid.empty ?? true },
         { key: 'redo', label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => !iApi?.history.canRedo }
     ],
     View: [

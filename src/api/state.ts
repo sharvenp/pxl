@@ -50,7 +50,7 @@ export class StateAPI extends APIScope {
         const tools = toolApi.tools;
 
         const toolState = {
-            selectedTool: toolApi.selectedTool?.toolType ?? ToolType.PENCIL,
+            selectedTool: toolApi.selectedTool.toolType ?? ToolType.PENCIL,
             states: tools.map(tool =>
             ({
                 tool: tool.toolType,
