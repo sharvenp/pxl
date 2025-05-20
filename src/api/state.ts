@@ -1,6 +1,6 @@
 import { AlphaFilter, Filter } from 'pixi.js';
 import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
-import { ToolType } from './utils';
+import { LayerFilterType, ToolType } from './utils';
 
 export class StateAPI extends APIScope {
 
@@ -96,7 +96,7 @@ export class StateAPI extends APIScope {
                 return filter.map((filter: Filter) => {
                     switch (filter.constructor) {
                         case AlphaFilter:
-                            return { type: "alpha", alpha: (filter as AlphaFilter).alpha };
+                            return { type: LayerFilterType.ALPHA, alpha: (filter as AlphaFilter).alpha };
                         default:
                             return undefined;
                     }

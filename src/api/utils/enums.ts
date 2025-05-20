@@ -4,7 +4,6 @@ export enum Events {
     MOUSE_MOVE = "canvas_mouse_move",
     MOUSE_DRAG_START = "canvas_mouse_drag_start",
     MOUSE_DRAG_STOP = "canvas_mouse_drag_stop",
-    CANVAS_INITIALIZED = "canvas_initialized",
     CANVAS_MOUSE_ENTER = "canvas_mouse_enter",
     CANVAS_MOUSE_LEAVE = "canvas_mouse_leave",
     CANVAS_UPDATE = "canvas_update",
@@ -60,6 +59,10 @@ export enum PxlGraphicMethodType {
     LINE_TO = 'lineTo',
     STROKE = 'stroke',
     FILL = 'fill'
+}
+
+export enum LayerFilterType {
+    ALPHA = 'alpha'
 }
 
 export enum UITheme {

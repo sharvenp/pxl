@@ -38,6 +38,7 @@ const initialized = ref(false);
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
         initialized.value = true;
+        updateLayerList();
     })!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
@@ -53,10 +54,6 @@ onMounted(() => {
     })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_REORDERED, () => {
-        updateLayerList();
-    })!);
-
-    handlers.push(iApi?.event.on(Events.CANVAS_INITIALIZED, () => {
         updateLayerList();
     })!);
 

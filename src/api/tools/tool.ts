@@ -56,7 +56,7 @@ export abstract class Tool extends APIScope {
     }
 
     protected loadToolState(): any {
-        const toolState = this.$iApi.state.loadedState?.tools.states.find((tool: any) => tool.tool === this._toolType)?.state;
+        const toolState = this.$iApi.state.loadedState?.tools?.states.find((tool: any) => tool.tool === this._toolType)?.state;
         return toolState;
     }
 

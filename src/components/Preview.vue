@@ -17,7 +17,7 @@ let handlers: Array<string> = [];
 onMounted(() => {
 
     // setup preview canvas
-    handlers.push(iApi?.event.on(Events.CANVAS_INITIALIZED, () => {
+    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
         if (iApi?.canvas?.view && previewCanvas.value) {
             let canvasEl = previewCanvas.value;
             let ch = iApi.canvas.height

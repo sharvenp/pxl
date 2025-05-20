@@ -17,8 +17,8 @@ export class CanvasAPI extends APIScope {
     constructor(iApi: InstanceAPI, pixi: Application) {
         super(iApi);
 
-        this._mirrorX = false;
-        this._mirrorY = false;
+        this._mirrorX = iApi.state.loadedState?.canvas.settings.mirrorX ?? false;
+        this._mirrorY = iApi.state.loadedState?.canvas.settings.mirrorY ?? false;
 
         this._pixi = pixi;
 
@@ -67,10 +67,10 @@ export class CanvasAPI extends APIScope {
                     lastCell = { x: coords.x, y: coords.y };
                 }
             })
-            .on('pointerout', (event) => {
+            .on('pointerout', () => {
                 this.$iApi.event.emit(Events.CANVAS_MOUSE_LEAVE);
             })
-            .on('pointerenter', (event) => {
+            .on('pointerenter', () => {
                 this.$iApi.event.emit(Events.CANVAS_MOUSE_ENTER);
             });
 
@@ -111,8 +111,6 @@ export class CanvasAPI extends APIScope {
             this._mirrorX = this.$iApi.state.loadedState.canvas.settings.mirrorX ?? false;
             this._mirrorY = this.$iApi.state.loadedState.canvas.settings.mirrorY ?? false;
         }
-
-        this.$iApi.event.emit(Events.CANVAS_INITIALIZED);
     }
 
     destroy(): void {

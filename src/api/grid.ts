@@ -1,6 +1,6 @@
 import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
+import { Events, LayerFilterType, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
@@ -18,17 +18,43 @@ export class GridAPI extends APIScope {
         this._pixi = pixi;
 
         this._drawContainer = new Container({ eventMode: 'none', blendMode: 'normal' });
-
-        this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
-        this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
-        this._drawContainer.addChild(this._activeLayer);
         this._pixi.stage.addChild(this._drawContainer);
-
-        this._drawLayers = [this._activeLayer];
-        this._activeIndex = 0;
 
         this._previewContainer = new Container({ eventMode: 'none' });
         this._pixi.stage.addChild(this._previewContainer);
+
+        const layerConfig = iApi.state.loadedState?.canvas.layers;
+
+        if (layerConfig) {
+            this._drawLayers = [];
+            layerConfig.states.forEach((layerState: any) => {
+                const newLayer = new Container({
+                    eventMode: 'none',
+                    label: layerState.label,
+                    visible: layerState.visible,
+                    alpha: layerState.alpha,
+                    filters: layerState.filters.map((filter: any) => {
+                        switch (filter.type) {
+                            case LayerFilterType.ALPHA:
+                                return new AlphaFilter({ alpha: filter.alpha });
+                            default:
+                                return undefined;
+                        }
+                    }).filter((f: any) => f !== undefined)
+                });
+                this._drawContainer.addChild(newLayer);
+                this._drawLayers.push(newLayer);
+            });
+            this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
+            this._activeIndex = layerConfig.selectedLayer;
+        } else {
+            this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+            this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
+            this._drawContainer.addChild(this._activeLayer);
+
+            this._drawLayers = [this._activeLayer];
+            this._activeIndex = 0;
+        }
     }
 
     destroy(): void {
