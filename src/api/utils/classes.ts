@@ -1,5 +1,4 @@
-import { PxlGraphicLogEntry, PxlGraphicMethodType, SelectedRegionData } from ".";
-import { Graphics, FillInput, StrokeInput } from 'pixi.js';
+import { SelectedRegionData } from ".";
 
 export class SelectedRegion {
 

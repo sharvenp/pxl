@@ -43,7 +43,10 @@ export interface MenuOption {
     disabled(): boolean
 }
 
-export interface PxlGraphicLogEntry {
-    method: PxlGraphicMethodType;
-    params: Array<any>;
+export interface Rectangle {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: string | RGBAColor
 }

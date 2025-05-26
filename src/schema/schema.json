@@ -279,11 +279,45 @@
                                         "type": "array",
                                         "description": "Graphic data of the layer",
                                         "items": {
-                                            "type": "number",
-                                            "description": "Pixel data of the layer as Uint8ClampedArray",
-                                            "minimum": 0,
-                                            "maximum": 255,
-                                            "multipleOf": 1
+                                            "type": "object",
+                                            "description": "Rectangle on the layer",
+                                            "properties": {
+                                                "x": {
+                                                    "type": "number",
+                                                    "description": "Top-left x coordinate",
+                                                    "minimum": 0,
+                                                    "multipleOf": 1
+                                                },
+                                                "y": {
+                                                    "type": "number",
+                                                    "description": "Top-left y coordinate",
+                                                    "minimum": 0,
+                                                    "multipleOf": 1
+                                                },
+                                                "width": {
+                                                    "type": "number",
+                                                    "description": "Width of the rectangle",
+                                                    "minimum": 1,
+                                                    "multipleOf": 1
+                                                },
+                                                "height": {
+                                                    "type": "number",
+                                                    "description": "Height of the rectangle",
+                                                    "minimum": 1,
+                                                    "multipleOf": 1
+                                                },
+                                                "color": {
+                                                    "$ref": "#/$defs/colorHex"
+                                                }
+                                            },
+                                            "required": [
+                                                "x",
+                                                "y",
+                                                "width",
+                                                "height",
+                                                "color"
+                                            ],
+                                            "additionalProperties": false
                                         }
                                     }
                                 },

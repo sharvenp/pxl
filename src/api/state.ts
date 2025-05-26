@@ -1,6 +1,6 @@
 import { AlphaFilter, Filter } from 'pixi.js';
 import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
-import { LayerFilterType, ToolType } from './utils';
+import { LayerFilterType, ToolType, Utils } from './utils';
 
 export class StateAPI extends APIScope {
 
@@ -119,7 +119,7 @@ export class StateAPI extends APIScope {
                     alpha: layer.alpha,
                     blendMode: layer.blendMode,
                     filters: _processFilters(layer.filters),
-                    data: canvasApi.grid?.extractPixels(i)
+                    data: Utils.gridToRectangles(canvasApi.grid?.extractPixels(i))
                 }))
             }
         };
