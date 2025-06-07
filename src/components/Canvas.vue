@@ -28,10 +28,10 @@
 
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from 'vue'
-import { InstanceAPI } from '../api';
+import { OrchestratorAPI } from '../api';
 
 const container = ref();
-const iApi = inject<InstanceAPI>('iApi');
+const oApi = inject<OrchestratorAPI>('oApi');
 let width = ref(undefined);
 let height = ref(undefined);
 let error = ref("");
@@ -50,7 +50,10 @@ function initializeCanvas() {
             }
         }
     }
-    iApi?.new(container.value, config).then(()=> {
+
+    oApi!.container = container.value;
+
+    oApi!.newInstance(config).then(()=> {
         initialized.value = true;
     })
 }
@@ -76,7 +79,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    iApi?.destroy();
+    oApi?.destroyInstance();
     initialized.value = false;
 })
 

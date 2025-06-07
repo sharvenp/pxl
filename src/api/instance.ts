@@ -23,6 +23,11 @@ export class InstanceAPI {
 
     new(container: HTMLElement, config: any): Promise<void> {
 
+        if (this.initalized) {
+            console.warn('InstanceAPI: Already initialized, cannot create a new instance.');
+            return Promise.reject(new Error('InstanceAPI: Already initialized'));
+        }
+
         // create pixi app
         const pixi = new Application();
 
@@ -63,6 +68,11 @@ export class InstanceAPI {
     }
 
     destroy(): void {
+        if (!this.initalized) {
+            console.warn('InstanceAPI: Cannot destroy, not initialized.');
+            return;
+        }
+
         this.event.destroy();
         this.ipc.destroy();
         this.palette.destroy();

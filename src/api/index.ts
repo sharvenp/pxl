@@ -1,5 +1,6 @@
 export * from './common';
 export * from './instance';
+export * from './orchestrator';
 export * from './event';
 export * from './ipc';
 export * from './history';
