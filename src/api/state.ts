@@ -119,7 +119,7 @@ export class StateAPI extends APIScope {
                     alpha: layer.alpha,
                     blendMode: layer.blendMode,
                     filters: _processFilters(layer.filters),
-                    data: Utils.gridToRectangles(canvasApi.grid?.extractPixels(i))
+                    data: Utils.gridToRectangles(canvasApi.grid?.extractPixels(i), canvasApi.width, canvasApi.height)
                 }))
             }
         };

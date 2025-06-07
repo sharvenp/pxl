@@ -93,63 +93,66 @@ export class Utils {
         return Math.random().toString(16).slice(2);
     }
 
-    static gridToRectangles(grid: Uint8ClampedArray): Array<Rectangle> {
-        const width = (globalThis as any).GRID_WIDTH;
-        const height = (globalThis as any).GRID_HEIGHT;
-        const finalRects: Rectangle[] = [];
-        type RectKey = string;
-        type ActiveRect = {
+    static gridToRectangles(grid: Uint8ClampedArray, width: number, height: number): Array<Rectangle> {
+        const finalRects: Array<Rectangle> = [];
+        let activeRects: Record<string, {
             x: number;
             yStart: number;
             width: number;
             height: number;
             value: [number, number, number, number];
-        };
-        let activeRects: Record<RectKey, ActiveRect> = {};
+        }> = {};
 
-        function pixelKey(offset: number): [number, number, number, number] | null {
+        const getPixel = (x: number, y: number): [number, number, number, number] | undefined => {
+            const offset = (y * width + x) * 4;
             const r = grid[offset];
             const g = grid[offset + 1];
             const b = grid[offset + 2];
             const a = grid[offset + 3];
-            if (a === 0) return null;
+            // skip transparent pixels
+            if (a === 0) return undefined;
             return [r, g, b, a];
         }
 
-        function makeRectKey(x: number, width: number, value: [number, number, number, number]): string {
-            return `${x},${width},${value.join(",")}`;
-        }
+        const makeRectKey = (x: number, width: number, value: [number, number, number, number]): string => `${x},${width},${value.join(",")}`;
 
         for (let y = 0; y < height; y++) {
-            const newActive: Record<RectKey, ActiveRect> = {};
+            const newActive: any = {};
             let x = 0;
+
+            // scan the entire row
             while (x < width) {
-                const offset = (y * width + x) * 4;
-                const key = pixelKey(offset);
+                const key = getPixel(x, y);
+
+                // if the pixel is transparent, skip it and keep going right
                 if (!key) {
                     x++;
                     continue;
                 }
+
                 const startX = x;
-                while (
-                    x < width &&
-                    (() => {
-                        const off = (y * width + x) * 4;
-                        const k = pixelKey(off);
-                        return k && k[0] === key[0] && k[1] === key[1] && k[2] === key[2] && k[3] === key[3];
-                    })()
-                ) {
+
+                // extend the run to the right
+                while (x < width) {
+                    const k = getPixel(x, y);
+                    if (!(k && k[0] === key[0] && k[1] === key[1] && k[2] === key[2] && k[3] === key[3])) {
+                        break;
+                    }
                     x++;
                 }
+
+                // calculate the width of the run and create a rectangle key
                 const runWidth = x - startX;
                 const rectKey = makeRectKey(startX, runWidth, key);
 
+                // if the rectangle already exists, extend its height
+                // otherwise, create a new rectangle
                 if (activeRects[rectKey]) {
                     const rect = activeRects[rectKey];
                     rect.height += 1;
                     newActive[rectKey] = rect;
                 } else {
-                    const rect: ActiveRect = {
+                    const rect: any = {
                         x: startX,
                         yStart: y,
                         width: runWidth,
@@ -159,9 +162,13 @@ export class Utils {
                     newActive[rectKey] = rect;
                 }
             }
+
+            // iterate over all rectangles that were active in the previous row
             for (const rectKey in activeRects) {
+                // if a rectangle is not continued in the current row, finalize it
                 if (!(rectKey in newActive)) {
                     const rect = activeRects[rectKey];
+                    // push the completed rectangle to the finalRects array
                     finalRects.push({
                         x: rect.x,
                         y: rect.yStart,
@@ -176,8 +183,11 @@ export class Utils {
                     });
                 }
             }
+            // update activeRects to the new active rectangles
             activeRects = newActive;
         }
+
+        // finalize any remaining rectangles in activeRects
         for (const rect of Object.values(activeRects)) {
             finalRects.push({
                 x: rect.x,
