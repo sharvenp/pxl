@@ -1,6 +1,6 @@
 import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, LayerFilterType, MAX_LAYER_COUNT, PixelCoordinates, RGBAColor, Utils } from './utils';
+import { Events, LayerFilterType, MAX_LAYER_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils } from './utils';
 
 export class GridAPI extends APIScope {
 
@@ -33,6 +33,7 @@ export class GridAPI extends APIScope {
                     label: layerState.label,
                     visible: layerState.visible,
                     alpha: layerState.alpha,
+                    blendMode: layerState.blendMode,
                     filters: layerState.filters.map((filter: any) => {
                         switch (filter.type) {
                             case LayerFilterType.ALPHA:
@@ -42,6 +43,14 @@ export class GridAPI extends APIScope {
                         }
                     }).filter((f: any) => f !== undefined)
                 });
+
+                // draw the pixel data rectangles
+                const graphic = new Graphics({ roundPixels: true });
+                layerState.data.forEach((rect: DataRectangle) => {
+                    graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
+                });
+                newLayer.addChild(graphic);
+
                 this._drawContainer.addChild(newLayer);
                 this._drawLayers.push(newLayer);
             });

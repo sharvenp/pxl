@@ -1,4 +1,4 @@
-import { RGBAColor, Rectangle } from "./interfaces";
+import { RGBAColor, DataRectangle } from "./interfaces";
 
 export class Utils {
 
@@ -93,8 +93,8 @@ export class Utils {
         return Math.random().toString(16).slice(2);
     }
 
-    static gridToRectangles(grid: Uint8ClampedArray, width: number, height: number): Array<Rectangle> {
-        const finalRects: Array<Rectangle> = [];
+    static gridToRectangles(grid: Uint8ClampedArray, width: number, height: number): Array<DataRectangle> {
+        const finalRects: Array<DataRectangle> = [];
         let activeRects: Record<string, {
             x: number;
             yStart: number;
@@ -174,12 +174,12 @@ export class Utils {
                         y: rect.yStart,
                         width: rect.width,
                         height: rect.height,
-                        color: {
-                            r: rect.value[0],
-                            g: rect.value[1],
-                            b: rect.value[2],
-                            a: rect.value[3]
-                        }
+                        color: new Uint8Array([
+                            rect.value[0],
+                            rect.value[1],
+                            rect.value[2],
+                            rect.value[3]
+                        ])
                     });
                 }
             }
@@ -194,12 +194,12 @@ export class Utils {
                 y: rect.yStart,
                 width: rect.width,
                 height: rect.height,
-                color: {
-                    r: rect.value[0],
-                    g: rect.value[1],
-                    b: rect.value[2],
-                    a: rect.value[3]
-                }
+                color: new Uint8Array([
+                    rect.value[0],
+                    rect.value[1],
+                    rect.value[2],
+                    rect.value[3]
+                ])
             });
         }
         return finalRects;

@@ -43,10 +43,10 @@ export interface MenuOption {
     disabled(): boolean
 }
 
-export interface Rectangle {
+export interface DataRectangle {
     x: number,
     y: number,
     width: number,
     height: number,
-    color: string | RGBAColor
+    color: Uint8Array
 }
