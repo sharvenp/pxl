@@ -1,4 +1,4 @@
-import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI } from '.';
+import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI, NotifyAPI } from '.';
 import { Application } from 'pixi.js';
 import { Events } from './utils';
 
@@ -12,12 +12,14 @@ export class InstanceAPI {
     history!: HistoryAPI;
     settings!: SettingsAPI;
     state!: StateAPI;
+    notify!: NotifyAPI;
 
     initalized: boolean;
 
     constructor() {
         this.initalized = false;
         this.event = new EventAPI(this);
+        this.notify = new NotifyAPI(this);
     }
 
     new(container: HTMLElement, config: any): void {
@@ -53,6 +55,8 @@ export class InstanceAPI {
 
             this.initalized = true;
             this.event.emit(Events.APP_INITIALIZED);
+
+            this.notify.notify('Application initialized successfully!', 'success');
         });
     }
 

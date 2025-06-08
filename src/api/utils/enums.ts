@@ -21,6 +21,7 @@ export enum Events {
     CLONE_TOOL_RESET = "clone_tool_reset",
     UNDO = "undo",
     REDO = "redo",
+    NOTIFY_SHOW = "notify_show",
 }
 
 export enum ShadeMode {

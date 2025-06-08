@@ -12,3 +12,4 @@ export * from './settings';
 export * from './palette';
 export * from './tool';
 export * from './state';
+export * from './notify';
