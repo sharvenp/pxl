@@ -37,6 +37,10 @@ onMounted(() => {
         }
     })!);
 
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
+
     // render the preview canvas
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
         if (iApi?.canvas?.view && previewCanvas.value) {

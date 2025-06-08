@@ -41,7 +41,7 @@ export class ToolAPI extends APIScope {
                 }
                 this.invokeAction(mouseEvt, event);
             }
-        }));
+        }, "INSTANCE_BOUND_tool_drag_start"));
 
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
             if (this._selectedTool) {
@@ -51,7 +51,7 @@ export class ToolAPI extends APIScope {
                 this.previewCursor(mouseEvt);
             }
             this._stopTracking();
-        }));
+        }, "INSTANCE_BOUND_tool_drag_stop"));
 
         this._handlers.push(this.$iApi.event.on(Events.MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
 
@@ -68,7 +68,7 @@ export class ToolAPI extends APIScope {
                     this.previewCursor(mouseEvt);
                 }
             }
-        }));
+        }, "INSTANCE_BOUND_tool_mouse_move"));
 
         this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (event: Events) => {
 
@@ -77,7 +77,7 @@ export class ToolAPI extends APIScope {
 
             // clear tracking set
             this._stopTracking();
-        }));
+        }, "INSTANCE_BOUND_tool_mouse_leave"));
 
         // default to pencil if not set
         this._selectedTool = this._tools[this.$iApi.state.loadedState?.tools?.selectedTool ?? ToolType.PENCIL];

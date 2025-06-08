@@ -1,10 +1,4 @@
-import { APIScope, InstanceAPI } from '.';
-
-export class IPCAPI extends APIScope {
-
-    constructor(iApi: InstanceAPI) {
-        super(iApi);
-    }
+export class IPCAPI {
 
     destroy(): void {
         // do nothing

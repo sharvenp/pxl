@@ -40,6 +40,10 @@ onMounted(() => {
         mirrorY.value = iApi?.canvas.mirrorY ?? false;
         initialized.value = true;
     })!);
+
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
 })
 
 onUnmounted(() => {

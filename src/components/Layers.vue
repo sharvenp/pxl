@@ -41,6 +41,10 @@ onMounted(() => {
         updateLayerList();
     })!)
 
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
+
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
         selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     })!);

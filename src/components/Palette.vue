@@ -74,6 +74,10 @@ onMounted(() => {
         palette.value = [...iApi?.palette.palette ?? []];
     })!);
 
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
+
     handlers.push(iApi?.event.on(Events.PALETTE_COLOR_SELECT, (color: PaletteItem) => {
         currentColor.value = color;
     })!);

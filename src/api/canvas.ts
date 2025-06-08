@@ -9,6 +9,8 @@ export class CanvasAPI extends APIScope {
     private _cursor: CursorAPI;
 
     private _panzoom: PanzoomObject;
+    private _startZoom: number;
+    private _startPan: { x: number, y: number };
     private _pixi: Application;
 
     private _mirrorX: boolean;
@@ -102,6 +104,8 @@ export class CanvasAPI extends APIScope {
 
         // zoom in to canvas to fit into screen
         this._panzoom.zoom(scale, { animate: true });
+        this._startZoom = this._panzoom.getScale();
+        this._startPan = this._panzoom.getPan();
 
         // initialize grid
         this._grid = new GridAPI(this.$iApi, this._pixi);
@@ -119,13 +123,28 @@ export class CanvasAPI extends APIScope {
         window.onwheel = null;
         window.onpointerdown = null;
 
+        // remove the transform style from the parent element
+        this._pixi.canvas.parentElement!.style = '';
+        this._panzoom.destroy();
+
         this._grid.destroy();
 
         this._cursor.destroy();
 
-        this._panzoom.destroy();
+        this._pixi.destroy({ removeView: true }, { children: true, texture: true, context: true });
+    }
 
-        this._pixi.destroy();
+    resetZoom() {
+        this._panzoom.zoom(this._startZoom);
+        this._panzoom.pan(this._startPan.x, this._startPan.y);
+    }
+
+    zoomIn() {
+        this._panzoom.zoomIn();
+    }
+
+    zoomOut() {
+        this._panzoom.zoomOut();
     }
 
     private _handlePan(event: PointerEvent) {
@@ -137,6 +156,7 @@ export class CanvasAPI extends APIScope {
 
     private _handleZoom(event: WheelEvent, zoomOptions?: ZoomOptions) {
         this._panzoom?.zoomWithWheel(event, zoomOptions);
+        console.log(this._panzoom.getScale());
     }
 
     private _handleResize() {

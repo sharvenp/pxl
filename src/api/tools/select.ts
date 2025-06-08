@@ -40,12 +40,12 @@ export class Select extends Tool {
         this._handlers.push(this.$iApi.event.on(Events.SELECT_TOOL_RESET, () => {
             this._resetDrag();
             this._revertRegion();
-        }));
+        }, "INSTANCE_BOUND_select_tool_reset"));
 
         this._handlers.push(this.$iApi.event.on(Events.UNDO, () => {
             this._resetDrag();
             this._revertRegion();
-        }));
+        }, "INSTANCE_BOUND_select_tool_undo"));
 
         this._previewLayer = new Container({ eventMode: 'none' });
         this._previewGraphic = new Graphics({ roundPixels: true });

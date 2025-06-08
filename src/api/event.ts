@@ -32,9 +32,16 @@ export class EventAPI extends APIScope {
     }
 
     destroy(): void {
-        this._eventRegister.forEach(eh => this.off(eh.handlerName));
-        this._eventRegister.length = 0;
-        this._nameRegister.length = 0;
+        // remove all instance bound handlers
+        const eventHandlersToRemove: Array<string> = [];
+        this._eventRegister.forEach(eh => {
+            if (eh.eventName.startsWith('INSTANCE_BOUND_')) {
+                eventHandlersToRemove.push(eh.handlerName);
+            }
+        });
+        eventHandlersToRemove.forEach(eh => {
+            this._eventBus.off(eh);
+        });
     }
 
     private findHandler(handlerName: string): EventHandler | undefined {

@@ -28,14 +28,36 @@
 
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from 'vue'
-import { OrchestratorAPI } from '../api';
+import { InstanceAPI, OrchestratorAPI } from '../api';
+import { Events } from '../api/utils';
 
 const container = ref();
+const iApi = inject<InstanceAPI>('iApi');
 const oApi = inject<OrchestratorAPI>('oApi');
 let width = ref(undefined);
 let height = ref(undefined);
 let error = ref("");
 let initialized = ref(false);
+const handlers: Array<string> = [];
+
+onMounted(() => {
+    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
+        initialized.value = true;
+    })!)
+
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
+
+    oApi!.container = container.value;
+
+})
+onUnmounted(() => {
+    handlers.forEach(h => iApi?.event.off(h));
+
+    oApi?.destroyInstance();
+    initialized.value = false;
+})
 
 function initializeCanvas() {
     if (!validateDimensions()) {
@@ -51,11 +73,10 @@ function initializeCanvas() {
         }
     }
 
-    oApi!.container = container.value;
+    oApi!.newInstance(config);
 
-    oApi!.newInstance(config).then(()=> {
-        initialized.value = true;
-    })
+    width.value = undefined;
+    height.value = undefined;
 }
 
 function validateDimensions(): boolean {
@@ -74,14 +95,4 @@ function validateDimensions(): boolean {
     }
     return true;
 }
-
-onMounted(() => {
-})
-
-onUnmounted(() => {
-    oApi?.destroyInstance();
-    initialized.value = false;
-})
-
-
 </script>

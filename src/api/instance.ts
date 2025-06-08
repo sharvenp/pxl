@@ -1,10 +1,9 @@
-import { EventAPI, IPCAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI } from '.';
+import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI } from '.';
 import { Application } from 'pixi.js';
 import { Events } from './utils';
 
 export class InstanceAPI {
 
-    ipc!: IPCAPI;
     event!: EventAPI;
     canvas!: CanvasAPI;
     palette!: PaletteAPI;
@@ -21,20 +20,15 @@ export class InstanceAPI {
         this.event = new EventAPI(this);
     }
 
-    new(container: HTMLElement, config: any): Promise<void> {
+    new(container: HTMLElement, config: any): void {
 
         if (this.initalized) {
-            console.warn('InstanceAPI: Already initialized, cannot create a new instance.');
-            return Promise.reject(new Error('InstanceAPI: Already initialized'));
+            throw new Error('InstanceAPI: Already initialized');
         }
 
         // create pixi app
         const pixi = new Application();
 
-        let resolvePromise: () => void;
-        const initPromise = new Promise<void>((resolve) => {
-            resolvePromise = resolve;
-        });
 
         pixi.init({
             width: config.canvas.settings.width,
@@ -48,7 +42,6 @@ export class InstanceAPI {
             this.state = new StateAPI(this);
             this.state.loadedState = config;
 
-            this.ipc = new IPCAPI(this);
             this.palette = new PaletteAPI(this);
 
             this.canvas = new CanvasAPI(this, pixi);
@@ -60,21 +53,15 @@ export class InstanceAPI {
 
             this.initalized = true;
             this.event.emit(Events.APP_INITIALIZED);
-        }).then(() => {
-            resolvePromise();
         });
-
-        return initPromise;
     }
 
     destroy(): void {
         if (!this.initalized) {
-            console.warn('InstanceAPI: Cannot destroy, not initialized.');
-            return;
+            throw new Error('InstanceAPI: Cannot destroy, not initialized.');
         }
 
         this.event.destroy();
-        this.ipc.destroy();
         this.palette.destroy();
         this.tool.destroy();
         this.keybind.destroy();
@@ -84,5 +71,6 @@ export class InstanceAPI {
         this.canvas.destroy();
 
         this.initalized = false;
+        this.event.emit(Events.APP_DESTROYED);
     }
 }

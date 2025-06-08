@@ -35,7 +35,7 @@ export class Clone extends Tool {
         this._handlers.push(this.$iApi.event.on(Events.CLONE_TOOL_RESET, () => {
             this._resetDrag();
             this._resetRegionSelect();
-        }));
+        }, "INSTANCE_BOUND_clone_tool_reset"));
     }
 
     destroy(): void {

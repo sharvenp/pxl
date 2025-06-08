@@ -28,11 +28,11 @@
 
 <script setup lang="ts">
 import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
-import { InstanceAPI } from '../api';
+import { InstanceAPI, OrchestratorAPI } from '../api';
 import { MenuOption } from '../api/utils';
-import { encode, decode } from 'cbor2';
 
 const iApi = inject<InstanceAPI>('iApi');
+const oApi = inject<OrchestratorAPI>('oApi');
 const activeMenu = ref<string | undefined>(undefined);
 const menuOptions = ref<Record<string, MenuOption[]>>({
     File: [
@@ -44,13 +44,13 @@ const menuOptions = ref<Record<string, MenuOption[]>>({
         { key: 'exit', label: 'Exit', hotkey: '', disabled: () => false }
     ],
     Edit: [
-        { key: 'undo', label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas.grid.empty ?? true },
-        { key: 'redo', label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => !iApi?.history.canRedo }
+        { key: 'undo', label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas?.grid.empty ?? true },
+        { key: 'redo', label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => iApi?.history?.canRedo ?? true }
     ],
     View: [
-        { key: 'zoom-in', label: 'Zoom In', hotkey: 'Ctrl++', disabled: () => false },
-        { key: 'zoom-out', label: 'Zoom Out', hotkey: 'Ctrl+-', disabled: () => false },
-        { key: 'reset-view', label: 'Reset View', hotkey: '', disabled: () => false }
+        { key: 'zoom-in', label: 'Zoom In', hotkey: 'Ctrl++', disabled: () => !iApi?.canvas },
+        { key: 'zoom-out', label: 'Zoom Out', hotkey: 'Ctrl+-', disabled: () => !iApi?.canvas },
+        { key: 'reset-view', label: 'Reset View', hotkey: '', disabled: () => !iApi?.canvas }
     ],
     Help: [
         { key: 'about', label: 'About', hotkey: 'F1', disabled: () => false }
@@ -59,7 +59,7 @@ const menuOptions = ref<Record<string, MenuOption[]>>({
 const ipcRequired = new Set(['exit', 'save-project']);
 
 const ipcSupported = computed(() => {
-  return iApi?.ipc?.ipcAPISupported() ?? false;
+  return oApi?.ipc?.ipcAPISupported() ?? false;
 })
 
 function openMenu(menu: string) {
@@ -105,16 +105,16 @@ function handleOption(key: string) {
     // handle the selected key here
     switch (key) {
         case 'new-project':
-            // TODO
+            oApi?.destroyInstance();
             break;
         case 'open-project':
-            _openFile();
+            oApi?.loadProject();
             break;
         case 'save-project':
-            _saveFile();
+            oApi?.saveProject();
             break;
         case 'save-project-as':
-            _saveFile();
+            oApi?.saveProject();
             break;
         case 'exit':
             // TODO
@@ -126,13 +126,13 @@ function handleOption(key: string) {
             iApi?.history.redo();
             break;
         case 'zoom-in':
-            // TODO
+            iApi?.canvas?.zoomIn();
             break;
         case 'zoom-out':
-            // TODO
+            iApi?.canvas?.zoomOut();
             break;
         case 'reset-view':
-            // TODO
+            iApi?.canvas?.resetZoom();
             break;
         case 'about':
             // TODO
@@ -142,53 +142,4 @@ function handleOption(key: string) {
     // close the menu
     activeMenu.value = undefined;
 }
-
-function _saveFile() {
-    var state = iApi?.state.getState();
-    if (state) {
-        const uint8Array = new Uint8Array(encode(state));
-
-        const blob = new Blob([uint8Array], { type: 'application/cbor' });
-
-        const url = URL.createObjectURL(blob);
-
-        // TODO: needs to be set to the project name
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'project.pxl'; // Set the desired file name
-        document.body.appendChild(a);
-        a.click();
-
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-}
-
-function _openFile() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.pxl';
-
-    input.addEventListener('change', async (event) => {
-        const file = (event.target as HTMLInputElement).files?.[0];
-        if (file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const configState =decode(new Uint8Array(arrayBuffer));
-            // destroy api
-            // iApi?.destroy();
-
-            // // create new api
-            // iApi?.new(configState)
-
-            // set the state
-            // iApi?.state.setState(configState);
-            console.log(configState);
-        }
-    });
-
-    // trigger dialog and remove it
-    input.click();
-    input.remove();
-}
-
 </script>

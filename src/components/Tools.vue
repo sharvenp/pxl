@@ -74,6 +74,10 @@ onMounted(() => {
         currentTool.value = iApi?.tool.selectedTool;
     })!)
 
+    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
+        initialized.value = false;
+    })!);
+
     handlers.push(iApi?.event.on(Events.TOOL_SELECT, () => {
         currentTool.value = iApi?.tool.selectedTool;
     })!);
