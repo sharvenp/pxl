@@ -140,6 +140,9 @@ function handleOption(key: string) {
         case 'save-project-as':
             oApi?.saveProject();
             break;
+        case 'export':
+            iApi?.canvas?.grid.exportImage();
+            break;
         case 'exit':
             // TODO
             break;

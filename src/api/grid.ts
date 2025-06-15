@@ -150,6 +150,16 @@ export class GridAPI extends APIScope {
         return data;
     }
 
+    exportImage(): void {
+        this._pixi.renderer.extract.download({
+            filename: "pxl-image.png",
+            target: this._drawContainer,
+            antialias: false,
+            frame: new Rectangle(0, 0, this.width, this.height),
+            resolution: 1
+        });
+    }
+
     draw(graphic: Graphics | Container): void {
         if (graphic.parent === this._activeLayer) {
             return;
