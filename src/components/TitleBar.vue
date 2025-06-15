@@ -105,10 +105,34 @@ function handleOption(key: string) {
     // handle the selected key here
     switch (key) {
         case 'new-project':
-            oApi?.destroyInstance();
+            iApi?.notify.notify({
+                title: "Create new project",
+                message: "Are you sure you want to create a new project?",
+                options: [
+                    {
+                        label: "Create",
+                        callback: () => {
+                            oApi?.destroyInstance();
+                        }
+                    }
+                ],
+                showCancel: true
+            });
             break;
         case 'open-project':
-            oApi?.loadProject();
+            iApi?.notify.notify({
+                title: "Open project",
+                message: "Are you sure you want to open a project?",
+                options: [
+                    {
+                        label: "Open",
+                        callback: () => {
+                            oApi?.loadProject();
+                        }
+                    }
+                ],
+                showCancel: true
+            });
             break;
         case 'save-project':
             oApi?.saveProject();

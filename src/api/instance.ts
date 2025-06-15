@@ -55,8 +55,6 @@ export class InstanceAPI {
 
             this.initalized = true;
             this.event.emit(Events.APP_INITIALIZED);
-
-            this.notify.notify('Application initialized successfully!', 'success');
         });
     }
 

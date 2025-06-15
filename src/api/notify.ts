@@ -1,5 +1,5 @@
 import { APIScope, InstanceAPI } from ".";
-import { Events } from "./utils";
+import { Events, NotificationConfiguration } from "./utils";
 
 export class NotifyAPI extends APIScope {
 
@@ -7,8 +7,8 @@ export class NotifyAPI extends APIScope {
         super(iApi);
     }
 
-    notify(message: string, type: "info" | "success" | "error" | "warning" = "info"): void {
-        this.$iApi.event.emit(Events.NOTIFY_SHOW, { message, type });
+    notify(notification: NotificationConfiguration): void {
+        this.$iApi.event.emit(Events.NOTIFY_SHOW, notification);
     }
 
     destroy(): void {

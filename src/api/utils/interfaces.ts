@@ -43,6 +43,14 @@ export interface MenuOption {
     disabled(): boolean
 }
 
+export interface NotificationConfiguration {
+    title: string,
+    message: string,
+    subtext?: string,
+    options?: Array<{ label: string, callback: Function }>,
+    showCancel?: boolean
+}
+
 export interface DataRectangle {
     x: number,
     y: number,

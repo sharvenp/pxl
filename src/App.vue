@@ -3,6 +3,7 @@
   <div class="layout grid h-full grid-rows-3 grid-cols-1">
     <TitleBar />
     <PxlCanvas />
+    <Notification/>
     <Tools />
     <Preview />
     <CanvasSettings />
@@ -22,4 +23,5 @@ import StatusBar from './components/StatusBar.vue';
 import Preview from './components/Preview.vue';
 import CanvasSettings from './components/CanvasSettings.vue';
 import Layers from './components/Layers.vue';
+import Notification from './components/Notification.vue';
 </script>
