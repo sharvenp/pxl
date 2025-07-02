@@ -1,12 +1,12 @@
 <template>
     <div class="status-bar absolute w-full flex flex-row z-10">
-        <p>
-            <span class="text-xs px-2 text-gray-500">{{ version }}</span>
-        </p>
-        <p class="p-1 text-right ms-auto text-xs h-6">
+        <p class="p-1 px-2 text-xs h-6">
             <template v-if="isOnCanvas">
                 X: {{x}} Y: {{y}}
             </template>
+        </p>
+        <p class="text-xs p-1 text-gray-500 ms-auto">
+            <span>{{ version }}</span>
         </p>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <div v-show="initialized" class="canvas-settings absolute border bg-white m-5 flex flex-col p-4 z-10">
+    <div v-show="initialized" class="canvas-settings absolute rounded border bg-white m-5 flex flex-col p-4 z-10">
         <div class="flex flex-row items-center text-xs">
             <input type="checkbox" v-model="mirrorX" @change="updateMirrorX">
             <span class="ms-2">Mirror X</span>

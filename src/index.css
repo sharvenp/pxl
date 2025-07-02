@@ -21,7 +21,9 @@
   --text-secondary-color: rgb(201, 201, 201);
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
 }
 
@@ -43,18 +45,18 @@ canvas {
   background-color: var(--secondary-color);
 }
 
-.title-bar  {
+.title-bar {
   background-color: var(--accent-color);
   top: 0;
   -webkit-user-select: none;
   -webkit-app-region: drag;
 }
 
-.title-bar button  {
+.title-bar button {
   -webkit-app-region: no-drag;
 }
 
-.status-bar  {
+.status-bar {
   bottom: 0px;
   background-color: var(--accent-color);
 }
@@ -64,9 +66,19 @@ canvas {
   left: 0;
 }
 
-.preview-canvas {
+.preview {
   top: 40px;
   right: 0;
+  width: 132px;
+  height: 132px;
+}
+
+.preview-canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  margin: auto;
 }
 
 .canvas-settings {
@@ -88,11 +100,26 @@ canvas {
   width: 155px;
 }
 
+.animator {
+  width: calc(100% - 320px);
+  height: 197px;
+}
+
+.animator-frame {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+}
+
+.animator-img {
+  image-rendering: pixelated;
+}
+
 .transparent-swatch {
   background: repeating-conic-gradient(#eeeeee 0% 25%, transparent 0% 50%) 50% / 10px 10px
 }
 
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-	background-clip: content-box;
+  background-clip: content-box;
 }

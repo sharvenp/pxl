@@ -160,6 +160,15 @@ export class GridAPI extends APIScope {
         });
     }
 
+    exportImageBase64(): Promise<string> {
+        return this._pixi.renderer.extract.base64({
+            target: this._drawContainer,
+            antialias: false,
+            frame: new Rectangle(0, 0, this.width, this.height),
+            resolution: 1
+        });
+    }
+
     draw(graphic: Graphics | Container): void {
         if (graphic.parent === this._activeLayer) {
             return;

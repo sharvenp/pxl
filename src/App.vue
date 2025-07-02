@@ -9,6 +9,7 @@
     <CanvasSettings />
     <Layers />
     <Palette />
+    <Animator />
     <StatusBar />
   </div>
 </div>
@@ -24,4 +25,5 @@ import Preview from './components/Preview.vue';
 import CanvasSettings from './components/CanvasSettings.vue';
 import Layers from './components/Layers.vue';
 import Notification from './components/Notification.vue';
+import Animator from './components/Animator.vue';
 </script>

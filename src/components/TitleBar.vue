@@ -31,6 +31,7 @@ import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
 import { InstanceAPI, OrchestratorAPI } from '../api';
 import { MenuOption } from '../api/utils';
 
+const version = __APP_VERSION__;
 const iApi = inject<InstanceAPI>('iApi');
 const oApi = inject<OrchestratorAPI>('oApi');
 const activeMenu = ref<string | undefined>(undefined);
@@ -143,7 +144,7 @@ function handleOption(key: string) {
         case 'export':
             iApi?.canvas?.grid.exportImage();
             break;
-        case 'exit':
+    case 'exit':
             // TODO
             break;
         case 'undo':
@@ -162,7 +163,11 @@ function handleOption(key: string) {
             iApi?.canvas?.resetZoom();
             break;
         case 'about':
-            // TODO
+            iApi?.notify.notify({
+                title: "About",
+                message: `.pxl v${version}`,
+                subtext: "Copyright (c) 2025 sharvenp",
+            });
             break;
     }
 
