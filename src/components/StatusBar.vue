@@ -30,6 +30,10 @@ onMounted(() => {
         isOnCanvas.value = true;
     })!);
 
+     handlers.push(iApi?.event.on(Events.APP_DESTROYED, (evt: GridMouseEvent) => {
+        isOnCanvas.value = false;
+    })!);
+
     handlers.push(iApi?.event.on(Events.CANVAS_MOUSE_LEAVE, () => {
         isOnCanvas.value = false;
     })!);

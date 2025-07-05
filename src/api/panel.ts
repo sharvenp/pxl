@@ -23,23 +23,13 @@ export class PanelAPI extends APIScope {
         });
     }
 
-    show(panels: string | Array<string>): void {
-        this._setVisibility(panels, true);
+    toggle(panels: string | Array<string>, visibility?: boolean | undefined): void {
+        this._setVisibility(panels, visibility === undefined ? !this.isVisible(panels as string) : visibility);
     }
 
-    hide(panels: string | Array<string>): void {
-        this._setVisibility(panels, false);
-    }
-
-    showAll(): void {
+    toggleAll(visibility?: boolean | undefined): void {
         Object.keys(this._panels.value).forEach(panel => {
-            this._panels.value[panel] = true;
-        });
-    }
-
-    hideAll(): void {
-        Object.keys(this._panels.value).forEach(panel => {
-            this._panels.value[panel] = false;
+            this._panels.value[panel] = visibility === undefined ? !this.isVisible(panel) : visibility;
         });
     }
 

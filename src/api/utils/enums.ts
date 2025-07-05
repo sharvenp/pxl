@@ -33,6 +33,34 @@ export enum PanelType {
     CANVAS_SETTINGS = "canvas_settings",
 }
 
+export enum MenuOptionType {
+    NEW_PROJECT = "new_project",
+    OPEN_PROJECT = "open_project",
+    SAVE_PROJECT = "save_project",
+    SAVE_PROJECT_AS = "save_project_as",
+    EXPORT = "export",
+    EXIT = "exit",
+    UNDO = "undo",
+    REDO = "redo",
+    ZOOM_IN = "zoom_in",
+    ZOOM_OUT = "zoom_out",
+    RESET_VIEW = "reset_view",
+    TOGGLE_TOOLS_PANEL = "toggle_tools",
+    TOGGLE_PALETTE_PANEL = "toggle_palette",
+    TOGGLE_LAYERS_PANEL = "toggle_layers",
+    TOGGLE_PREVIEW_PANEL = "toggle_preview",
+    TOGGLE_CANVAS_SETTINGS_PANEL = "toggle_canvas_settings",
+    TOGGLE_ANIMATOR_PANEL = "toggle_animator",
+    ABOUT = "about"
+}
+
+export enum WindowActionType {
+    MINIMIZE = "minimize",
+    MAXIMIZE = "maximize",
+    CLOSE = "close"
+}
+
+
 export enum ShadeMode {
     LIGHTEN = "Lighten",
     DARKEN = "Darken"

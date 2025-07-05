@@ -3,9 +3,9 @@
         <div class="mt-1 flex flex-row text-sm justify-between">
             <span class="text-sm font-bold px-2">.pxl</span>
             <div v-show="ipcSupported" class="row-span-2 flex flex-row justify-end text-sm mx-1">
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction('minimize')">_</button>
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction('maximize-restore')">O</button>
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction('close')">X</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.MINIMIZE)">_</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.MAXIMIZE)">O</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.CLOSE)">X</button>
             </div>
         </div>
         <div class="mt-1 flex flex-row text-sm relative">
@@ -29,32 +29,38 @@
 <script setup lang="ts">
 import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
 import { InstanceAPI, OrchestratorAPI } from '../api';
-import { MenuOption } from '../api/utils';
+import { MenuOption, MenuOptionType, PanelType, WindowActionType } from '../api/utils';
 
 const version = __APP_VERSION__;
 const iApi = inject<InstanceAPI>('iApi');
 const oApi = inject<OrchestratorAPI>('oApi');
 const activeMenu = ref<string | undefined>(undefined);
-const menuOptions = ref<Record<string, MenuOption[]>>({
+const menuOptions = ref<Record<string, Array<MenuOption>>>({
     File: [
-        { key: 'new-project', label: 'New Project', hotkey: 'Ctrl+N', disabled: () => false },
-        { key: 'open-project', label: 'Open Project', hotkey: 'Ctrl+O', disabled: () => false },
-        { key: 'save-project', label: 'Save Project', hotkey: 'Ctrl+S', disabled: () => false },
-        { key: 'save-project-as', label: 'Save Project As', hotkey: '', disabled: () => false },
-        { key: 'export', label: 'Export', hotkey: 'Ctrl+E', disabled: () => false },
-        { key: 'exit', label: 'Exit', hotkey: '', disabled: () => false }
+        { key: MenuOptionType.NEW_PROJECT, label: 'New Project', hotkey: 'Ctrl+N', disabled: () => false },
+        { key: MenuOptionType.OPEN_PROJECT, label: 'Open Project', hotkey: 'Ctrl+O', disabled: () => false },
+        { key: MenuOptionType.SAVE_PROJECT, label: 'Save Project', hotkey: 'Ctrl+S', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.SAVE_PROJECT_AS, label: 'Save Project As', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.EXPORT, label: 'Export', hotkey: 'Ctrl+E', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.EXIT, label: 'Exit', hotkey: '', disabled: () => false }
     ],
     Edit: [
-        { key: 'undo', label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas?.grid.empty ?? true },
-        { key: 'redo', label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => iApi?.history?.canRedo ?? true }
+        { key: MenuOptionType.UNDO, label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas?.grid.empty ?? true },
+        { key: MenuOptionType.REDO, label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => iApi?.history?.canRedo ?? true }
     ],
     View: [
-        { key: 'zoom-in', label: 'Zoom In', hotkey: 'Ctrl++', disabled: () => !iApi?.canvas },
-        { key: 'zoom-out', label: 'Zoom Out', hotkey: 'Ctrl+-', disabled: () => !iApi?.canvas },
-        { key: 'reset-view', label: 'Reset View', hotkey: '', disabled: () => !iApi?.canvas }
+        { key: MenuOptionType.ZOOM_IN, label: 'Zoom In', hotkey: 'Ctrl++', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.ZOOM_OUT, label: 'Zoom Out', hotkey: 'Ctrl+-', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.RESET_VIEW, label: 'Reset View', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.TOGGLE_TOOLS_PANEL, label: 'Toggle Tools', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.TOGGLE_PALETTE_PANEL, label: 'Toggle Palette', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.TOGGLE_LAYERS_PANEL, label: 'Toggle Layers', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.TOGGLE_PREVIEW_PANEL, label: 'Toggle Preview', hotkey: '', disabled: () => !iApi?.initalized  },
+        { key: MenuOptionType.TOGGLE_CANVAS_SETTINGS_PANEL, label: 'Toggle Canvas Settings', hotkey: '', disabled: () => !iApi?.initalized  },
+        { key: MenuOptionType.TOGGLE_ANIMATOR_PANEL, label: 'Toggle Animator', hotkey: '', disabled: () => !iApi?.initalized },
     ],
     Help: [
-        { key: 'about', label: 'About', hotkey: 'F1', disabled: () => false }
+        { key: MenuOptionType.ABOUT, label: 'About', hotkey: 'F1', disabled: () => false }
     ]
 });
 const ipcRequired = new Set(['exit', 'save-project']);
@@ -90,13 +96,16 @@ onUnmounted(() => {
 
 function windowAction(action: string) {
     switch (action) {
-        case 'minimize':
+        case WindowActionType.MINIMIZE:
+            // TODO
             // iApi?.minimizeWindow();
             break;
-        case 'maximize-restore':
+            case WindowActionType.MAXIMIZE:
+            // TODO
             // iApi?.maximizeWindow();
             break;
-        case 'close':
+        case WindowActionType.CLOSE:
+            // TODO
             // iApi?.closeWindow();
             break;
     }
@@ -105,7 +114,7 @@ function windowAction(action: string) {
 function handleOption(key: string) {
     // handle the selected key here
     switch (key) {
-        case 'new-project':
+        case MenuOptionType.NEW_PROJECT:
             iApi?.notify.notify({
                 title: "Create new project",
                 message: "Are you sure you want to create a new project?",
@@ -120,7 +129,7 @@ function handleOption(key: string) {
                 showCancel: true
             });
             break;
-        case 'open-project':
+        case MenuOptionType.OPEN_PROJECT:
             iApi?.notify.notify({
                 title: "Open project",
                 message: "Are you sure you want to open a project?",
@@ -135,38 +144,58 @@ function handleOption(key: string) {
                 showCancel: true
             });
             break;
-        case 'save-project':
+        case MenuOptionType.SAVE_PROJECT:
             oApi?.saveProject();
             break;
-        case 'save-project-as':
+        case MenuOptionType.SAVE_PROJECT_AS:
             oApi?.saveProject();
             break;
-        case 'export':
+        case MenuOptionType.EXPORT:
             iApi?.canvas?.grid.exportImage();
             break;
-    case 'exit':
+        case MenuOptionType.EXIT:
             // TODO
             break;
-        case 'undo':
+        case MenuOptionType.UNDO:
             iApi?.history.undo();
             break;
-        case 'redo':
+        case MenuOptionType.REDO:
             iApi?.history.redo();
             break;
-        case 'zoom-in':
+        case MenuOptionType.ZOOM_IN:
             iApi?.canvas?.zoomIn();
             break;
-        case 'zoom-out':
+        case MenuOptionType.ZOOM_OUT:
             iApi?.canvas?.zoomOut();
             break;
-        case 'reset-view':
+        case MenuOptionType.RESET_VIEW:
             iApi?.canvas?.resetZoom();
             break;
-        case 'about':
+        case MenuOptionType.TOGGLE_TOOLS_PANEL:
+            iApi?.panel.toggle(PanelType.TOOLS);
+            break;
+        case MenuOptionType.TOGGLE_PALETTE_PANEL:
+            iApi?.panel.toggle(PanelType.PALETTE);
+            break;
+        case MenuOptionType.TOGGLE_LAYERS_PANEL:
+            iApi?.panel.toggle(PanelType.LAYERS);
+            break;
+        case MenuOptionType.TOGGLE_PREVIEW_PANEL:
+            iApi?.panel.toggle(PanelType.PREVIEW);
+            break;
+        case MenuOptionType.TOGGLE_CANVAS_SETTINGS_PANEL:
+            iApi?.panel.toggle(PanelType.CANVAS_SETTINGS);
+            break;
+        case MenuOptionType.TOGGLE_ANIMATOR_PANEL:
+            iApi?.panel.toggle(PanelType.ANIMATOR);
+            break;
+        case MenuOptionType.ABOUT:
             iApi?.notify.notify({
                 title: "About",
                 message: `.pxl v${version}`,
                 subtext: "Copyright (c) 2025 sharvenp",
+                showCancel: true,
+                cancelLabel: "Close",
             });
             break;
     }

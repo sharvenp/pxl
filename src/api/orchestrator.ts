@@ -42,7 +42,20 @@ export class OrchestratorAPI {
             const file = (event.target as HTMLInputElement).files?.[0];
             if (file) {
                 const arrayBuffer = await file.arrayBuffer();
-                const configState = decode(new Uint8Array(arrayBuffer));
+                let configState: any = {};
+
+                try {
+                    configState = decode(new Uint8Array(arrayBuffer));
+                } catch (error) {
+                    this.iApi.notify.notify({
+                        title: "Error",
+                        message: "Unable to load project file.",
+                        subtext: "Please ensure the file is a valid .pxl project.",
+                        showCancel: true,
+                        cancelLabel: "Close",
+                    });
+                    return;
+                }
 
                 // destroy api
                 this.destroyInstance();

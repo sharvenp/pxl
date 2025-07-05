@@ -65,13 +65,13 @@ export class InstanceAPI {
             this.settings = new SettingsAPI(this);
 
             this.initalized = true;
-            this.panel.show([
+            this.panel.toggle([
                 PanelType.TOOLS,
                 PanelType.PALETTE,
                 PanelType.LAYERS,
                 PanelType.PREVIEW,
                 PanelType.CANVAS_SETTINGS
-            ]);
+            ], true);
             this.event.emit(Events.APP_INITIALIZED);
         });
     }
@@ -91,7 +91,7 @@ export class InstanceAPI {
         this.canvas.destroy();
 
         this.initalized = false;
-        this.panel.hideAll();
+        this.panel.toggleAll(false);
         this.event.emit(Events.APP_DESTROYED);
     }
 }

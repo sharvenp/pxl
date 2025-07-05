@@ -14,7 +14,7 @@
                             @click="callOptionCallback(option.callback)">
                         {{ option.label }}
                     </button>
-                    <button v-if="notification?.showCancel" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" @click="closeModal">Cancel</button>
+                    <button v-if="notification?.showCancel" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" @click="closeModal">{{ notification?.cancelLabel ?? 'Cancel' }}</button>
                 </div>
             </div>
         </div>

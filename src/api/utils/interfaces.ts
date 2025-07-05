@@ -48,7 +48,8 @@ export interface NotificationConfiguration {
     message: string,
     subtext?: string,
     options?: Array<{ label: string, callback: Function }>,
-    showCancel?: boolean
+    showCancel?: boolean,
+    cancelLabel?: string
 }
 
 export interface DataRectangle {
