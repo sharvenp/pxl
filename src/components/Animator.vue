@@ -1,16 +1,16 @@
 <template>
-    <div class="absolute animator p-3 bottom-10 left-5 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
+    <div v-show="visible" class="absolute animator p-3 bottom-10 left-5 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
         <div>
             <div class="flex items-center gap-4 mb-2">
                 <button
                     class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
                     title="Add Frame"
                 >
-                    ➕
+                    ➕ Add Frame
                 </button>
                 <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
                     <input type="checkbox" class="accent-stone-500" />
-                    Onion Skinning
+                    Onion Skin
                 </label>
             </div>
         </div>
@@ -45,12 +45,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
 import { InstanceAPI } from '../api';
-import { Events } from '../api/utils';
+import { Events, PanelType } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 const handlers: Array<string> = [];
+
+const visible = computed(() => iApi?.panel.isVisible(PanelType.ANIMATOR));
 
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, async () => {

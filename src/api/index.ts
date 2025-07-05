@@ -13,3 +13,4 @@ export * from './palette';
 export * from './tool';
 export * from './state';
 export * from './notify';
+export * from './panel';

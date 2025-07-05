@@ -24,6 +24,15 @@ export enum Events {
     NOTIFY_SHOW = "notify_show",
 }
 
+export enum PanelType {
+    TOOLS = "tools",
+    PALETTE = "palette",
+    LAYERS = "layers",
+    PREVIEW = "preview",
+    ANIMATOR = "animator",
+    CANVAS_SETTINGS = "canvas_settings",
+}
+
 export enum ShadeMode {
     LIGHTEN = "Lighten",
     DARKEN = "Darken"

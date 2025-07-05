@@ -1,6 +1,6 @@
-import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI, NotifyAPI } from '.';
+import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI, NotifyAPI, PanelAPI } from '.';
 import { Application } from 'pixi.js';
-import { Events } from './utils';
+import { Events, PanelType } from './utils';
 
 export class InstanceAPI {
 
@@ -13,6 +13,7 @@ export class InstanceAPI {
     settings!: SettingsAPI;
     state!: StateAPI;
     notify!: NotifyAPI;
+    panel!: PanelAPI;
 
     initalized: boolean;
 
@@ -20,6 +21,16 @@ export class InstanceAPI {
         this.initalized = false;
         this.event = new EventAPI(this);
         this.notify = new NotifyAPI(this);
+        this.panel = new PanelAPI(this);
+
+        this.panel.register([
+            PanelType.TOOLS,
+            PanelType.PALETTE,
+            PanelType.LAYERS,
+            PanelType.PREVIEW,
+            PanelType.ANIMATOR,
+            PanelType.CANVAS_SETTINGS
+        ], false);
     }
 
     new(container: HTMLElement, config: any): void {
@@ -54,6 +65,13 @@ export class InstanceAPI {
             this.settings = new SettingsAPI(this);
 
             this.initalized = true;
+            this.panel.show([
+                PanelType.TOOLS,
+                PanelType.PALETTE,
+                PanelType.LAYERS,
+                PanelType.PREVIEW,
+                PanelType.CANVAS_SETTINGS
+            ]);
             this.event.emit(Events.APP_INITIALIZED);
         });
     }
@@ -73,6 +91,7 @@ export class InstanceAPI {
         this.canvas.destroy();
 
         this.initalized = false;
+        this.panel.hideAll();
         this.event.emit(Events.APP_DESTROYED);
     }
 }

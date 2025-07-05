@@ -1,5 +1,5 @@
 <template>
-    <div v-show="initialized" class="canvas-layers absolute border bg-white m-5 flex flex-col p-1 z-10">
+    <div v-show="visible" class="canvas-layers absolute border bg-white m-5 flex flex-col p-1 z-10">
         <div class="flex flex-col text-xs overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
             <draggable class="dragArea list-group w-full" :list="layers" @change="syncOrder">
                 <div v-for="(layer, i) in layers" :key="i" :class="`flex flex-row border m-1 p-1 ${layer.label === selectedId ? 'bg-stone-100 border-orange-200' : ''}`">
@@ -12,7 +12,7 @@
             </draggable>
         </div>
     </div>
-    <div v-show="initialized" class="canvas-layers-actions absolute border bg-white m-5 flex flex-col z-10">
+    <div v-show="visible" class="canvas-layers-actions absolute border bg-white m-5 flex flex-col z-10">
         <div class="flex flex-row justify-around p-1">
             <button class="p-1 border text-xs" :disabled="layers.length >= MAX_LAYER_COUNT" @click="toggleAll(true)">👁️</button>
             <button class="p-1 border text-xs" :disabled="layers.length >= MAX_LAYER_COUNT" @click="toggleAll(false)">👀</button>
@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onUnmounted, onMounted, nextTick } from 'vue'
+import { ref, inject, onUnmounted, onMounted, nextTick, computed } from 'vue'
 import { InstanceAPI } from '../api';
-import { Events, MAX_LAYER_COUNT } from '../api/utils';
+import { Events, MAX_LAYER_COUNT, PanelType } from '../api/utils';
 import { Container } from 'pixi.js';
 import { VueDraggableNext as draggable} from "vue-draggable-next";
 
@@ -33,17 +33,13 @@ const iApi = inject<InstanceAPI>('iApi');
 const handlers: Array<string> = [];
 const selectedId = ref<string>('');
 const layers = ref<Array<Container>>([]);
-const initialized = ref(false);
+
+const visible = computed(() => iApi?.panel.isVisible(PanelType.LAYERS));
 
 onMounted(() => {
     handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
-        initialized.value = true;
         updateLayerList();
     })!)
-
-    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
-        initialized.value = false;
-    })!);
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
         selectedId.value = iApi?.canvas.grid.activeLayer.label!;

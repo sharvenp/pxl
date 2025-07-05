@@ -1,18 +1,19 @@
 <template>
-    <div class="preview absolute rounded bg-white bg-opacity-60 border m-5 z-10 items-center justify-center flex">
-        <canvas class="preview-canvas border" v-show="initialized" width="100" height="100" ref="previewCanvas"></canvas>
+    <div v-show="visible" class="preview absolute rounded bg-white bg-opacity-60 border m-5 z-10 items-center justify-center flex">
+        <canvas class="preview-canvas border" width="100" height="100" ref="previewCanvas"></canvas>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
 import { InstanceAPI } from '../api';
-import { Events } from '../api/utils';
+import { Events, PanelType } from '../api/utils';
 
 const iApi = inject<InstanceAPI>('iApi');
 const previewCanvas = ref<HTMLCanvasElement>();
-const initialized = ref(false);
 let handlers: Array<string> = [];
+
+const visible = computed(() => iApi?.panel.isVisible(PanelType.PREVIEW));
 
 onMounted(() => {
 
@@ -33,12 +34,7 @@ onMounted(() => {
 
             canvasEl.width = w;
             canvasEl.height = h;
-            initialized.value = true;
         }
-    })!);
-
-    handlers.push(iApi?.event.on(Events.APP_DESTROYED, () => {
-        initialized.value = false;
     })!);
 
     // render the preview canvas
