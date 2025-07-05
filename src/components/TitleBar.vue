@@ -45,8 +45,8 @@ const menuOptions = ref<Record<string, Array<MenuOption>>>({
         { key: MenuOptionType.EXIT, label: 'Exit', hotkey: '', disabled: () => false }
     ],
     Edit: [
-        { key: MenuOptionType.UNDO, label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.canvas?.grid.empty ?? true },
-        { key: MenuOptionType.REDO, label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => iApi?.history?.canRedo ?? true }
+        { key: MenuOptionType.UNDO, label: 'Undo', hotkey: 'Ctrl+Z', disabled: () => iApi?.history !== undefined ? !iApi?.history.canUndo : true },
+        { key: MenuOptionType.REDO, label: 'Redo', hotkey: 'Ctrl+Y', disabled: () => iApi?.history !== undefined ? !iApi?.history.canRedo : true }
     ],
     View: [
         { key: MenuOptionType.ZOOM_IN, label: 'Zoom In', hotkey: 'Ctrl++', disabled: () => !iApi?.initalized },

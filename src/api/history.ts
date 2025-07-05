@@ -1,6 +1,6 @@
 import { ContainerChild } from 'pixi.js';
 import { InstanceAPI, APIScope } from '.';
-import { Events, MAX_HISTORY_SIZE } from './utils';
+import { Events, MAX_HISTORY_SIZE, PxlSpecialGraphicType } from './utils';
 
 export class HistoryAPI extends APIScope {
 
@@ -32,7 +32,14 @@ export class HistoryAPI extends APIScope {
 
         const grid = this.$iApi.canvas.grid;
         if (grid && !grid.empty) {
-            const topMostGraphic = grid.pop();
+            let topMostGraphic = grid.peek();
+
+            // if the top most graphic is a special graphic, don't undo it
+            if (topMostGraphic.label === PxlSpecialGraphicType.FROM_LOAD_STATE) {
+                return;
+            }
+
+            topMostGraphic = grid.pop();
             this._historyStack.push(topMostGraphic);
 
             grid.render();
@@ -56,6 +63,22 @@ export class HistoryAPI extends APIScope {
     private _clearHistory(): void {
         this._historyStack.forEach(c => c.destroy());
         this._historyStack.length = 0;
+    }
+
+    get canUndo(): boolean {
+        const grid = this.$iApi.canvas.grid;
+        if (grid && !grid.empty) {
+            const topMostGraphic = grid.peek();
+
+            // if the top most graphic is a special graphic, don't undo it
+            if (topMostGraphic.label === PxlSpecialGraphicType.FROM_LOAD_STATE) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     get canRedo(): boolean {

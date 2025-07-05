@@ -100,6 +100,10 @@ export enum PxlGraphicMethodType {
     FILL = 'fill'
 }
 
+export enum PxlSpecialGraphicType {
+    FROM_LOAD_STATE = 'from_load_state',
+}
+
 export enum LayerFilterType {
     ALPHA = 'alpha'
 }
