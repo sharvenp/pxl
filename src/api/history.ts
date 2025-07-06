@@ -67,18 +67,11 @@ export class HistoryAPI extends APIScope {
 
     get canUndo(): boolean {
         const grid = this.$iApi.canvas.grid;
-        if (grid && !grid.empty) {
-            const topMostGraphic = grid.peek();
-
-            // if the top most graphic is a special graphic, don't undo it
-            if (topMostGraphic.label === PxlSpecialGraphicType.FROM_LOAD_STATE) {
-                return false;
-            }
-
-            return true;
+        if (!grid || grid.empty) {
+            return false;
         }
 
-        return false;
+        return grid.peek().label !== PxlSpecialGraphicType.FROM_LOAD_STATE;
     }
 
     get canRedo(): boolean {
