@@ -156,7 +156,6 @@ export class CanvasAPI extends APIScope {
 
     private _handleZoom(event: WheelEvent, zoomOptions?: ZoomOptions) {
         this._panzoom?.zoomWithWheel(event, zoomOptions);
-        console.log(this._panzoom.getScale());
     }
 
     private _handleResize() {

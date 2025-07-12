@@ -4,7 +4,11 @@
             <div class="flex items-center gap-4 mb-2">
                 <button
                     class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
-                    title="Add Frame"
+                >
+                    ▶️ Preview
+                </button>
+                <button
+                    class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
                 >
                     ➕ Add Frame
                 </button>
@@ -14,7 +18,7 @@
                 </label>
             </div>
         </div>
-        <div class="flex flex-nowrap h-full items-start gap-4 ">
+        <div class="flex flex-nowrap items-start gap-4">
             <div v-for="i in Array(20).fill(0)" :key="i" class="border animator-frame flex-none flex items-center justify-center relative">
                 <img :id="`animation-frame-${i}`" class="animator-img border" />
                 <!-- Icon Buttons Bottom Right -->

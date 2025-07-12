@@ -106,8 +106,8 @@ canvas {
 }
 
 .animator-frame {
-  width: 120px;
-  height: 120px;
+  width: 115px;
+  height: 115px;
   overflow: hidden;
 }
 
