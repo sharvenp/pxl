@@ -6,7 +6,8 @@
                     <div class="flex flex-row items-center" v-on:dblclick="selectLayer(i)">
                         <input type="checkbox" class="ms-1 me-2" v-model="layer.visible" @change="notifyVisibilityChange()">
                         <canvas :id="layer.label" width="30" height="30" class="border bg-white"></canvas>
-                        <span class="ml-2">Layer {{ i + 1 }}</span>
+                        <!-- <span class="ml-2">Layer {{ i + 1 }}</span> -->
+                        <span class="ml-2">{{ layer.label }}</span>
                     </div>
                 </div>
             </draggable>
@@ -87,13 +88,16 @@ function updateLayerPreviews() {
 function updateLayerPreview(layer: Container) {
     let grid = iApi?.canvas.grid;
     if (grid && layer) {
+        if (!grid.drawLayers.some(l => l.label === layer.label)) {
+            return;
+        }
         let activeLayerCanvas = document.getElementById(layer.label) as HTMLCanvasElement;
         if (activeLayerCanvas) {
             let ctx = activeLayerCanvas.getContext('2d')!;
             ctx.imageSmoothingEnabled = false;
             if (ctx) {
                 ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
-                ctx.drawImage(grid.getLayerPreview(layer), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+                ctx.drawImage(grid.getContainerPreview(layer), 0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
             }
         }
     }

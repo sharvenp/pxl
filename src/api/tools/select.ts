@@ -13,7 +13,7 @@ export class Select extends Tool {
 
     private _previewLayer: Container | undefined;
     private _previewGraphic: Graphics | undefined;
-    private _drawContainer: Container | undefined;
+    private _regionContainer: Container | undefined;
 
     private _resetButtonProperty: ButtonProperty;
 
@@ -127,11 +127,11 @@ export class Select extends Tool {
                     this._selectedRegion = new SelectedRegion(x, y, w, h, pixels);
 
                     // erase pixels from grid
-                    this._drawContainer = new Container({ eventMode: 'none' });
+                    this._regionContainer = new Container({ eventMode: 'none' });
                     this._drawGraphic.blendMode = 'erase';
                     this._drawGraphic.rect(x, y, w, h).fill(NO_COLOR_FULL_ALPHA);
-                    this._drawContainer.addChild(this._drawGraphic);
-                    grid.draw(this._drawContainer);
+                    this._regionContainer.addChild(this._drawGraphic);
+                    grid.draw(this._regionContainer);
                     this.newGraphic();
                     grid?.render();
 
@@ -189,8 +189,8 @@ export class Select extends Tool {
                                 .fill(px.color);
                         }
                     });
-                    this._drawContainer!.addChild(this._drawGraphic);
-                    grid.draw(this._drawContainer!);
+                    this._regionContainer!.addChild(this._drawGraphic);
+                    grid.draw(this._regionContainer!);
                     this.newGraphic();
                     grid?.render();
 
@@ -257,12 +257,12 @@ export class Select extends Tool {
     private _revertRegion(): void {
         const grid = this.$iApi.canvas.grid;
 
-        if (this._isSelected && grid && this._drawContainer) {
+        if (this._isSelected && grid && this._regionContainer) {
             this._selectedRegion?.revertTransform();
 
-            this._drawContainer.removeFromParent();
-            this._drawContainer.destroy({ children: true });
-            this._drawContainer = undefined;
+            this._regionContainer.removeFromParent();
+            this._regionContainer.destroy({ children: true });
+            this._regionContainer = undefined;
         }
 
         this._resetRegionSelect();

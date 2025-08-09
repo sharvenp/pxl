@@ -1,13 +1,17 @@
 import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, LayerFilterType, MAX_LAYER_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
+import { Events, LayerFilterType, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
 
 export class GridAPI extends APIScope {
 
     private _pixi: Application;
 
-    private _drawContainer: Container;
+    private _frames: Array<Container>;
+    private _activeFrame: Container;
+    private _frameIndex: number;
+
     private _previewContainer: Container;
+
     private _drawLayers: Array<Container>;
     private _activeLayer: Container;
     private _activeIndex: number;
@@ -17,8 +21,11 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._drawContainer = new Container({ eventMode: 'none', blendMode: 'normal' });
-        this._pixi.stage.addChild(this._drawContainer);
+        this._activeFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: 'frame-0' });
+        this._frames = [this._activeFrame];
+        this._frameIndex = 0;
+
+        this._pixi.stage.addChild(this._activeFrame);
 
         this._previewContainer = new Container({ eventMode: 'none' });
         this._pixi.stage.addChild(this._previewContainer);
@@ -26,6 +33,7 @@ export class GridAPI extends APIScope {
         const layerConfig = iApi.state.loadedState?.canvas.layers;
 
         if (layerConfig) {
+            // TODO: fix config
             this._drawLayers = [];
             layerConfig.states.forEach((layerState: any) => {
                 const newLayer = new Container({
@@ -51,7 +59,7 @@ export class GridAPI extends APIScope {
                 });
                 newLayer.addChild(graphic);
 
-                this._drawContainer.addChild(newLayer);
+                this._activeFrame.addChild(newLayer);
                 this._drawLayers.push(newLayer);
             });
             this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
@@ -59,7 +67,7 @@ export class GridAPI extends APIScope {
         } else {
             this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
-            this._drawContainer.addChild(this._activeLayer);
+            this._activeFrame.addChild(this._activeLayer);
 
             this._drawLayers = [this._activeLayer];
             this._activeIndex = 0;
@@ -69,7 +77,9 @@ export class GridAPI extends APIScope {
     destroy(): void {
         this._previewContainer.destroy();
 
-        this._drawContainer.destroy({ children: true });
+        this._frames.forEach(frame => frame.destroy({ children: true }));
+        this._frameIndex = 0;
+        this._frames.length = 0;
         this._activeIndex = 0;
         this._drawLayers.length = 0;
     }
@@ -78,7 +88,7 @@ export class GridAPI extends APIScope {
 
         // Use extract to get the pixel data
         const pixelData = this._pixi.renderer.extract.pixels({
-            target: this._drawContainer,
+            target: this._activeFrame,
             antialias: false,
             frame: new Rectangle(coords.x, coords.y, 1, 1),
             resolution: 1
@@ -150,23 +160,45 @@ export class GridAPI extends APIScope {
         return data;
     }
 
-    exportImage(): void {
+    exportImage(frameIndex?: number): void {
+
+        let frame = this._activeFrame;
+        if (frameIndex !== undefined && frameIndex >= 0 && frameIndex < this._frames.length) {
+            frame = this._frames[frameIndex];
+        }
+
         this._pixi.renderer.extract.download({
             filename: "pxl-image.png",
-            target: this._drawContainer,
+            target: frame,
             antialias: false,
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
         });
     }
 
-    exportImageBase64(): Promise<string> {
+    exportImageBase64(frameIndex?: number): Promise<string> {
+
+        let frame = this._activeFrame;
+        if (frameIndex !== undefined && frameIndex >= 0 && frameIndex < this._frames.length) {
+            frame = this._frames[frameIndex];
+        }
+
         return this._pixi.renderer.extract.base64({
-            target: this._drawContainer,
+            target: frame,
             antialias: false,
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
         });
+    }
+
+    getContainerPreview(container: Container): HTMLCanvasElement {
+        return this._pixi.renderer.extract.canvas(
+            {
+                target: container,
+                antialias: false,
+                frame: new Rectangle(0, 0, this._pixi.canvas.width, this._pixi.canvas.height),
+                resolution: 1
+            }) as HTMLCanvasElement;
     }
 
     draw(graphic: Graphics | Container): void {
@@ -307,7 +339,7 @@ export class GridAPI extends APIScope {
         newLayer.label = id
         newLayer.filters = [new AlphaFilter({ alpha: 1 })];
 
-        this._drawContainer.addChild(newLayer);
+        this._activeFrame.addChild(newLayer);
         this._drawLayers.push(newLayer);
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_ADDED);
@@ -327,7 +359,7 @@ export class GridAPI extends APIScope {
 
         this.setActiveLayer(this._activeIndex - 1);
 
-        this._drawContainer.removeChild(layerToRemove);
+        this._activeFrame.removeChild(layerToRemove);
         this._drawLayers.splice(indexToRemove, 1);
         layerToRemove.destroy();
 
@@ -339,12 +371,12 @@ export class GridAPI extends APIScope {
     reorderLayers(layerOrder: Array<Container>): void {
 
         // remove all children
-        this._drawContainer.removeChildren(0, this._drawContainer.children.length);
+        this._activeFrame.removeChildren(0, this._activeFrame.children.length);
         this._drawLayers = [];
 
         // add them back in the new order
         layerOrder.forEach((l, i) => {
-            this._drawContainer.addChild(l);
+            this._activeFrame.addChild(l);
             this._drawLayers.push(l);
 
             if (l === this._activeLayer) {
@@ -357,19 +389,43 @@ export class GridAPI extends APIScope {
         this._notify();
     }
 
-    getLayerPreview(layer: Container): HTMLCanvasElement {
-        return this._pixi.renderer.extract.canvas(
-            {
-                target: layer,
-                antialias: false,
-                frame: new Rectangle(0, 0, this._pixi.canvas.width, this._pixi.canvas.height),
-                resolution: 1
-            }) as HTMLCanvasElement;
+    setActiveFrame(frameIdx: number): void {
+        if (frameIdx < 0 || frameIdx > this._frames.length - 1) {
+            return;
+        }
+        this._activeFrame = this._frames[frameIdx];
+        this._frameIndex = frameIdx;
+
+        this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
+    }
+
+    addFrame(): void {
+        if (this._frames.length >= MAX_FRAME_COUNT) {
+            return;
+        }
+
+        const newFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: `frame-${this._frames.length}` });
+
+        this._pixi.stage.addChild(newFrame);
+        this._frames.push(newFrame);
+
+        this.$iApi.event.emit(Events.CANVAS_FRAME_ADDED);
+
+        // select the new layer
+        this.setActiveFrame(this._frames.length - 1);
+    }
+
+    removeFrame(frameIndex: number): void {
+        //TODO: delete the frame
+    }
+
+    reorderFrame(frameOrder: Array<Container>): void {
+        //TODO: reorder frames
     }
 
     private _notify(): void {
         // render the update
-        this._pixi.renderer.render(this._drawContainer);
+        this._pixi.renderer.render(this._activeFrame);
         this.$iApi.event.emit(Events.CANVAS_UPDATE);
     }
 
@@ -383,6 +439,18 @@ export class GridAPI extends APIScope {
 
     get activeIndex(): number {
         return this._activeIndex;
+    }
+
+    get frames(): Array<Container> {
+        return this._frames;
+    }
+
+    get activeFrame(): Container {
+        return this._activeFrame;
+    }
+
+    get activeFrameIndex(): number {
+        return this._frameIndex;
     }
 
     get previewContainer(): Container {
