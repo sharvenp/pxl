@@ -12,7 +12,7 @@ export class GridAPI extends APIScope {
 
     private _previewContainer: Container;
 
-    private _drawLayers: Array<Container>;
+    private _drawLayers: { [frame: string]: Array<Container>; };
     private _activeLayer: Container;
     private _activeIndex: number;
 
@@ -21,7 +21,7 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._activeFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: 'frame-0' });
+        this._activeFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
         this._frames = [this._activeFrame];
         this._frameIndex = 0;
 
@@ -32,44 +32,49 @@ export class GridAPI extends APIScope {
 
         const layerConfig = iApi.state.loadedState?.canvas.layers;
 
+        this._drawLayers = {};
+
         if (layerConfig) {
+            // TODO: remove
+            this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+            this._activeIndex = 0;
+
             // TODO: fix config
-            this._drawLayers = [];
-            layerConfig.states.forEach((layerState: any) => {
-                const newLayer = new Container({
-                    eventMode: 'none',
-                    label: layerState.label,
-                    visible: layerState.visible,
-                    alpha: layerState.alpha,
-                    blendMode: layerState.blendMode,
-                    filters: layerState.filters.map((filter: any) => {
-                        switch (filter.type) {
-                            case LayerFilterType.ALPHA:
-                                return new AlphaFilter({ alpha: filter.alpha });
-                            default:
-                                return undefined;
-                        }
-                    }).filter((f: any) => f !== undefined)
-                });
+            // layerConfig.states.forEach((layerState: any) => {
+            //     const newLayer = new Container({
+            //         eventMode: 'none',
+            //         label: layerState.label,
+            //         visible: layerState.visible,
+            //         alpha: layerState.alpha,
+            //         blendMode: layerState.blendMode,
+            //         filters: layerState.filters.map((filter: any) => {
+            //             switch (filter.type) {
+            //                 case LayerFilterType.ALPHA:
+            //                     return new AlphaFilter({ alpha: filter.alpha });
+            //                 default:
+            //                     return undefined;
+            //             }
+            //         }).filter((f: any) => f !== undefined)
+            //     });
 
-                // draw the pixel data rectangles
-                const graphic = new Graphics({ roundPixels: true, label: PxlSpecialGraphicType.FROM_LOAD_STATE });
-                layerState.data.forEach((rect: DataRectangle) => {
-                    graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
-                });
-                newLayer.addChild(graphic);
+            //     // draw the pixel data rectangles
+            //     const graphic = new Graphics({ roundPixels: true, label: PxlSpecialGraphicType.FROM_LOAD_STATE });
+            //     layerState.data.forEach((rect: DataRectangle) => {
+            //         graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
+            //     });
+            //     newLayer.addChild(graphic);
 
-                this._activeFrame.addChild(newLayer);
-                this._drawLayers.push(newLayer);
-            });
-            this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
-            this._activeIndex = layerConfig.selectedLayer;
+            //     this._activeFrame.addChild(newLayer);
+            //     this._drawLayers.push(newLayer);
+            // });
+            // this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
+            // this._activeIndex = layerConfig.selectedLayer;
         } else {
             this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
             this._activeFrame.addChild(this._activeLayer);
 
-            this._drawLayers = [this._activeLayer];
+            this._drawLayers[this._activeFrame.label] = [this._activeLayer];
             this._activeIndex = 0;
         }
     }
@@ -77,11 +82,19 @@ export class GridAPI extends APIScope {
     destroy(): void {
         this._previewContainer.destroy();
 
+        // clear draw layers
+        for (const key in this._drawLayers) {
+            if (Array.isArray(this._drawLayers[key])) {
+                this._drawLayers[key].forEach(layer => layer.destroy({ children: true }));
+            }
+        }
+        this._drawLayers = {};
+        this._activeIndex = 0;
+
+        // clear frames
         this._frames.forEach(frame => frame.destroy({ children: true }));
         this._frameIndex = 0;
         this._frames.length = 0;
-        this._activeIndex = 0;
-        this._drawLayers.length = 0;
     }
 
     getPixel(coords: PixelCoordinates): RGBAColor {
@@ -115,7 +128,7 @@ export class GridAPI extends APIScope {
 
     extractPixels(layerIdx: number | undefined = undefined): Uint8ClampedArray {
         const pixelData = this._pixi.renderer.extract.pixels({
-            target: layerIdx === undefined ? this._activeLayer : this._drawLayers[layerIdx],
+            target: layerIdx === undefined ? this._activeLayer : this._drawLayers[this._activeFrame.label][layerIdx],
             antialias: false,
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
@@ -316,23 +329,23 @@ export class GridAPI extends APIScope {
     }
 
     setActiveLayer(layerIdx: number): void {
-        if (layerIdx < 0 || layerIdx > this._drawLayers.length - 1) {
+        if (layerIdx < 0 || layerIdx > this._drawLayers[this._activeFrame.label].length - 1) {
             return;
         }
-        this._activeLayer = this._drawLayers[layerIdx];
+        this._activeLayer = this._drawLayers[this._activeFrame.label][layerIdx];
         this._activeIndex = layerIdx;
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_SELECTED);
     }
 
     addLayer(): void {
-        if (this._drawLayers.length >= MAX_LAYER_COUNT) {
+        if (this._drawLayers[this._activeFrame.label].length >= MAX_LAYER_COUNT) {
             return;
         }
 
         const newLayer = new Container({ eventMode: 'none' });
         let id = Utils.getRandomId();
-        while (this._drawLayers.some(l => l.label === id)) {
+        while (this._drawLayers[this._activeFrame.label].some(l => l.label === id)) {
             // ensure unique id
             id = Utils.getRandomId();
         }
@@ -340,16 +353,16 @@ export class GridAPI extends APIScope {
         newLayer.filters = [new AlphaFilter({ alpha: 1 })];
 
         this._activeFrame.addChild(newLayer);
-        this._drawLayers.push(newLayer);
+        this._drawLayers[this._activeFrame.label].push(newLayer);
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_ADDED);
 
         // select the new layer
-        this.setActiveLayer(this._drawLayers.length - 1);
+        this.setActiveLayer(this._drawLayers[this._activeFrame.label].length - 1);
     }
 
     removeLayer(): void {
-        if (this._drawLayers.length <= 1) {
+        if (this._drawLayers[this._activeFrame.label].length <= 1) {
             // at least one layer is needed
             return;
         }
@@ -360,7 +373,7 @@ export class GridAPI extends APIScope {
         this.setActiveLayer(this._activeIndex - 1);
 
         this._activeFrame.removeChild(layerToRemove);
-        this._drawLayers.splice(indexToRemove, 1);
+        this._drawLayers[this._activeFrame.label].splice(indexToRemove, 1);
         layerToRemove.destroy();
 
         this.$iApi.event.emit(Events.CANVAS_LAYER_REMOVED);
@@ -372,12 +385,12 @@ export class GridAPI extends APIScope {
 
         // remove all children
         this._activeFrame.removeChildren(0, this._activeFrame.children.length);
-        this._drawLayers = [];
+        this._drawLayers[this._activeFrame.label] = [];
 
         // add them back in the new order
         layerOrder.forEach((l, i) => {
             this._activeFrame.addChild(l);
-            this._drawLayers.push(l);
+            this._drawLayers[this._activeFrame.label].push(l);
 
             if (l === this._activeLayer) {
                 this._activeIndex = i;
@@ -397,6 +410,10 @@ export class GridAPI extends APIScope {
         this._frameIndex = frameIdx;
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
+
+        this.setActiveLayer(0);
+
+        this._notify();
     }
 
     addFrame(): void {
@@ -404,10 +421,19 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        const newFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: `frame-${this._frames.length}` });
+        // hide current frame
+        this._activeFrame.visible = false;
+
+        const newFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
+        this._frames.push(newFrame);
 
         this._pixi.stage.addChild(newFrame);
-        this._frames.push(newFrame);
+
+        const newFrameLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+        newFrameLayer.filters = [new AlphaFilter({ alpha: 1 })];
+        newFrame.addChild(newFrameLayer);
+
+        this._drawLayers[newFrame.label] = [newFrameLayer];
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_ADDED);
 
@@ -430,7 +456,7 @@ export class GridAPI extends APIScope {
     }
 
     get drawLayers(): Array<Container> {
-        return this._drawLayers;
+        return this._drawLayers[this._activeFrame.label];
     }
 
     get activeLayer(): Container {

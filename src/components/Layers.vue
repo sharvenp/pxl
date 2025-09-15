@@ -38,25 +38,20 @@ const layers = ref<Array<Container>>([]);
 const visible = computed(() => iApi?.panel.isVisible(PanelType.LAYERS));
 
 onMounted(() => {
-    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
-        updateLayerList();
-    })!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
         selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     })!);
 
-    handlers.push(iApi?.event.on(Events.CANVAS_LAYER_ADDED, () => {
+    handlers.push(...(iApi?.event.ons([
+        Events.APP_INITIALIZED,
+        Events.CANVAS_LAYER_ADDED,
+        Events.CANVAS_LAYER_REMOVED,
+        Events.CANVAS_LAYER_REORDERED,
+        Events.CANVAS_FRAME_SELECTED],
+        () => {
         updateLayerList();
-    })!);
-
-    handlers.push(iApi?.event.on(Events.CANVAS_LAYER_REMOVED, () => {
-        updateLayerList();
-    })!);
-
-    handlers.push(iApi?.event.on(Events.CANVAS_LAYER_REORDERED, () => {
-        updateLayerList();
-    })!);
+    }))!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
         updateLayerPreview(iApi?.canvas.grid.activeLayer as Container);

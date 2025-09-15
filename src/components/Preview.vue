@@ -38,20 +38,23 @@ onMounted(() => {
     })!);
 
     // render the preview canvas
-    handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        if (iApi?.canvas?.view && previewCanvas.value) {
-            let ctx = previewCanvas.value.getContext('2d')!;
-            ctx.imageSmoothingEnabled = false;
-            if (ctx) {
-                ctx.clearRect(0, 0, previewCanvas.value.width, previewCanvas.value.height);
-                ctx.drawImage(iApi.canvas.view, 0, 0, previewCanvas.value.width, previewCanvas.value.height);
-            }
-        }
-    })!);
+    handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, updatePreview)!);
+    handlers.push(iApi?.event.on(Events.CANVAS_FRAME_ADDED, updatePreview)!);
 })
 
 onUnmounted(() => {
     handlers.forEach(h => iApi?.event.off(h));
 })
+
+function updatePreview() {
+    if (iApi?.canvas?.view && previewCanvas.value) {
+        let ctx = previewCanvas.value.getContext('2d')!;
+        ctx.imageSmoothingEnabled = false;
+        if (ctx) {
+            ctx.clearRect(0, 0, previewCanvas.value.width, previewCanvas.value.height);
+            ctx.drawImage(iApi.canvas.view, 0, 0, previewCanvas.value.width, previewCanvas.value.height);
+        }
+    }
+}
 
 </script>

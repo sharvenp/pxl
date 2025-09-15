@@ -89,8 +89,13 @@ export class Utils {
         return color;
     }
 
-    static getRandomId(): string {
-        return Math.random().toString(16).slice(2);
+    static getRandomId(length: number = 8): string {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
     }
 
     static gridToRectangles(grid: Uint8ClampedArray, width: number, height: number): Array<DataRectangle> {

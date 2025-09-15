@@ -65,25 +65,19 @@ const frames = ref<Array<Container>>([]);
 const visible = computed(() => iApi?.panel.isVisible(PanelType.ANIMATOR));
 
 onMounted(() => {
-    handlers.push(iApi?.event.on(Events.APP_INITIALIZED, () => {
-        updateFrameList();
-    })!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_FRAME_SELECTED, () => {
         selectedFrame.value = iApi?.canvas.grid.activeLayer.label!;
     })!);
 
-    handlers.push(iApi?.event.on(Events.CANVAS_FRAME_ADDED, () => {
+    handlers.push(...(iApi?.event.ons([
+        Events.APP_INITIALIZED,
+        Events.CANVAS_FRAME_ADDED,
+        Events.CANVAS_FRAME_REMOVED,
+        Events.CANVAS_FRAME_REORDERED],
+        () => {
         updateFrameList();
-    })!);
-
-    handlers.push(iApi?.event.on(Events.CANVAS_FRAME_REMOVED, () => {
-        updateFrameList();
-    })!);
-
-    handlers.push(iApi?.event.on(Events.CANVAS_FRAME_REORDERED, () => {
-        updateFrameList();
-    })!);
+    }))!)
 
     handlers.push(iApi?.event.on(Events.CANVAS_UPDATE, () => {
         updateFramePreview(iApi?.canvas.grid.activeFrameIndex);
