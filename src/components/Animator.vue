@@ -22,7 +22,7 @@
         </div>
         <div class="flex flex-nowrap items-start gap-4">
             <div v-for="(frame, i) in frames" :key="i" class="border animator-frame flex-none flex items-center justify-center relative">
-                <img :id="frame.label" class="animator-img border" />
+                <img :id="frame.label" class="animator-img border" v-on:dblclick="selectFrame(i)" />
 
                 <!-- Icon Buttons Bottom Right -->
                 <div class="absolute bottom-1 right-1 flex gap-1">
@@ -124,6 +124,15 @@ async function updateFramePreview(frameIndex: number) {
                 img.style.height = 'auto';
             }
         }
+    }
+}
+
+function selectFrame(frameIdx: number) {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        // reverse layerIdx
+        frameIdx = frames.value.length - frameIdx - 1;
+        grid.setActiveFrame(frameIdx);
     }
 }
 

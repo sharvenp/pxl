@@ -406,8 +406,15 @@ export class GridAPI extends APIScope {
         if (frameIdx < 0 || frameIdx > this._frames.length - 1) {
             return;
         }
+
+        // hide the current frame
+        this._activeFrame.visible = false;
+
         this._activeFrame = this._frames[frameIdx];
         this._frameIndex = frameIdx;
+
+        // show the new frame
+        this._activeFrame.visible = true;
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
 
