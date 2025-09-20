@@ -15,7 +15,7 @@
                     ➕ Add Frame
                 </button>
                 <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
-                    <input type="checkbox" class="accent-stone-500" />
+                    <input type="checkbox" class="accent-stone-500" @change="toggleOnionSkin" />
                     Onion Skin
                 </label>
             </div>
@@ -124,6 +124,13 @@ async function updateFramePreview(frameIndex: number) {
                 img.style.height = 'auto';
             }
         }
+    }
+}
+
+function toggleOnionSkin(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+        iApi?.canvas.grid.toggleOnionSkin(input.checked);
     }
 }
 

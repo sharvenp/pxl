@@ -9,6 +9,7 @@ export class GridAPI extends APIScope {
     private _frames: Array<Container>;
     private _activeFrame: Container;
     private _frameIndex: number;
+    private _onionSkin: boolean;
 
     private _previewContainer: Container;
 
@@ -24,6 +25,7 @@ export class GridAPI extends APIScope {
         this._activeFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
         this._frames = [this._activeFrame];
         this._frameIndex = 0;
+        this._onionSkin = false;
 
         this._pixi.stage.addChild(this._activeFrame);
 
@@ -416,6 +418,11 @@ export class GridAPI extends APIScope {
         // show the new frame
         this._activeFrame.visible = true;
 
+        // update onion skin if enabled
+        if (this._onionSkin) {
+            this._updateOnionSkin();
+        }
+
         this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
 
         this.setActiveLayer(0);
@@ -454,6 +461,33 @@ export class GridAPI extends APIScope {
 
     reorderFrame(frameOrder: Array<Container>): void {
         //TODO: reorder frames
+    }
+
+    toggleOnionSkin(enabled: boolean): void {
+        this._onionSkin = enabled;
+
+        // only show previous frame for now
+        if (this._frameIndex > 0 && this._onionSkin) {
+            this._updateOnionSkin();
+        }
+    }
+
+    private _updateOnionSkin(): void {
+
+        // turn off all frames except the active one
+        this._frames.forEach((f, i) => {
+            if (i !== this._frameIndex) {
+                f.visible = false;
+            }
+            f.alpha = 1;
+        });
+
+        if (this._frameIndex === 0) {
+            return;
+        }
+
+        this._frames[this._frameIndex - 1].visible = true;
+        this._frames[this._frameIndex - 1].alpha = 0.2;
     }
 
     private _notify(): void {
