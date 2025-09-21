@@ -409,17 +409,10 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        this._activeFrame.visible = false;
-
         this._activeFrame = this._frames[frameIdx];
         this._frameIndex = frameIdx;
 
-        this._activeFrame.visible = true;
-
-        // update onion skin if enabled
-        if (this._onionSkin) {
-            this._updateOnionSkin();
-        }
+        this._updateFrameVisibility();
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
 
@@ -460,29 +453,21 @@ export class GridAPI extends APIScope {
 
     toggleOnionSkin(enabled: boolean): void {
         this._onionSkin = enabled;
-
-        // only show previous frame for now
-        if (this._frameIndex > 0 && this._onionSkin) {
-            this._updateOnionSkin();
-        }
+        this._updateFrameVisibility();
     }
 
-    private _updateOnionSkin(): void {
+    private _updateFrameVisibility(): void {
 
         // turn off all frames except the active one
         this._frames.forEach((f, i) => {
-            if (i !== this._frameIndex) {
-                f.visible = false;
-            }
+            f.visible = i === this._frameIndex;
             f.alpha = 1;
         });
 
-        if (this._frameIndex === 0) {
-            return;
+        if (this._frameIndex > 0 && this._onionSkin) {
+            this._frames[this._frameIndex - 1].visible = true;
+            this._frames[this._frameIndex - 1].alpha = 0.2;
         }
-
-        this._frames[this._frameIndex - 1].visible = true;
-        this._frames[this._frameIndex - 1].alpha = 0.2;
     }
 
     private _notify(): void {

@@ -18,6 +18,7 @@
                     <input type="checkbox" class="accent-stone-500" @change="toggleOnionSkin" />
                     Onion Skin
                 </label>
+                <span class="text-xs text-gray-500 ml-auto">{{ frames.length }} / {{ MAX_FRAME_COUNT }}</span>
             </div>
         </div>
         <div class="flex flex-nowrap items-start gap-4">
