@@ -409,13 +409,11 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        // hide the current frame
         this._activeFrame.visible = false;
 
         this._activeFrame = this._frames[frameIdx];
         this._frameIndex = frameIdx;
 
-        // show the new frame
         this._activeFrame.visible = true;
 
         // update onion skin if enabled
@@ -434,9 +432,6 @@ export class GridAPI extends APIScope {
         if (this._frames.length >= MAX_FRAME_COUNT) {
             return;
         }
-
-        // hide current frame
-        this._activeFrame.visible = false;
 
         const newFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
         this._frames.push(newFrame);

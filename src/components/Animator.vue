@@ -21,8 +21,9 @@
             </div>
         </div>
         <div class="flex flex-nowrap items-start gap-4">
-            <div v-for="(frame, i) in frames" :key="i" class="border animator-frame flex-none flex items-center justify-center relative">
-                <img :id="frame.label" class="animator-img border" v-on:dblclick="selectFrame(i)" />
+            <div v-for="(frame, i) in frames" :key="i" class="border animator-frame flex-none flex items-center justify-center relative rounded hover:shadow-lg transition" :class="{'border-stone-500 border-2': selectedFrame === i, 'border-stone-200': selectedFrame !== i}">
+                <!-- Highlight border if selected -->
+                <img :id="frame.label" class="animator-img" v-on:dblclick="selectFrame(i)" />
 
                 <!-- Icon Buttons Bottom Right -->
                 <div class="absolute bottom-1 right-1 flex gap-1">
@@ -59,7 +60,7 @@ import { Container } from 'pixi.js';
 
 const iApi = inject<InstanceAPI>('iApi');
 const handlers: Array<string> = [];
-const selectedFrame = ref<string>('');
+const selectedFrame = ref<number>(0);
 const frames = ref<Array<Container>>([]);
 
 const visible = computed(() => iApi?.panel.isVisible(PanelType.ANIMATOR));
@@ -67,7 +68,7 @@ const visible = computed(() => iApi?.panel.isVisible(PanelType.ANIMATOR));
 onMounted(() => {
 
     handlers.push(iApi?.event.on(Events.CANVAS_FRAME_SELECTED, () => {
-        selectedFrame.value = iApi?.canvas.grid.activeLayer.label!;
+        selectedFrame.value = iApi?.canvas.grid.activeFrameIndex;
     })!);
 
     handlers.push(...(iApi?.event.ons([
@@ -89,8 +90,8 @@ onUnmounted(() => {
 })
 
 function updateFrameList() {
-    frames.value = [...(iApi?.canvas.grid.frames ?? [])].reverse();
-    selectedFrame.value = iApi?.canvas.grid.activeFrame.label!;
+    frames.value = [...(iApi?.canvas.grid.frames ?? [])];
+    selectedFrame.value = iApi?.canvas.grid.activeFrameIndex!;
     nextTick().then(() => {
         // need to do this on next tick to ensure canvas is rendered
         updateFramePreviews();
@@ -100,8 +101,22 @@ function updateFrameList() {
 function updateFramePreviews() {
     let grid = iApi?.canvas.grid;
     if (grid) {
-        frames.value.forEach((_, i) => {
+        frames.value.forEach((frame, i) => {
+
+            // Temporarily make frame visible and opaque to get a proper preview
+
+            const prevVisibility = frame.visible;
+            const prevAlpha = frame.alpha;
+
+            frame.visible = true;
+            frame.alpha = 1;
+
             updateFramePreview(i);
+
+            // Restore previous state
+
+            frame.visible = prevVisibility;
+            frame.alpha = prevAlpha;
         });
     }
 }
@@ -137,8 +152,6 @@ function toggleOnionSkin(event: Event) {
 function selectFrame(frameIdx: number) {
     let grid = iApi?.canvas.grid;
     if (grid) {
-        // reverse layerIdx
-        frameIdx = frames.value.length - frameIdx - 1;
         grid.setActiveFrame(frameIdx);
     }
 }
