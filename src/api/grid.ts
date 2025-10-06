@@ -8,8 +8,11 @@ export class GridAPI extends APIScope {
 
     private _frames: Array<Container>;
     private _activeFrame: Container;
+    private _frameContainer: Container;
     private _frameIndex: number;
+
     private _onionSkin: boolean;
+    private _onionSkinContainer: Container;
 
     private _previewContainer: Container;
 
@@ -22,14 +25,21 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._activeFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
+        this._onionSkin = false;
+        this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkin', visible: false });
+        this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
+        this._pixi.stage.addChild(this._onionSkinContainer);
+
+        this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
+        this._pixi.stage.addChild(this._frameContainer);
+
+        // TODO: move this
+        this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
         this._frames = [this._activeFrame];
         this._frameIndex = 0;
-        this._onionSkin = false;
+        this._frameContainer.addChild(this._activeFrame);
 
-        this._pixi.stage.addChild(this._activeFrame);
-
-        this._previewContainer = new Container({ eventMode: 'none' });
+        this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer', visible: false });
         this._pixi.stage.addChild(this._previewContainer);
 
         const layerConfig = iApi.state.loadedState?.canvas.layers;
@@ -82,6 +92,9 @@ export class GridAPI extends APIScope {
     }
 
     destroy(): void {
+
+        // TODO: update this
+
         this._previewContainer.destroy();
 
         // clear draw layers
@@ -394,7 +407,7 @@ export class GridAPI extends APIScope {
             this._activeFrame.addChild(l);
             this._drawLayers[this._activeFrame.label].push(l);
 
-            if (l === this._activeLayer) {
+            if (l.label === this._activeLayer.label) {
                 this._activeIndex = i;
             }
         });
@@ -412,10 +425,11 @@ export class GridAPI extends APIScope {
         this._activeFrame = this._frames[frameIdx];
         this._frameIndex = frameIdx;
 
-        this._updateFrameVisibility();
+        this._updateStageFrame();
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_SELECTED);
 
+        // default to the first layer of the new frame
         this.setActiveLayer(0);
 
         this._notify();
@@ -426,10 +440,8 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        const newFrame = new Container({ eventMode: 'none', blendMode: 'normal', label: Utils.getRandomId() });
+        const newFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
         this._frames.push(newFrame);
-
-        this._pixi.stage.addChild(newFrame);
 
         const newFrameLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
         newFrameLayer.filters = [new AlphaFilter({ alpha: 1 })];
@@ -447,26 +459,38 @@ export class GridAPI extends APIScope {
         //TODO: delete the frame
     }
 
-    reorderFrame(frameOrder: Array<Container>): void {
-        //TODO: reorder frames
+    reorderFrames(frameOrder: Array<Container>): void {
+
+        // remove all frames
+        this._frames = [...frameOrder];
+        this._frameIndex = this._frames.findIndex(f => f.label === this._activeFrame.label);
+
+        // update stage frame
+        this._updateStageFrame();
+
+        this.$iApi.event.emit(Events.CANVAS_FRAME_REORDERED);
     }
 
     toggleOnionSkin(enabled: boolean): void {
         this._onionSkin = enabled;
-        this._updateFrameVisibility();
+        this._onionSkinContainer.visible = enabled;
+        this._updateStageFrame();
     }
 
-    private _updateFrameVisibility(): void {
+    private _updateStageFrame(): void {
 
-        // turn off all frames except the active one
-        this._frames.forEach((f, i) => {
-            f.visible = i === this._frameIndex;
-            f.alpha = 1;
-        });
+        if (this._frameContainer.children.length > 0) {
+            this._frameContainer.removeChildAt(0);
+        }
 
-        if (this._frameIndex > 0 && this._onionSkin) {
-            this._frames[this._frameIndex - 1].visible = true;
-            this._frames[this._frameIndex - 1].alpha = 0.2;
+        if (this._onionSkinContainer.children.length > 0) {
+            this._onionSkinContainer.removeChildAt(0);
+        }
+
+        this._frameContainer.addChild(this._activeFrame);
+
+        if (this._onionSkin && this._frameIndex > 0) {
+            this._onionSkinContainer.addChild(this._frames[this._frameIndex - 1]);
         }
     }
 
