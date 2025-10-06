@@ -93,8 +93,6 @@ export class GridAPI extends APIScope {
 
     destroy(): void {
 
-        // TODO: update this
-
         this._previewContainer.destroy();
 
         // clear draw layers
@@ -108,6 +106,9 @@ export class GridAPI extends APIScope {
 
         // clear frames
         this._frames.forEach(frame => frame.destroy({ children: true }));
+        this._activeLayer.destroy({ children: true });
+        this._frameContainer.destroy({ children: true });
+        this._onionSkinContainer.destroy({ children: true });
         this._frameIndex = 0;
         this._frames.length = 0;
     }
