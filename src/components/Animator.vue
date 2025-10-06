@@ -1,6 +1,6 @@
 <template>
     <div v-show="visible"
-        class="absolute animator p-3 bottom-10 left-5 rounded border bg-white overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3">
+        class="absolute animator p-3 bottom-10 left-5 rounded border bg-white">
         <div>
             <div class="flex items-center gap-4 mb-2">
                 <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium">
@@ -18,7 +18,7 @@
             </div>
         </div>
         <div>
-            <draggable class="flex flex-nowrap items-start gap-4" :list="frames" @change="syncOrder">
+            <draggable class="flex flex-nowrap items-start gap-4 overflow-auto overflow-y-hidden scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-2 scrollbar-h-2" :list="frames" @change="syncOrder">
                 <div v-for="(frame, i) in frames" :key="i"
                     class="border animator-frame flex-none flex items-center justify-center relative rounded hover:shadow-lg transition"
                     :class="{ 'border-stone-500 border-2': selectedFrame === i, 'border-stone-200': selectedFrame !== i }">
@@ -26,7 +26,7 @@
                     <img :id="frame.label" class="animator-img" v-on:dblclick="selectFrame(i)" />
 
                     <!-- Icon Buttons Bottom Right -->
-                    <div class="absolute bottom-1 right-1 flex gap-1">
+                    <div class="absolute top-1 left-1 right-1 flex justify-between">
                         <!-- Clone Icon -->
                         <button class="p-1 rounded hover:bg-stone-100 transition" title="Clone">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
