@@ -457,7 +457,35 @@ export class GridAPI extends APIScope {
     }
 
     removeFrame(frameIndex: number): void {
-        //TODO: delete the frame
+        if (this._frames.length <= 1) {
+            // at least one frame is needed
+            return;
+        }
+
+        const shouldChangeFrame = frameIndex === this._frameIndex;
+
+        if (shouldChangeFrame) {
+            this.setActiveFrame(this._frameIndex - 1);
+        }
+
+        const indexToRemove = frameIndex;
+        const frameToRemove = this._frames[indexToRemove];
+
+        this._drawLayers[frameToRemove.label].forEach(layer => layer.destroy({ children: true }));
+        delete this._drawLayers[frameToRemove.label];
+
+        this._frames.splice(indexToRemove, 1);
+        frameToRemove.destroy({ children: true });
+
+        if (!shouldChangeFrame) {
+            this.setActiveFrame(this._frames.findIndex(f => f.label === this._activeFrame.label));
+        }
+
+        this._updateStageFrame();
+
+        this.$iApi.event.emit(Events.CANVAS_FRAME_REMOVED);
+
+        this._notify();
     }
 
     reorderFrames(frameOrder: Array<Container>): void {

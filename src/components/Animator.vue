@@ -38,7 +38,7 @@
                             </svg>
                         </button>
                         <!-- Delete Icon -->
-                        <button class="p-1 rounded hover:bg-stone-100 transition" title="Delete">
+                        <button class="p-1 rounded hover:bg-stone-100 transition" title="Delete" @click="deleteFrame(i)">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -147,6 +147,13 @@ function addFrame() {
     let grid = iApi?.canvas.grid;
     if (grid) {
         grid.addFrame();
+    }
+}
+
+function deleteFrame(frameIdx: number) {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        grid.removeFrame(frameIdx);
     }
 }
 
