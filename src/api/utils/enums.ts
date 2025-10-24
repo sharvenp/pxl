@@ -16,6 +16,7 @@ export enum Events {
     CANVAS_FRAME_REMOVED = "canvas_frame_removed",
     CANVAS_FRAME_SELECTED = "canvas_frame_selected",
     CANVAS_FRAME_REORDERED = "canvas_frame_reordered",
+    CANVAS_FRAME_DUPLICATED = "canvas_frame_duplicated",
     TOOL_SELECT = "tool_select",
     TOOL_ALT_MODE_UPDATE = "tool_alt_mode_update",
     PALETTE_COLOR_SELECT = "palette_color_select",
@@ -106,6 +107,7 @@ export enum PxlGraphicMethodType {
 
 export enum PxlSpecialGraphicType {
     FROM_LOAD_STATE = 'from_load_state',
+    FROM_CLONE = 'from_clone',
 }
 
 export enum LayerFilterType {

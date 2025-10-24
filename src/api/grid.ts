@@ -142,9 +142,12 @@ export class GridAPI extends APIScope {
         }
     }
 
-    extractPixels(layerIdx: number | undefined = undefined): Uint8ClampedArray {
+    extractPixels(layerIdx: number | undefined = undefined, frameIdx: number | undefined = undefined): Uint8ClampedArray {
+
+        const targetFrame = frameIdx === undefined ? this._activeFrame : this._frames[frameIdx];
+
         const pixelData = this._pixi.renderer.extract.pixels({
-            target: layerIdx === undefined ? this._activeLayer : this._drawLayers[this._activeFrame.label][layerIdx],
+            target: layerIdx === undefined ? this._activeLayer : this._drawLayers[targetFrame.label][layerIdx],
             antialias: false,
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
@@ -452,7 +455,7 @@ export class GridAPI extends APIScope {
 
         this.$iApi.event.emit(Events.CANVAS_FRAME_ADDED);
 
-        // select the new layer
+        // select the new frame
         this.setActiveFrame(this._frames.length - 1);
     }
 
@@ -506,6 +509,42 @@ export class GridAPI extends APIScope {
         this.$iApi.event.emit(Events.CANVAS_FRAME_REORDERED);
     }
 
+    cloneFrame(frameIndex: number): void {
+
+        if (frameIndex < 0 || frameIndex > this._frames.length - 1) {
+            return;
+        }
+
+        const frameToDuplicate = this._frames[frameIndex];
+        const newFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+
+        this._drawLayers[newFrame.label] = [];
+
+        frameToDuplicate.children.forEach((_, i) => {
+            const newFrameLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+            newFrameLayer.filters = [new AlphaFilter({ alpha: 1 })];
+
+            const extract = Utils.gridToRectangles(this.extractPixels(i, frameIndex), this.width, this.height);
+            const graphic = new Graphics({ roundPixels: true, label: PxlSpecialGraphicType.FROM_CLONE });
+            extract.forEach((rect: DataRectangle) => {
+                graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
+            });
+            newFrameLayer.addChild(graphic);
+
+            newFrame.addChild(newFrameLayer);
+
+            this._drawLayers[newFrame.label].push(newFrameLayer);
+        });
+
+        this._frames.splice(frameIndex + 1, 0, newFrame);
+
+        this.$iApi.event.emit(Events.CANVAS_FRAME_DUPLICATED);
+
+        this.setActiveFrame(frameIndex + 1);
+
+        this._updateStageFrame();
+    }
+
     toggleOnionSkin(enabled: boolean): void {
         this._onionSkin = enabled;
         this._onionSkinContainer.visible = enabled;
@@ -514,10 +553,12 @@ export class GridAPI extends APIScope {
 
     private _updateStageFrame(): void {
 
+        // only one frame is shown at a time
         if (this._frameContainer.children.length > 0) {
             this._frameContainer.removeChildAt(0);
         }
 
+        // only one onion skin frame is shown at a time
         if (this._onionSkinContainer.children.length > 0) {
             this._onionSkinContainer.removeChildAt(0);
         }

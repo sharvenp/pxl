@@ -28,7 +28,7 @@
                     <!-- Icon Buttons Bottom Right -->
                     <div class="absolute top-1 left-1 right-1 flex justify-between">
                         <!-- Clone Icon -->
-                        <button class="p-1 rounded hover:bg-stone-100 transition" title="Clone">
+                        <button class="p-1 rounded hover:bg-stone-100 transition" title="Clone" @click="cloneFrame(i)">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <rect x="9" y="9" width="10" height="10" rx="2" stroke-width="2" stroke="currentColor"
@@ -76,7 +76,8 @@ onMounted(() => {
         Events.APP_INITIALIZED,
         Events.CANVAS_FRAME_ADDED,
         Events.CANVAS_FRAME_REMOVED,
-        Events.CANVAS_FRAME_REORDERED],
+        Events.CANVAS_FRAME_REORDERED,
+        Events.CANVAS_FRAME_DUPLICATED],
         () => {
             updateFrameList();
         }))!)
@@ -154,6 +155,13 @@ function deleteFrame(frameIdx: number) {
     let grid = iApi?.canvas.grid;
     if (grid) {
         grid.removeFrame(frameIdx);
+    }
+}
+
+function cloneFrame(frameIdx: number) {
+    let grid = iApi?.canvas.grid;
+    if (grid) {
+        grid.cloneFrame(frameIdx);
     }
 }
 

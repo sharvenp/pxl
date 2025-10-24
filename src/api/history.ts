@@ -35,7 +35,7 @@ export class HistoryAPI extends APIScope {
             let topMostGraphic = grid.peek();
 
             // if the top most graphic is a special graphic, don't undo it
-            if (topMostGraphic.label === PxlSpecialGraphicType.FROM_LOAD_STATE) {
+            if (topMostGraphic.label === PxlSpecialGraphicType.FROM_LOAD_STATE || topMostGraphic.label === PxlSpecialGraphicType.FROM_CLONE) {
                 return;
             }
 
@@ -71,7 +71,7 @@ export class HistoryAPI extends APIScope {
             return false;
         }
 
-        return grid.peek().label !== PxlSpecialGraphicType.FROM_LOAD_STATE;
+        return grid.peek().label !== PxlSpecialGraphicType.FROM_LOAD_STATE && grid.peek().label !== PxlSpecialGraphicType.FROM_CLONE;
     }
 
     get canRedo(): boolean {
