@@ -462,10 +462,16 @@ export class GridAPI extends APIScope {
             return;
         }
 
-        const shouldChangeFrame = frameIndex === this._frameIndex;
+        let frameToSet = undefined;
 
-        if (shouldChangeFrame) {
-            this.setActiveFrame(this._frameIndex - 1);
+        if (frameIndex === this._frameIndex) {
+            if (this._frameIndex > 0) {
+                frameToSet = this._frames[this._frameIndex - 1];
+            } else {
+                frameToSet = this._frames[1];
+            }
+        } else {
+            frameToSet = this._activeFrame;
         }
 
         const indexToRemove = frameIndex;
@@ -477,8 +483,8 @@ export class GridAPI extends APIScope {
         this._frames.splice(indexToRemove, 1);
         frameToRemove.destroy({ children: true });
 
-        if (!shouldChangeFrame) {
-            this.setActiveFrame(this._frames.findIndex(f => f.label === this._activeFrame.label));
+        if (frameToSet !== undefined) {
+            this.setActiveFrame(this._frames.findIndex(f => f.label === frameToSet.label));
         }
 
         this._updateStageFrame();
