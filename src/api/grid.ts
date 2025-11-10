@@ -6,6 +6,7 @@ export class GridAPI extends APIScope {
 
     private _pixi: Application;
 
+    private _fps: number;
     private _frames: Array<Container>;
     private _activeFrame: Container;
     private _frameContainer: Container;
@@ -50,6 +51,7 @@ export class GridAPI extends APIScope {
             // TODO: remove
             this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._activeIndex = 0;
+            this._fps = 5;
 
             // TODO: fix config
             // layerConfig.states.forEach((layerState: any) => {
@@ -88,6 +90,8 @@ export class GridAPI extends APIScope {
 
             this._drawLayers[this._activeFrame.label] = [this._activeLayer];
             this._activeIndex = 0;
+
+            this._fps = 5;
         }
     }
 
@@ -586,6 +590,14 @@ export class GridAPI extends APIScope {
 
     get activeIndex(): number {
         return this._activeIndex;
+    }
+
+    get fps(): number {
+        return this._fps;
+    }
+
+    set fps(value: number) {
+        this._fps = value;
     }
 
     get frames(): Array<Container> {

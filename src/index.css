@@ -27,7 +27,8 @@ body,
   height: 100%;
 }
 
-canvas {
+canvas,
+img {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
@@ -109,10 +110,6 @@ canvas {
   width: 115px;
   height: 115px;
   overflow: hidden;
-}
-
-.animator-img {
-  image-rendering: pixelated;
 }
 
 .transparent-swatch {
