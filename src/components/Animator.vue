@@ -66,20 +66,6 @@
             <img id="animator-preview" class="border shadow-lg" />
             <div class="flex justify-between text-sm mt-2">
                 <span>{{ fps }} FPS</span>
-                <div class="flex items-center gap-4">
-                    <!-- TODO: implement -->
-                    <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-xs font-medium">
-                        ⏮️
-                    </button>
-                    <!-- TODO: implement -->
-                    <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-xs font-medium">
-                        ⏯️
-                    </button>
-                    <!-- TODO: implement -->
-                    <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-xs font-medium">
-                        ⏭️
-                    </button>
-                </div>
                 <span>
                     {{ previewFrameId + 1 }} / {{ frames.length }}
                 </span>
@@ -120,7 +106,6 @@ onMounted(() => {
         Events.CANVAS_FRAME_DUPLICATED],
         () => {
             fps.value = iApi?.canvas.grid.fps;
-            console.log(fps.value);
             updateFrameList();
         }))!)
 
@@ -260,6 +245,7 @@ function updateFps(event: Event) {
     let grid = iApi?.canvas.grid;
     if (grid && !isNaN(newFps)) {
         iApi!.canvas.grid.fps = newFps;
+        fps.value = newFps;
     }
 }
 
