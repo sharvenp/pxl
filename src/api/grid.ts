@@ -17,7 +17,7 @@ export class GridAPI extends APIScope {
 
     private _previewContainer: Container;
 
-    private _drawLayers: { [frame: string]: Array<Container>; };
+    private _drawLayers: { [frame: string]: Array<Container> };
     private _activeLayer: Container;
     private _activeIndex: number;
 
@@ -597,7 +597,11 @@ export class GridAPI extends APIScope {
         this.$iApi.event.emit(Events.CANVAS_UPDATE);
     }
 
-    get drawLayers(): Array<Container> {
+    get drawLayers(): { [frame: string]: Array<Container> } {
+        return this._drawLayers;
+    }
+
+    get activeFrameLayers(): Array<Container> {
         return this._drawLayers[this._activeFrame.label];
     }
 
@@ -643,5 +647,9 @@ export class GridAPI extends APIScope {
 
     get empty(): boolean {
         return this._activeLayer.children.length === 0;
+    }
+
+    get onionSkin(): boolean {
+        return this._onionSkin;
     }
 }

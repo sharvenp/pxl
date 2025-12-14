@@ -203,173 +203,168 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "Name of the layer"
+                  },
+                  "selectedLayer": {
+                    "type": "number",
+                    "description": "Index of the selected layer",
+                    "minimum": 0,
+                    "multipleOf": 1
+                  },
                   "layers": {
-                    "type": "object",
-                    "description": "State of canvas layer",
-                    "properties": {
-                      "selectedLayer": {
-                        "type": "number",
-                        "description": "Index of the selected layer",
-                        "minimum": 0,
-                        "multipleOf": 1
-                      },
-                      "states": {
-                        "type": "array",
-                        "description": "Layer data of the canvas",
-                        "minItems": 1,
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "label": {
-                              "type": "string",
-                              "description": "Name of the layer"
-                            },
-                            "visible": {
-                              "type": "boolean",
-                              "description": "Whether the layer is visible or not"
-                            },
-                            "alpha": {
-                              "type": "number",
-                              "description": "Alpha of the layer",
-                              "minimum": 0,
-                              "maximum": 1
-                            },
-                            "blendMode": {
-                              "type": "string",
-                              "description": "Blend mode of the graphic",
-                              "enum": [
-                                "inherit",
-                                "normal",
-                                "add",
-                                "multiply",
-                                "screen",
-                                "darken",
-                                "lighten",
-                                "erase",
-                                "color-dodge",
-                                "color-burn",
-                                "linear-burn",
-                                "linear-dodge",
-                                "linear-light",
-                                "hard-light",
-                                "soft-light",
-                                "pin-light",
-                                "difference",
-                                "exclusion",
-                                "overlay",
-                                "saturation",
-                                "color",
-                                "luminosity",
-                                "normal-npm",
-                                "add-npm",
-                                "screen-npm",
-                                "none",
-                                "subtract",
-                                "divide",
-                                "vivid-light",
-                                "hard-mix",
-                                "negation",
-                                "min",
-                                "max"
-                              ]
-                            },
-                            "filters": {
-                              "type": "array",
-                              "description": "Filters applied to the layer",
-                              "items": {
-                                "oneOf": [
-                                  {
-                                    "type": "object",
-                                    "description": "Alpha filter",
-                                    "properties": {
-                                      "type": {
-                                        "type": "string",
-                                        "enum": [
-                                          "alpha"
-                                        ]
-                                      },
-                                      "value": {
-                                        "type": "number",
-                                        "description": "Alpha value",
-                                        "minimum": 0,
-                                        "maximum": 1
-                                      }
-                                    },
-                                    "required": [
-                                      "type",
-                                      "value"
-                                    ],
-                                    "additionalProperties": false
-                                  }
-                                ]
-                              }
-                            },
-                            "data": {
-                              "type": "array",
-                              "description": "Graphic data of the layer",
-                              "items": {
+                    "type": "array",
+                    "description": "Layer data of the canvas",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "description": "Name of the layer"
+                        },
+                        "visible": {
+                          "type": "boolean",
+                          "description": "Whether the layer is visible or not"
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "description": "Alpha of the layer",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "blendMode": {
+                          "type": "string",
+                          "description": "Blend mode of the graphic",
+                          "enum": [
+                            "inherit",
+                            "normal",
+                            "add",
+                            "multiply",
+                            "screen",
+                            "darken",
+                            "lighten",
+                            "erase",
+                            "color-dodge",
+                            "color-burn",
+                            "linear-burn",
+                            "linear-dodge",
+                            "linear-light",
+                            "hard-light",
+                            "soft-light",
+                            "pin-light",
+                            "difference",
+                            "exclusion",
+                            "overlay",
+                            "saturation",
+                            "color",
+                            "luminosity",
+                            "normal-npm",
+                            "add-npm",
+                            "screen-npm",
+                            "none",
+                            "subtract",
+                            "divide",
+                            "vivid-light",
+                            "hard-mix",
+                            "negation",
+                            "min",
+                            "max"
+                          ]
+                        },
+                        "filters": {
+                          "type": "array",
+                          "description": "Filters applied to the layer",
+                          "items": {
+                            "oneOf": [
+                              {
                                 "type": "object",
-                                "description": "Rectangle on the layer",
+                                "description": "Alpha filter",
                                 "properties": {
-                                  "x": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "alpha"
+                                    ]
+                                  },
+                                  "value": {
                                     "type": "number",
-                                    "description": "Top-left x coordinate",
+                                    "description": "Alpha value",
                                     "minimum": 0,
-                                    "multipleOf": 1
-                                  },
-                                  "y": {
-                                    "type": "number",
-                                    "description": "Top-left y coordinate",
-                                    "minimum": 0,
-                                    "multipleOf": 1
-                                  },
-                                  "width": {
-                                    "type": "number",
-                                    "description": "Width of the rectangle",
-                                    "minimum": 1,
-                                    "multipleOf": 1
-                                  },
-                                  "height": {
-                                    "type": "number",
-                                    "description": "Height of the rectangle",
-                                    "minimum": 1,
-                                    "multipleOf": 1
-                                  },
-                                  "color": {
-                                    "$ref": "#/$defs/colorHex"
+                                    "maximum": 1
                                   }
                                 },
                                 "required": [
-                                  "x",
-                                  "y",
-                                  "width",
-                                  "height",
-                                  "color"
+                                  "type",
+                                  "value"
                                 ],
                                 "additionalProperties": false
                               }
-                            }
-                          },
-                          "required": [
-                            "label",
-                            "visible",
-                            "alpha",
-                            "blendMode",
-                            "filters",
-                            "data"
-                          ],
-                          "additionalProperties": false
+                            ]
+                          }
+                        },
+                        "data": {
+                          "type": "array",
+                          "description": "Graphic data of the layer",
+                          "items": {
+                            "type": "object",
+                            "description": "Rectangle on the layer",
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "description": "Top-left x coordinate",
+                                "minimum": 0,
+                                "multipleOf": 1
+                              },
+                              "y": {
+                                "type": "number",
+                                "description": "Top-left y coordinate",
+                                "minimum": 0,
+                                "multipleOf": 1
+                              },
+                              "width": {
+                                "type": "number",
+                                "description": "Width of the rectangle",
+                                "minimum": 1,
+                                "multipleOf": 1
+                              },
+                              "height": {
+                                "type": "number",
+                                "description": "Height of the rectangle",
+                                "minimum": 1,
+                                "multipleOf": 1
+                              },
+                              "color": {
+                                "$ref": "#/$defs/colorHex"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y",
+                              "width",
+                              "height",
+                              "color"
+                            ],
+                            "additionalProperties": false
+                          }
                         }
-                      }
-                    },
-                    "required": [
-                      "selectedLayer",
-                      "states"
-                    ],
-                    "additionalProperties": false
+                      },
+                      "required": [
+                        "label",
+                        "visible",
+                        "alpha",
+                        "blendMode",
+                        "filters",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
                   }
                 },
                 "required": [
+                  "label",
+                  "selectedLayer",
                   "layers"
                 ],
                 "additionalProperties": false

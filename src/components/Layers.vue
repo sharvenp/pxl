@@ -68,7 +68,7 @@ onUnmounted(() => {
 })
 
 function updateLayerList() {
-    layers.value = [...(iApi?.canvas.grid.drawLayers ?? [])].reverse();
+    layers.value = [...(iApi?.canvas.grid.activeFrameLayers ?? [])].reverse();
     selectedId.value = iApi?.canvas.grid.activeLayer.label!;
     nextTick().then(() => {
         // need to do this on next tick to ensure canvas is rendered
@@ -88,7 +88,7 @@ function updateLayerPreviews() {
 function updateLayerPreview(layer: Container) {
     let grid = iApi?.canvas.grid;
     if (grid && layer) {
-        if (!grid.drawLayers.some(l => l.label === layer.label)) {
+        if (!grid.activeFrameLayers.some(l => l.label === layer.label)) {
             return;
         }
         let activeLayerCanvas = document.getElementById(layer.label) as HTMLCanvasElement;
