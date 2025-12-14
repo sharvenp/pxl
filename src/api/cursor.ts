@@ -12,7 +12,7 @@ export class CursorAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._cursorLayer = new Container({ alpha: 0.25, eventMode: 'none', label: 'cursor' });
+        this._cursorLayer = new Container({ alpha: 0.25, eventMode: 'none', label: 'cursorContainer' });
         this._cursorGraphic = new Graphics({ roundPixels: true });
 
         this._cursorLayer.addChild(this._cursorGraphic);

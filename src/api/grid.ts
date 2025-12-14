@@ -26,21 +26,21 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        this._onionSkin = false;
-        this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkin', visible: false });
-        this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
-        this._pixi.stage.addChild(this._onionSkinContainer);
-
+        // TODO: move this
         this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
         this._pixi.stage.addChild(this._frameContainer);
 
-        // TODO: move this
+        this._onionSkin = false;
+        this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: false });
+        this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
+        this._pixi.stage.addChild(this._onionSkinContainer);
+
         this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
         this._frames = [this._activeFrame];
         this._frameIndex = 0;
         this._frameContainer.addChild(this._activeFrame);
 
-        this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer', visible: false });
+        this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
         this._pixi.stage.addChild(this._previewContainer);
 
         const layerConfig = iApi.state.loadedState?.canvas.layers;
