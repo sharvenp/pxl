@@ -2,6 +2,14 @@ import { AlphaFilter, Application, Container, ContainerChild, Graphics, ICanvas,
 import { APIScope, InstanceAPI } from '.';
 import { Events, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
 
+/***********************************************************************************************
+ Core Container Stack:
+ [BOTTOM MOST]  0 - FRAMES CONTAINER        - Frames go here (contains layers)
+                1 - ONION SKIN CONTAINER    - Used to preview onion skinning
+                2 - PREVIEW CONTAINER       - Used by select to preview selections
+ [TOP MOST]     3 - CURSOR CONTAINER        - Used to draw the cursor (initalized by CusrorAPI)
+***********************************************************************************************/
+
 export class GridAPI extends APIScope {
 
     private _pixi: Application;
@@ -25,23 +33,6 @@ export class GridAPI extends APIScope {
         super(iApi);
 
         this._pixi = pixi;
-
-        // TODO: move this
-        this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
-        this._pixi.stage.addChild(this._frameContainer);
-
-        this._onionSkin = false;
-        this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: false });
-        this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
-        this._pixi.stage.addChild(this._onionSkinContainer);
-
-        this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
-        this._frames = [this._activeFrame];
-        this._frameIndex = 0;
-        this._frameContainer.addChild(this._activeFrame);
-
-        this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
-        this._pixi.stage.addChild(this._previewContainer);
 
         const layerConfig = iApi.state.loadedState?.canvas.layers;
 
@@ -84,6 +75,15 @@ export class GridAPI extends APIScope {
             // this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
             // this._activeIndex = layerConfig.selectedLayer;
         } else {
+            // Create frame container and initial frame/layer
+            this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
+            this._pixi.stage.addChild(this._frameContainer);
+
+            this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+            this._frames = [this._activeFrame];
+            this._frameIndex = 0;
+            this._frameContainer.addChild(this._activeFrame);
+
             this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
             this._activeFrame.addChild(this._activeLayer);
@@ -91,6 +91,17 @@ export class GridAPI extends APIScope {
             this._drawLayers[this._activeFrame.label] = [this._activeLayer];
             this._activeIndex = 0;
 
+            // Create onion skin container
+            this._onionSkin = false;
+            this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: false });
+            this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
+            this._pixi.stage.addChild(this._onionSkinContainer);
+
+            // Create preview container
+            this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
+            this._pixi.stage.addChild(this._previewContainer);
+
+            // set default fps
             this._fps = 5;
         }
     }

@@ -1,5 +1,6 @@
 import { ICanvas } from "pixi.js";
 import { RGBAColor, DataRectangle } from "./interfaces";
+import { v4 as uuidv4 } from 'uuid';
 import JSZip from "jszip";
 
 export class Utils {
@@ -91,12 +92,20 @@ export class Utils {
         return color;
     }
 
-    static getRandomId(length: number = 8): string {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    static getRandomId(custom: boolean = false): string {
         let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
+
+        if (custom) {
+            // use a custom alphanumeric id
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+        } else {
+            // generate a guid
+            result = uuidv4();
         }
+
         return result;
     }
 

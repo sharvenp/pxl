@@ -40,6 +40,7 @@
     "tiny-emitter": "^2.1.0",
     "tree-kill": "^1.2.2",
     "typescript": "^5.9.2",
+    "uuid": "^13.0.0",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",
     "vue": "^3.3.4",

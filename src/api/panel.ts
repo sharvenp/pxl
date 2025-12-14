@@ -7,6 +7,8 @@ export class PanelAPI extends APIScope {
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
+
+        //TODO: Load config
     }
 
     register(name: string | Array<string>, defaultVisible = true): void {
