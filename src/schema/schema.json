@@ -1,572 +1,617 @@
 {
-    "$id": "https://github.com/sharvenp/pxl/blob/main/src/schema/schema.json",
-    "schema": "https://json-schema.org/draft/2020-12/schema",
-    "description": "Schema for .pxl project save state",
-    "type": "object",
-    "properties": {
-        "version": {
-            "type": "string",
-            "description": "Version of the save state",
-            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+  "$id": "https://github.com/sharvenp/pxl/blob/main/src/schema/schema.json",
+  "schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Schema for .pxl project save state",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Version of the save state",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "preferences": {
+      "type": "object",
+      "description": "State of the project and preferences",
+      "properties": {
+        "theme": {
+          "type": "string",
+          "description": "Theme of the project",
+          "enum": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tools": {
+      "type": "object",
+      "properties": {
+        "selectedTool": {
+          "$ref": "#/$defs/tool-id"
         },
-        "preferences": {
-            "type": "object",
-            "description": "State of the project and preferences",
-            "properties": {
-                "theme": {
-                    "type": "string",
-                    "description": "Theme of the project",
-                    "enum": [
-                        "light",
-                        "dark"
-                    ]
-                }
-            },
-            "additionalProperties": false
-        },
-        "tools": {
+        "states": {
+          "type": "array",
+          "description": "State of tools",
+          "items": {
             "type": "object",
             "properties": {
-                "selectedTool": {
-                    "$ref": "#/$defs/tool-id"
-                },
-                "states": {
-                    "type": "array",
-                    "description": "State of tools",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "tool": {
-                                "$ref": "#/$defs/tool-id"
-                            },
-                            "state": {
-                                "type": "object",
-                                "description": "State of the tool",
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/$defs/pencil-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/eraser-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/fill-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/rectangle-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/ellipse-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/line-state"
-                                    },
-                                    {
-                                        "$ref": "#/$defs/shade-state"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "description": "Blank state",
-                                        "properties": {},
-                                        "additionalProperties": false
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "tool",
-                            "state"
-                        ],
-                        "additionalProperties": false
-                    }
-                }
+              "tool": {
+                "$ref": "#/$defs/tool-id"
+              },
+              "state": {
+                "type": "object",
+                "description": "State of the tool",
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/pencil-state"
+                  },
+                  {
+                    "$ref": "#/$defs/eraser-state"
+                  },
+                  {
+                    "$ref": "#/$defs/fill-state"
+                  },
+                  {
+                    "$ref": "#/$defs/rectangle-state"
+                  },
+                  {
+                    "$ref": "#/$defs/ellipse-state"
+                  },
+                  {
+                    "$ref": "#/$defs/line-state"
+                  },
+                  {
+                    "$ref": "#/$defs/shade-state"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Blank state",
+                    "properties": {},
+                    "additionalProperties": false
+                  }
+                ]
+              }
             },
             "required": [
-                "selectedTool",
-                "states"
+              "tool",
+              "state"
             ],
             "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "selectedTool",
+        "states"
+      ],
+      "additionalProperties": false
+    },
+    "palette": {
+      "type": "object",
+      "description": "State of the palette",
+      "properties": {
+        "selectedColor": {
+          "type": "object",
+          "description": "Palette color",
+          "properties": {
+            "colorHex": {
+              "$ref": "#/$defs/colorHex"
+            },
+            "colorRGBA": {
+              "$ref": "#/$defs/colorRGBA"
+            }
+          },
+          "required": [
+            "colorHex",
+            "colorRGBA"
+          ],
+          "additionalProperties": false
         },
-        "palette": {
+        "colors": {
+          "type": "array",
+          "description": "Colors in the palette",
+          "items": {
             "type": "object",
-            "description": "State of the palette",
+            "description": "Palette color",
             "properties": {
-                "selectedColor": {
-                    "type": "object",
-                    "description": "Palette color",
-                    "properties": {
-                        "colorHex": {
-                            "$ref": "#/$defs/colorHex"
-                        },
-                        "colorRGBA": {
-                            "$ref": "#/$defs/colorRGBA"
-                        }
-                    },
-                    "required": [
-                        "colorHex",
-                        "colorRGBA"
-                    ],
-                    "additionalProperties": false
-                },
-                "colors": {
-                    "type": "array",
-                    "description": "Colors in the palette",
-                    "items": {
-                        "type": "object",
-                        "description": "Palette color",
-                        "properties": {
-                            "colorHex": {
-                                "$ref": "#/$defs/colorHex"
-                            },
-                            "colorRGBA": {
-                                "$ref": "#/$defs/colorRGBA"
-                            }
-                        },
-                        "required": [
-                            "colorHex",
-                            "colorRGBA"
-                        ],
-                        "additionalProperties": false
-                    }
-                }
+              "colorHex": {
+                "$ref": "#/$defs/colorHex"
+              },
+              "colorRGBA": {
+                "$ref": "#/$defs/colorRGBA"
+              }
             },
             "required": [
-                "selectedColor",
-                "colors"
+              "colorHex",
+              "colorRGBA"
             ],
             "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "selectedColor",
+        "colors"
+      ],
+      "additionalProperties": false
+    },
+    "canvas": {
+      "type": "object",
+      "description": "State of the canvas",
+      "properties": {
+        "settings": {
+          "type": "object",
+          "description": "Settings of the canvas",
+          "properties": {
+            "width": {
+              "type": "number",
+              "description": "Width of the canvas",
+              "minimum": 1,
+              "maximum": 10000,
+              "multipleOf": 1
+            },
+            "height": {
+              "type": "number",
+              "description": "Height of the canvas",
+              "minimum": 1,
+              "maximum": 10000,
+              "multipleOf": 1
+            },
+            "mirrorX": {
+              "type": "boolean",
+              "description": "Whether to mirror the canvas on the x-axis or not"
+            },
+            "mirrorY": {
+              "type": "boolean",
+              "description": "Whether to mirror the canvas on the y-axis or not"
+            }
+          },
+          "required": [
+            "width",
+            "height",
+            "mirrorX",
+            "mirrorY"
+          ],
+          "additionalProperties": false
         },
-        "canvas": {
-            "type": "object",
-            "description": "State of the canvas",
-            "properties": {
-                "settings": {
-                    "type": "object",
-                    "description": "Settings of the canvas",
-                    "properties": {
-                        "width": {
-                            "type": "number",
-                            "description": "Width of the canvas",
-                            "minimum": 1,
-                            "maximum": 10000,
-                            "multipleOf": 1
-                        },
-                        "height": {
-                            "type": "number",
-                            "description": "Height of the canvas",
-                            "minimum": 1,
-                            "maximum": 10000,
-                            "multipleOf": 1
-                        },
-                        "mirrorX": {
-                            "type": "boolean",
-                            "description": "Whether to mirror the canvas on the x-axis or not"
-                        },
-                        "mirrorY": {
-                            "type": "boolean",
-                            "description": "Whether to mirror the canvas on the y-axis or not"
-                        }
-                    },
-                    "required": [
-                        "width",
-                        "height",
-                        "mirrorX",
-                        "mirrorY"
-                    ],
-                    "additionalProperties": false
-                },
-                "layers": {
+        "animator": {
+          "type": "object",
+          "description": "State of the animator",
+          "properties": {
+            "selectedFrame": {
+              "type": "number",
+              "description": "Index of the selected frame",
+              "minimum": 0,
+              "multipleOf": 1
+            },
+            "onionSkin": {
+              "type": "boolean",
+              "description": "Indicates if onion skin is enabled"
+            },
+            "fps": {
+              "type": "number",
+              "description": "Animator frames per second",
+              "minimum": 5,
+              "maximum": 60,
+              "multipleOf": 1
+            },
+            "frames": {
+              "type": "array",
+              "description": "List of frames",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "layers": {
                     "type": "object",
                     "description": "State of canvas layer",
                     "properties": {
-                        "selectedLayer": {
-                            "type": "number",
-                            "description": "Index of the selected layer",
-                            "minimum": 0,
-                            "multipleOf": 1
-                        },
-                        "states": {
-                            "type": "array",
-                            "description": "Layer data of the canvas",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "label": {
+                      "selectedLayer": {
+                        "type": "number",
+                        "description": "Index of the selected layer",
+                        "minimum": 0,
+                        "multipleOf": 1
+                      },
+                      "states": {
+                        "type": "array",
+                        "description": "Layer data of the canvas",
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "label": {
+                              "type": "string",
+                              "description": "Name of the layer"
+                            },
+                            "visible": {
+                              "type": "boolean",
+                              "description": "Whether the layer is visible or not"
+                            },
+                            "alpha": {
+                              "type": "number",
+                              "description": "Alpha of the layer",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "blendMode": {
+                              "type": "string",
+                              "description": "Blend mode of the graphic",
+                              "enum": [
+                                "inherit",
+                                "normal",
+                                "add",
+                                "multiply",
+                                "screen",
+                                "darken",
+                                "lighten",
+                                "erase",
+                                "color-dodge",
+                                "color-burn",
+                                "linear-burn",
+                                "linear-dodge",
+                                "linear-light",
+                                "hard-light",
+                                "soft-light",
+                                "pin-light",
+                                "difference",
+                                "exclusion",
+                                "overlay",
+                                "saturation",
+                                "color",
+                                "luminosity",
+                                "normal-npm",
+                                "add-npm",
+                                "screen-npm",
+                                "none",
+                                "subtract",
+                                "divide",
+                                "vivid-light",
+                                "hard-mix",
+                                "negation",
+                                "min",
+                                "max"
+                              ]
+                            },
+                            "filters": {
+                              "type": "array",
+                              "description": "Filters applied to the layer",
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "description": "Alpha filter",
+                                    "properties": {
+                                      "type": {
                                         "type": "string",
-                                        "description": "Name of the layer"
-                                    },
-                                    "visible": {
-                                        "type": "boolean",
-                                        "description": "Whether the layer is visible or not"
-                                    },
-                                    "alpha": {
+                                        "enum": [
+                                          "alpha"
+                                        ]
+                                      },
+                                      "value": {
                                         "type": "number",
-                                        "description": "Alpha of the layer",
+                                        "description": "Alpha value",
                                         "minimum": 0,
                                         "maximum": 1
+                                      }
                                     },
-                                    "blendMode": {
-                                        "type": "string",
-                                        "description": "Blend mode of the graphic",
-                                        "enum": [
-                                            "inherit",
-                                            "normal",
-                                            "add",
-                                            "multiply",
-                                            "screen",
-                                            "darken",
-                                            "lighten",
-                                            "erase",
-                                            "color-dodge",
-                                            "color-burn",
-                                            "linear-burn",
-                                            "linear-dodge",
-                                            "linear-light",
-                                            "hard-light",
-                                            "soft-light",
-                                            "pin-light",
-                                            "difference",
-                                            "exclusion",
-                                            "overlay",
-                                            "saturation",
-                                            "color",
-                                            "luminosity",
-                                            "normal-npm",
-                                            "add-npm",
-                                            "screen-npm",
-                                            "none",
-                                            "subtract",
-                                            "divide",
-                                            "vivid-light",
-                                            "hard-mix",
-                                            "negation",
-                                            "min",
-                                            "max"
-                                        ]
-                                    },
-                                    "filters": {
-                                        "type": "array",
-                                        "description": "Filters applied to the layer",
-                                        "items": {
-                                            "oneOf": [
-                                                {
-                                                    "type": "object",
-                                                    "description": "Alpha filter",
-                                                    "properties": {
-                                                        "type": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "alpha"
-                                                            ]
-                                                        },
-                                                        "value": {
-                                                            "type": "number",
-                                                            "description": "Alpha value",
-                                                            "minimum": 0,
-                                                            "maximum": 1
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "type",
-                                                        "value"
-                                                    ],
-                                                    "additionalProperties": false
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "data": {
-                                        "type": "array",
-                                        "description": "Graphic data of the layer",
-                                        "items": {
-                                            "type": "object",
-                                            "description": "Rectangle on the layer",
-                                            "properties": {
-                                                "x": {
-                                                    "type": "number",
-                                                    "description": "Top-left x coordinate",
-                                                    "minimum": 0,
-                                                    "multipleOf": 1
-                                                },
-                                                "y": {
-                                                    "type": "number",
-                                                    "description": "Top-left y coordinate",
-                                                    "minimum": 0,
-                                                    "multipleOf": 1
-                                                },
-                                                "width": {
-                                                    "type": "number",
-                                                    "description": "Width of the rectangle",
-                                                    "minimum": 1,
-                                                    "multipleOf": 1
-                                                },
-                                                "height": {
-                                                    "type": "number",
-                                                    "description": "Height of the rectangle",
-                                                    "minimum": 1,
-                                                    "multipleOf": 1
-                                                },
-                                                "color": {
-                                                    "$ref": "#/$defs/colorHex"
-                                                }
-                                            },
-                                            "required": [
-                                                "x",
-                                                "y",
-                                                "width",
-                                                "height",
-                                                "color"
-                                            ],
-                                            "additionalProperties": false
-                                        }
-                                    }
+                                    "required": [
+                                      "type",
+                                      "value"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            },
+                            "data": {
+                              "type": "array",
+                              "description": "Graphic data of the layer",
+                              "items": {
+                                "type": "object",
+                                "description": "Rectangle on the layer",
+                                "properties": {
+                                  "x": {
+                                    "type": "number",
+                                    "description": "Top-left x coordinate",
+                                    "minimum": 0,
+                                    "multipleOf": 1
+                                  },
+                                  "y": {
+                                    "type": "number",
+                                    "description": "Top-left y coordinate",
+                                    "minimum": 0,
+                                    "multipleOf": 1
+                                  },
+                                  "width": {
+                                    "type": "number",
+                                    "description": "Width of the rectangle",
+                                    "minimum": 1,
+                                    "multipleOf": 1
+                                  },
+                                  "height": {
+                                    "type": "number",
+                                    "description": "Height of the rectangle",
+                                    "minimum": 1,
+                                    "multipleOf": 1
+                                  },
+                                  "color": {
+                                    "$ref": "#/$defs/colorHex"
+                                  }
                                 },
                                 "required": [
-                                    "label",
-                                    "visible",
-                                    "alpha",
-                                    "blendMode",
-                                    "filters",
-                                    "data"
+                                  "x",
+                                  "y",
+                                  "width",
+                                  "height",
+                                  "color"
                                 ],
                                 "additionalProperties": false
+                              }
                             }
+                          },
+                          "required": [
+                            "label",
+                            "visible",
+                            "alpha",
+                            "blendMode",
+                            "filters",
+                            "data"
+                          ],
+                          "additionalProperties": false
                         }
+                      }
                     },
                     "required": [
-                        "selectedLayer",
-                        "states"
+                      "selectedLayer",
+                      "states"
                     ],
                     "additionalProperties": false
-                }
-            },
-            "required": [
-                "settings",
-                "layers"
-            ],
-            "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "layers"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "selectedFrame",
+            "onionSkin",
+            "fps",
+            "frames"
+          ],
+          "additionalProperties": false
         }
-    },
-    "required": [
-        "version",
-        "preferences",
-        "tools",
-        "palette",
-        "canvas"
-    ],
-    "additionalProperties": false,
-    "$defs": {
-        "colorHex": {
-            "type": "string",
-            "description": "Color in hex format",
-            "pattern": "^#([0-9a-fA-F]{8})$"
-        },
-        "colorRGBA": {
-            "type": "object",
-            "description": "Color in RGBA format",
-            "properties": {
-                "r": {
-                    "type": "number",
-                    "description": "Red value",
-                    "minimum": 0,
-                    "maximum": 255
-                },
-                "g": {
-                    "type": "number",
-                    "description": "Green value",
-                    "minimum": 0,
-                    "maximum": 255
-                },
-                "b": {
-                    "type": "number",
-                    "description": "Blue value",
-                    "minimum": 0,
-                    "maximum": 255
-                },
-                "a": {
-                    "type": "number",
-                    "description": "Alpha value",
-                    "minimum": 0,
-                    "maximum": 255
-                }
-            },
-            "required": [
-                "r",
-                "g",
-                "b",
-                "a"
-            ],
-            "additionalProperties": false
-        },
-        "tool-id": {
-            "type": "string",
-            "description": "Possile tool ids",
-            "enum": [
-                "Pencil",
-                "Eraser",
-                "Picker",
-                "Fill",
-                "Rectangle",
-                "Ellipse",
-                "Line",
-                "Shade",
-                "Select",
-                "Clone"
-            ]
-        },
-        "pencil-state": {
-            "type": "object",
-            "description": "State of the pencil tool",
-            "properties": {
-                "width": {
-                    "type": "number",
-                    "description": "Width of the pencil",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "multipleOf": 1
-                }
-            },
-            "required": [
-                "width"
-            ],
-            "additionalProperties": false
-        },
-        "eraser-state": {
-            "type": "object",
-            "description": "State of the eraser tool",
-            "properties": {
-                "width": {
-                    "type": "number",
-                    "description": "Width of the eraser",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "multipleOf": 1
-                },
-                "strength": {
-                    "type": "number",
-                    "description": "Strength of the eraser",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "multipleOf": 1
-                }
-            },
-            "required": [
-                "width",
-                "strength"
-            ],
-            "additionalProperties": false
-        },
-        "fill-state": {
-            "type": "object",
-            "description": "State of the fill tool",
-            "properties": {
-                "tolerance": {
-                    "type": "number",
-                    "description": "tolerance of fill",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "multipleOf": 1
-                }
-            },
-            "required": [
-                "tolerance"
-            ],
-            "additionalProperties": false
-        },
-        "rectangle-state": {
-            "type": "object",
-            "description": "State of the rectangle tool",
-            "properties": {
-                "width": {
-                    "type": "number",
-                    "description": "Width of the rectangle",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "multipleOf": 1
-                },
-                "fill": {
-                    "type": "boolean",
-                    "description": "Whether to fill the rectangle or not"
-                }
-            },
-            "required": [
-                "width",
-                "fill"
-            ],
-            "additionalProperties": false
-        },
-        "ellipse-state": {
-            "type": "object",
-            "description": "State of the ellipse tool",
-            "properties": {
-                "width": {
-                    "type": "number",
-                    "description": "Width of the ellipse",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "multipleOf": 1
-                },
-                "fill": {
-                    "type": "boolean",
-                    "description": "Whether to fill the ellipse or not"
-                }
-            },
-            "required": [
-                "width",
-                "fill"
-            ],
-            "additionalProperties": false
-        },
-        "line-state": {
-            "type": "object",
-            "description": "State of the line tool",
-            "properties": {
-                "thickness": {
-                    "type": "number",
-                    "description": "Thickness of the line",
-                    "minimum": 1,
-                    "maximum": 5,
-                    "multipleOf": 1
-                }
-            },
-            "required": [
-                "thickness"
-            ],
-            "additionalProperties": false
-        },
-        "shade-state": {
-            "type": "object",
-            "description": "State of the shade tool",
-            "properties": {
-                "mode": {
-                    "type": "string",
-                    "description": "Mode of the shade tool",
-                    "enum": [
-                        "Lighten",
-                        "Darken"
-                    ]
-                },
-                "strength": {
-                    "type": "number",
-                    "description": "Strength of the shade tool",
-                    "minimum": 0,
-                    "maximum": 10,
-                    "multipleOf": 1
-                },
-                "width": {
-                    "type": "number",
-                    "description": "Width of the shade tool",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "multipleOf": 1
-                }
-            },
-            "required": [
-                "mode",
-                "strength",
-                "width"
-            ],
-            "additionalProperties": false
-        }
+      },
+      "required": [
+        "settings",
+        "animator"
+      ],
+      "additionalProperties": false
     }
+  },
+  "required": [
+    "version",
+    "preferences",
+    "tools",
+    "palette",
+    "canvas"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "colorHex": {
+      "type": "string",
+      "description": "Color in hex format",
+      "pattern": "^#([0-9a-fA-F]{8})$"
+    },
+    "colorRGBA": {
+      "type": "object",
+      "description": "Color in RGBA format",
+      "properties": {
+        "r": {
+          "type": "number",
+          "description": "Red value",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "g": {
+          "type": "number",
+          "description": "Green value",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "b": {
+          "type": "number",
+          "description": "Blue value",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "a": {
+          "type": "number",
+          "description": "Alpha value",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "required": [
+        "r",
+        "g",
+        "b",
+        "a"
+      ],
+      "additionalProperties": false
+    },
+    "tool-id": {
+      "type": "string",
+      "description": "Possile tool ids",
+      "enum": [
+        "Pencil",
+        "Eraser",
+        "Picker",
+        "Fill",
+        "Rectangle",
+        "Ellipse",
+        "Line",
+        "Shade",
+        "Select",
+        "Clone"
+      ]
+    },
+    "pencil-state": {
+      "type": "object",
+      "description": "State of the pencil tool",
+      "properties": {
+        "width": {
+          "type": "number",
+          "description": "Width of the pencil",
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        }
+      },
+      "required": [
+        "width"
+      ],
+      "additionalProperties": false
+    },
+    "eraser-state": {
+      "type": "object",
+      "description": "State of the eraser tool",
+      "properties": {
+        "width": {
+          "type": "number",
+          "description": "Width of the eraser",
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        "strength": {
+          "type": "number",
+          "description": "Strength of the eraser",
+          "minimum": 0,
+          "maximum": 100,
+          "multipleOf": 1
+        }
+      },
+      "required": [
+        "width",
+        "strength"
+      ],
+      "additionalProperties": false
+    },
+    "fill-state": {
+      "type": "object",
+      "description": "State of the fill tool",
+      "properties": {
+        "tolerance": {
+          "type": "number",
+          "description": "tolerance of fill",
+          "minimum": 0,
+          "maximum": 100,
+          "multipleOf": 1
+        }
+      },
+      "required": [
+        "tolerance"
+      ],
+      "additionalProperties": false
+    },
+    "rectangle-state": {
+      "type": "object",
+      "description": "State of the rectangle tool",
+      "properties": {
+        "width": {
+          "type": "number",
+          "description": "Width of the rectangle",
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        "fill": {
+          "type": "boolean",
+          "description": "Whether to fill the rectangle or not"
+        }
+      },
+      "required": [
+        "width",
+        "fill"
+      ],
+      "additionalProperties": false
+    },
+    "ellipse-state": {
+      "type": "object",
+      "description": "State of the ellipse tool",
+      "properties": {
+        "width": {
+          "type": "number",
+          "description": "Width of the ellipse",
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        "fill": {
+          "type": "boolean",
+          "description": "Whether to fill the ellipse or not"
+        }
+      },
+      "required": [
+        "width",
+        "fill"
+      ],
+      "additionalProperties": false
+    },
+    "line-state": {
+      "type": "object",
+      "description": "State of the line tool",
+      "properties": {
+        "thickness": {
+          "type": "number",
+          "description": "Thickness of the line",
+          "minimum": 1,
+          "maximum": 5,
+          "multipleOf": 1
+        }
+      },
+      "required": [
+        "thickness"
+      ],
+      "additionalProperties": false
+    },
+    "shade-state": {
+      "type": "object",
+      "description": "State of the shade tool",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Mode of the shade tool",
+          "enum": [
+            "Lighten",
+            "Darken"
+          ]
+        },
+        "strength": {
+          "type": "number",
+          "description": "Strength of the shade tool",
+          "minimum": 0,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        "width": {
+          "type": "number",
+          "description": "Width of the shade tool",
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        }
+      },
+      "required": [
+        "mode",
+        "strength",
+        "width"
+      ],
+      "additionalProperties": false
+    }
+  }
 }

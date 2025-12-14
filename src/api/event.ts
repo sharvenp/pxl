@@ -13,6 +13,8 @@ class EventHandler {
     }
 }
 
+const INSTANCE_BOUND_PREFIX = 'INSTANCE_BOUND_';
+
 export class EventAPI extends APIScope {
 
     private readonly _eventBus: TinyEmitter;
@@ -35,7 +37,7 @@ export class EventAPI extends APIScope {
         // remove all instance bound handlers
         const eventHandlersToRemove: Array<string> = [];
         this._eventRegister.forEach(eh => {
-            if (eh.eventName.startsWith('INSTANCE_BOUND_')) {
+            if (eh.eventName.startsWith(INSTANCE_BOUND_PREFIX)) {
                 eventHandlersToRemove.push(eh.handlerName);
             }
         });
