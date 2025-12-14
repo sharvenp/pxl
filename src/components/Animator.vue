@@ -3,12 +3,12 @@
         <div>
             <div class="flex items-center gap-4 mb-2">
                 <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
-                    @click="preview()">
-                    ▶️ Preview
-                </button>
-                <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
                     :disabled="frames.length >= MAX_FRAME_COUNT" @click="addFrame">
                     ➕ Add Frame
+                </button>
+                <button class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
+                    @click="preview()">
+                    ▶️ Preview
                 </button>
                 <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
                     Onion Skin

@@ -1,6 +1,6 @@
-import { AlphaFilter, Application, Container, ContainerChild, Graphics, Rectangle } from 'pixi.js';
+import { AlphaFilter, Application, Container, ContainerChild, Graphics, ICanvas, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, LayerFilterType, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
+import { Events, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
 
 export class GridAPI extends APIScope {
 
@@ -210,6 +210,23 @@ export class GridAPI extends APIScope {
             frame: new Rectangle(0, 0, this.width, this.height),
             resolution: 1
         });
+    }
+
+    exportFrames(): void {
+
+        const frameData: Array<ICanvas> = [];
+
+        this._frames.forEach(frame => {
+            const canvas = this._pixi.renderer.extract.canvas({
+                target: frame,
+                antialias: false,
+                frame: new Rectangle(0, 0, this.width, this.height),
+                resolution: 1
+            })
+            frameData.push(canvas);
+        });
+
+        Utils.framesToZip(frameData);
     }
 
     exportImageBase64(frameIndex?: number): Promise<string> {

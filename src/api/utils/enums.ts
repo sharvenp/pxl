@@ -44,6 +44,7 @@ export enum MenuOptionType {
     SAVE_PROJECT = "save_project",
     SAVE_PROJECT_AS = "save_project_as",
     EXPORT = "export",
+    EXPORT_FRAMES = "export_frames",
     EXIT = "exit",
     UNDO = "undo",
     REDO = "redo",

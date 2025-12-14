@@ -1,4 +1,6 @@
+import { ICanvas } from "pixi.js";
 import { RGBAColor, DataRectangle } from "./interfaces";
+import JSZip from "jszip";
 
 export class Utils {
 
@@ -208,5 +210,35 @@ export class Utils {
             });
         }
         return finalRects;
+    }
+
+    static async framesToZip(canvases: Array<ICanvas>): Promise<void> {
+
+        const zip = new JSZip();
+
+        const blobPromises = canvases.map(
+            (canvas, index) =>
+                new Promise<void>((resolve, reject) => {
+                    canvas.toBlob!(
+                        (blob) => {
+                            if (!blob) return reject(new Error("Canvas is empty"));
+                            zip.file(`pxl-frame-${index + 1}.png`, blob);
+                            resolve();
+                        },
+                        "image/png"
+                    );
+                })
+        );
+
+        await Promise.all(blobPromises);
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "pxl-frames.zip";
+        a.click();
+        URL.revokeObjectURL(url);
     }
 }

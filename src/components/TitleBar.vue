@@ -3,21 +3,27 @@
         <div class="mt-1 flex flex-row text-sm justify-between">
             <span class="text-sm font-bold px-2">.pxl</span>
             <div v-show="ipcSupported" class="row-span-2 flex flex-row justify-end text-sm mx-1">
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.MINIMIZE)">_</button>
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.MAXIMIZE)">O</button>
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" @click="windowAction(WindowActionType.CLOSE)">X</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400"
+                    @click="windowAction(WindowActionType.MINIMIZE)">_</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400"
+                    @click="windowAction(WindowActionType.MAXIMIZE)">O</button>
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400"
+                    @click="windowAction(WindowActionType.CLOSE)">X</button>
             </div>
         </div>
         <div class="mt-1 flex flex-row text-sm relative">
             <div v-for="(options, menu) in menuOptions" :key="menu" class="relative mx-1" @click="openMenu(menu)">
-                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" :id="`title-bar-${menu}`">{{ menu }}</button>
-                <div v-if="activeMenu === menu" class="absolute bg-white border mt-1 shadow-md w-max rounded" :id="`title-bar-${menu}-options`">
+                <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" :id="`title-bar-${menu}`">{{ menu
+                    }}</button>
+                <div v-if="activeMenu === menu" class="absolute bg-white border mt-1 shadow-md w-max rounded"
+                    :id="`title-bar-${menu}-options`">
                     <ul>
                         <li v-for="option in options.filter(o => !ipcRequired.has(o.key) || (ipcSupported && ipcRequired.has(o.key)))"
                             :key="option.key"
-                            :class="`px-4 py-1 ${option.disabled() ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-stone-200 cursor-pointer' }`"
+                            :class="`px-4 py-1 ${option.disabled() ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-stone-200 cursor-pointer'}`"
                             @click="handleOption(option.key)">
-                            {{ option.label }} <span v-if="option.hotkey" class=" text-xs underline">({{ option.hotkey }})</span>
+                            {{ option.label }} <span v-if="option.hotkey" class=" text-xs underline">({{ option.hotkey
+                                }})</span>
                         </li>
                     </ul>
                 </div>
@@ -42,6 +48,7 @@ const menuOptions = ref<Record<string, Array<MenuOption>>>({
         { key: MenuOptionType.SAVE_PROJECT, label: 'Save Project', hotkey: 'Ctrl+S', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.SAVE_PROJECT_AS, label: 'Save Project As', hotkey: '', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.EXPORT, label: 'Export', hotkey: 'Ctrl+E', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.EXPORT_FRAMES, label: 'Export Frames', hotkey: 'Ctrl+Shift+E', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.EXIT, label: 'Exit', hotkey: '', disabled: () => false }
     ],
     Edit: [
@@ -55,8 +62,8 @@ const menuOptions = ref<Record<string, Array<MenuOption>>>({
         { key: MenuOptionType.TOGGLE_TOOLS_PANEL, label: 'Toggle Tools', hotkey: '', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.TOGGLE_PALETTE_PANEL, label: 'Toggle Palette', hotkey: '', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.TOGGLE_LAYERS_PANEL, label: 'Toggle Layers', hotkey: '', disabled: () => !iApi?.initalized },
-        { key: MenuOptionType.TOGGLE_PREVIEW_PANEL, label: 'Toggle Preview', hotkey: '', disabled: () => !iApi?.initalized  },
-        { key: MenuOptionType.TOGGLE_CANVAS_SETTINGS_PANEL, label: 'Toggle Canvas Settings', hotkey: '', disabled: () => !iApi?.initalized  },
+        { key: MenuOptionType.TOGGLE_PREVIEW_PANEL, label: 'Toggle Preview', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.TOGGLE_CANVAS_SETTINGS_PANEL, label: 'Toggle Canvas Settings', hotkey: '', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.TOGGLE_ANIMATOR_PANEL, label: 'Toggle Animator', hotkey: '', disabled: () => !iApi?.initalized },
     ],
     Help: [
@@ -66,7 +73,7 @@ const menuOptions = ref<Record<string, Array<MenuOption>>>({
 const ipcRequired = new Set(['exit', 'save-project']);
 
 const ipcSupported = computed(() => {
-  return oApi?.ipc?.ipcAPISupported() ?? false;
+    return oApi?.ipc?.ipcAPISupported() ?? false;
 })
 
 function openMenu(menu: string) {
@@ -103,7 +110,7 @@ function windowAction(action: string) {
             // TODO
             // iApi?.minimizeWindow();
             break;
-            case WindowActionType.MAXIMIZE:
+        case WindowActionType.MAXIMIZE:
             // TODO
             // iApi?.maximizeWindow();
             break;
@@ -155,6 +162,9 @@ function handleOption(key: string) {
             break;
         case MenuOptionType.EXPORT:
             iApi?.canvas?.grid.exportImage();
+            break;
+        case MenuOptionType.EXPORT_FRAMES:
+            iApi?.canvas?.grid.exportFrames();
             break;
         case MenuOptionType.EXIT:
             // TODO
