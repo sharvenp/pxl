@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { ref, inject, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { InstanceAPI } from '../api';
-import { Events, MAX_FRAME_COUNT, PanelType } from '../api/utils';
+import { DEFAULT_FPS, Events, MAX_FPS, MAX_FRAME_COUNT, PanelType } from '../api/utils';
 import { Container } from 'pixi.js';
 import { VueDraggableNext as draggable } from "vue-draggable-next";
 
@@ -236,10 +236,10 @@ function updateFps(event: Event) {
     let newFps = parseInt(input.value);
 
     if (isNaN(newFps)) {
-        newFps = 5;
+        newFps = DEFAULT_FPS;
     }
 
-    newFps = Math.min(Math.max(newFps, 1), 60);
+    newFps = Math.min(Math.max(newFps, 1), MAX_FPS);
     input.value = newFps.toString();
 
     let grid = iApi?.canvas.grid;

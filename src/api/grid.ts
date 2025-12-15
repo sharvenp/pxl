@@ -1,6 +1,6 @@
 import { AlphaFilter, Application, Container, ContainerChild, Graphics, ICanvas, Rectangle } from 'pixi.js';
 import { APIScope, InstanceAPI } from '.';
-import { Events, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType } from './utils';
+import { Events, MAX_LAYER_COUNT, MAX_FRAME_COUNT, PixelCoordinates, DataRectangle, RGBAColor, Utils, PxlSpecialGraphicType, DEFAULT_FPS, LayerFilterType } from './utils';
 
 /***********************************************************************************************
  Core Container Stack:
@@ -34,50 +34,76 @@ export class GridAPI extends APIScope {
 
         this._pixi = pixi;
 
-        const layerConfig = iApi.state.loadedState?.canvas.layers;
+        const canvasConfig = iApi.state.loadedState?.canvas;
 
+        // Create frame container and initial frame/layer
+        this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
+        this._pixi.stage.addChild(this._frameContainer);
+
+        // Always default the active layer index to 0
+        this._activeIndex = 0;
         this._drawLayers = {};
 
-        if (layerConfig) {
-            // TODO: remove
-            this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
-            this._activeIndex = 0;
-            this._fps = 5;
+        if (canvasConfig) {
 
-            // TODO: fix config
-            // layerConfig.states.forEach((layerState: any) => {
-            //     const newLayer = new Container({
-            //         eventMode: 'none',
-            //         label: layerState.label,
-            //         visible: layerState.visible,
-            //         alpha: layerState.alpha,
-            //         blendMode: layerState.blendMode,
-            //         filters: layerState.filters.map((filter: any) => {
-            //             switch (filter.type) {
-            //                 case LayerFilterType.ALPHA:
-            //                     return new AlphaFilter({ alpha: filter.alpha });
-            //                 default:
-            //                     return undefined;
-            //             }
-            //         }).filter((f: any) => f !== undefined)
-            //     });
+            this._frames = [];
+            this._frameIndex = canvasConfig.animator.selectedFrame ?? 0;
 
-            //     // draw the pixel data rectangles
-            //     const graphic = new Graphics({ roundPixels: true, label: PxlSpecialGraphicType.FROM_LOAD_STATE });
-            //     layerState.data.forEach((rect: DataRectangle) => {
-            //         graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
-            //     });
-            //     newLayer.addChild(graphic);
+            canvasConfig.animator.frames.forEach((frameConfig: any) => {
 
-            //     this._activeFrame.addChild(newLayer);
-            //     this._drawLayers.push(newLayer);
-            // });
-            // this._activeLayer = this._drawLayers[layerConfig.selectedLayer];
-            // this._activeIndex = layerConfig.selectedLayer;
+                const newFrame = new Container({ eventMode: 'none', label: frameConfig.label });
+
+                this._frameContainer.addChild(this._activeFrame);
+                this._frames.push(newFrame);
+
+                this._drawLayers[newFrame.label] = [];
+
+                frameConfig.layers.forEach((layerConfig: any) => {
+
+                    this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
+                    this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
+                    this._activeFrame.addChild(this._activeLayer);
+
+                    this._drawLayers[this._activeFrame.label] = [this._activeLayer];
+                    this._activeIndex = 0;
+
+                    const newLayer = new Container({
+                        eventMode: 'none',
+                        label: layerConfig.label,
+                        visible: layerConfig.visible,
+                        alpha: layerConfig.alpha,
+                        blendMode: layerConfig.blendMode,
+                        filters: layerConfig.filters.map((filter: any) => {
+                            switch (filter.type) {
+                                case LayerFilterType.ALPHA:
+                                    return new AlphaFilter({ alpha: filter.alpha });
+                                default:
+                                    return undefined;
+                            }
+                        }).filter((f: any) => f !== undefined)
+                    });
+
+                    // draw the pixel data rectangles
+                    const graphic = new Graphics({ roundPixels: true, label: PxlSpecialGraphicType.FROM_LOAD_STATE });
+                    layerConfig.data.forEach((rect: DataRectangle) => {
+                        graphic.rect(rect.x, rect.y, rect.width, rect.height).fill(rect.color);
+                    });
+
+                    newLayer.addChild(graphic);
+                    newFrame.addChild(newLayer);
+
+                    this._drawLayers[newFrame.label].push(newLayer);
+                });
+            });
+
+            this._activeFrame = this._frames[this._frameIndex];
+            this._activeLayer = this._drawLayers[this._activeFrame.label][this._activeIndex];
+
+            // Load from state
+            this._onionSkin = canvasConfig.animator.onionSkin ?? false;
+            this._fps = canvasConfig.animator.fps ?? DEFAULT_FPS;
+
         } else {
-            // Create frame container and initial frame/layer
-            this._frameContainer = new Container({ eventMode: 'none', label: 'frameContainer' });
-            this._pixi.stage.addChild(this._frameContainer);
 
             this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._frames = [this._activeFrame];
@@ -89,21 +115,23 @@ export class GridAPI extends APIScope {
             this._activeFrame.addChild(this._activeLayer);
 
             this._drawLayers[this._activeFrame.label] = [this._activeLayer];
-            this._activeIndex = 0;
 
-            // Create onion skin container
+            // Initialize onion skinning to off
             this._onionSkin = false;
-            this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: false });
-            this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
-            this._pixi.stage.addChild(this._onionSkinContainer);
-
-            // Create preview container
-            this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
-            this._pixi.stage.addChild(this._previewContainer);
 
             // set default fps
-            this._fps = 5;
+            this._fps = DEFAULT_FPS;
         }
+
+        // Create onion skin container
+        this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: this._onionSkin });
+        this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
+        this._pixi.stage.addChild(this._onionSkinContainer);
+
+        // Create preview container
+        this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
+        this._pixi.stage.addChild(this._previewContainer);
+
     }
 
     destroy(): void {
@@ -124,6 +152,7 @@ export class GridAPI extends APIScope {
         this._activeLayer.destroy({ children: true });
         this._frameContainer.destroy({ children: true });
         this._onionSkinContainer.destroy({ children: true });
+        this._previewContainer.destroy({ children: true });
         this._frameIndex = 0;
         this._frames.length = 0;
     }

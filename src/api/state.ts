@@ -115,21 +115,17 @@ export class StateAPI extends APIScope {
                 selectedFrame: canvasApi.grid.activeFrameIndex,
                 onionSkin: canvasApi.grid.onionSkin,
                 fps: canvasApi.grid.fps,
-                frames: canvasApi.grid.frames.map((frame, frameIdx) => {
-                    const isActiveFrame = canvasApi.grid.activeFrame.label === frame.label;
-                    return ({
-                        label: frame.label,
-                        selectedLayer: isActiveFrame ? canvasApi.grid.activeIndex : 0,
-                        layers: canvasApi.grid.drawLayers[frame.label].map((layer, layerIdx) => ({
-                            label: layer.label,
-                            visible: layer.visible,
-                            alpha: layer.alpha,
-                            blendMode: layer.blendMode,
-                            filters: _processFilters(layer.filters as Filter[]),
-                            data: Utils.gridToRectangles(canvasApi.grid?.extractPixels(layerIdx, frameIdx), canvasApi.width, canvasApi.height)
-                        }))
-                    });
-                })
+                frames: canvasApi.grid.frames.map((frame, frameIdx) => ({
+                    label: frame.label,
+                    layers: canvasApi.grid.drawLayers[frame.label].map((layer, layerIdx) => ({
+                        label: layer.label,
+                        visible: layer.visible,
+                        alpha: layer.alpha,
+                        blendMode: layer.blendMode,
+                        filters: _processFilters(layer.filters as Filter[]),
+                        data: Utils.gridToRectangles(canvasApi.grid?.extractPixels(layerIdx, frameIdx), canvasApi.width, canvasApi.height)
+                    }))
+                }))
             },
         };
 
