@@ -65,6 +65,7 @@ export class InstanceAPI {
             this.settings = new SettingsAPI(this);
 
             this.initalized = true;
+
             this.panel.toggle([
                 PanelType.TOOLS,
                 PanelType.PALETTE,
@@ -72,6 +73,8 @@ export class InstanceAPI {
                 PanelType.PREVIEW,
                 PanelType.CANVAS_SETTINGS
             ], true);
+
+            // Emit initialized event
             this.event.emit(Events.APP_INITIALIZED);
         });
     }

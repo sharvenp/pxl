@@ -44,7 +44,7 @@ export class GridAPI extends APIScope {
         this._activeIndex = 0;
         this._drawLayers = {};
 
-        if (canvasConfig) {
+        if (canvasConfig.animator) {
 
             this._frames = [];
             this._frameIndex = canvasConfig.animator.selectedFrame ?? 0;
@@ -53,19 +53,11 @@ export class GridAPI extends APIScope {
 
                 const newFrame = new Container({ eventMode: 'none', label: frameConfig.label });
 
-                this._frameContainer.addChild(this._activeFrame);
                 this._frames.push(newFrame);
 
                 this._drawLayers[newFrame.label] = [];
 
                 frameConfig.layers.forEach((layerConfig: any) => {
-
-                    this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
-                    this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
-                    this._activeFrame.addChild(this._activeLayer);
-
-                    this._drawLayers[this._activeFrame.label] = [this._activeLayer];
-                    this._activeIndex = 0;
 
                     const newLayer = new Container({
                         eventMode: 'none',
@@ -108,7 +100,6 @@ export class GridAPI extends APIScope {
             this._activeFrame = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._frames = [this._activeFrame];
             this._frameIndex = 0;
-            this._frameContainer.addChild(this._activeFrame);
 
             this._activeLayer = new Container({ eventMode: 'none', label: Utils.getRandomId() });
             this._activeLayer.filters = [new AlphaFilter({ alpha: 1 })];
@@ -123,6 +114,9 @@ export class GridAPI extends APIScope {
             this._fps = DEFAULT_FPS;
         }
 
+        // Add the active frame to the frame container
+        this._frameContainer.addChild(this._activeFrame);
+
         // Create onion skin container
         this._onionSkinContainer = new Container({ eventMode: 'none', label: 'onionSkinContainer', visible: this._onionSkin });
         this._onionSkinContainer.filters = [new AlphaFilter({ alpha: 0.2 })];
@@ -132,6 +126,7 @@ export class GridAPI extends APIScope {
         this._previewContainer = new Container({ eventMode: 'none', label: 'previewContainer' });
         this._pixi.stage.addChild(this._previewContainer);
 
+        this._pixi.renderer.render(this._activeFrame);
     }
 
     destroy(): void {
