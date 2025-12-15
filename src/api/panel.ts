@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { APIScope, InstanceAPI } from '.';
+import { PanelType } from './utils';
 
 export class PanelAPI extends APIScope {
     // needs to be a ref to ensure reactivity in Vue components
@@ -7,8 +8,23 @@ export class PanelAPI extends APIScope {
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
+    }
 
-        //TODO: Load config
+    initializePanels(): void {
+        const panelConfig = this.$iApi.state.loadedState?.panels;
+
+        if (panelConfig?.openPanels) {
+            this.toggle(panelConfig.openPanels, true);
+        } else {
+            // Open default panels
+            this.toggle([
+                PanelType.TOOLS,
+                PanelType.PALETTE,
+                PanelType.LAYERS,
+                PanelType.PREVIEW,
+                PanelType.CANVAS_SETTINGS
+            ], true);
+        }
     }
 
     register(name: string | Array<string>, defaultVisible = true): void {
@@ -53,5 +69,9 @@ export class PanelAPI extends APIScope {
         panels.forEach(panel => {
             delete this._panels.value[panel];
         });
+    }
+
+    get panelVisibility(): Record<string, boolean> {
+        return this._panels.value;
     }
 }

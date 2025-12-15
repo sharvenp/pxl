@@ -1,5 +1,5 @@
 import { AlphaFilter, Filter } from 'pixi.js';
-import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, SettingsAPI, ToolAPI } from '.';
+import { APIScope, CanvasAPI, InstanceAPI, PaletteAPI, PanelAPI, SettingsAPI, ToolAPI } from '.';
 import { LayerFilterType, ToolType, Utils } from './utils';
 
 export class StateAPI extends APIScope {
@@ -26,7 +26,8 @@ export class StateAPI extends APIScope {
             preferences: this._processSettings(this.$iApi.settings),
             tools: this._processTools(this.$iApi.tool),
             palette: this._processPalette(this.$iApi.palette),
-            canvas: this._processCanvas(this.$iApi.canvas)
+            canvas: this._processCanvas(this.$iApi.canvas),
+            panels: this._processPanels(this.$iApi.panel),
         };
     }
 
@@ -132,9 +133,14 @@ export class StateAPI extends APIScope {
         return canvasState;
     }
 
-    /**
-     * Consume the state config and apply it to the current instance.
-    **/
+    private _processPanels(panelApi: PanelAPI): any {
+
+        const panelState = {
+            openPanels: Object.keys(panelApi.panelVisibility).filter(key => panelApi.panelVisibility[key])
+        };
+
+        return panelState;
+    }
 
     set loadedState(state: any) {
         this._loadedState = state;

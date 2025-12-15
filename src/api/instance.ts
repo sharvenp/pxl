@@ -42,7 +42,6 @@ export class InstanceAPI {
         // create pixi app
         const pixi = new Application();
 
-
         pixi.init({
             width: config.canvas.settings.width,
             height: config.canvas.settings.height,
@@ -64,17 +63,11 @@ export class InstanceAPI {
             this.history = new HistoryAPI(this);
             this.settings = new SettingsAPI(this);
 
-            this.initalized = true;
-
-            this.panel.toggle([
-                PanelType.TOOLS,
-                PanelType.PALETTE,
-                PanelType.LAYERS,
-                PanelType.PREVIEW,
-                PanelType.CANVAS_SETTINGS
-            ], true);
+            // Open the panels
+            this.panel.initializePanels();
 
             // Emit initialized event
+            this.initalized = true;
             this.event.emit(Events.APP_INITIALIZED);
         });
     }

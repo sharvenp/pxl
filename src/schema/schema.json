@@ -385,6 +385,31 @@
         "animator"
       ],
       "additionalProperties": false
+    },
+    "panels": {
+      "type": "object",
+      "description": "State of the panels",
+      "properties": {
+        "openPanels": {
+          "type": "array",
+          "description": "List of open panels",
+          "items": {
+            "type": "string",
+            "enum": [
+              "tools",
+              "palette",
+              "layers",
+              "preview",
+              "animator",
+              "canvas_settings"
+            ]
+          }
+        }
+      },
+      "required": [
+        "openPanels"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -392,7 +417,8 @@
     "preferences",
     "tools",
     "palette",
-    "canvas"
+    "canvas",
+    "panels"
   ],
   "additionalProperties": false,
   "$defs": {
