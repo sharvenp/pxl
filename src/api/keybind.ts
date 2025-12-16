@@ -80,8 +80,6 @@ export class KeyBindAPI extends APIScope {
 
         this._keys.push(key);
 
-        console.log(this._keys);
-
         const matchKeys = (keys: Array<Key>) => {
             if (keys.length != this._keys.length) {
                 return false;
@@ -118,8 +116,6 @@ export class KeyBindAPI extends APIScope {
         if (index > -1) {
             this._keys.splice(index, 1);
         }
-
-        console.log(this._keys);
     }
 
     private _processBlur(): void {
