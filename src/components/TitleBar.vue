@@ -14,7 +14,7 @@
         <div class="mt-1 flex flex-row text-sm relative">
             <div v-for="(options, menu) in menuOptions" :key="menu" class="relative mx-1" @click="openMenu(menu)">
                 <button class="px-2 self-center bg-stone-300 hover:bg-stone-400" :id="`title-bar-${menu}`">{{ menu
-                    }}</button>
+                }}</button>
                 <div v-if="activeMenu === menu" class="absolute bg-white border mt-1 shadow-md w-max rounded"
                     :id="`title-bar-${menu}-options`">
                     <ul>
@@ -23,7 +23,7 @@
                             :class="`px-4 py-1 ${option.disabled() ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-stone-200 cursor-pointer'}`"
                             @click="handleOption(option.key)">
                             {{ option.label }} <span v-if="option.hotkey" class=" text-xs underline">({{ option.hotkey
-                                }})</span>
+                            }})</span>
                         </li>
                     </ul>
                 </div>
@@ -34,10 +34,9 @@
 
 <script setup lang="ts">
 import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
-import { InstanceAPI, OrchestratorAPI } from '../api';
+import { InstanceAPI, NotifyAPI, OrchestratorAPI } from '../api';
 import { MenuOption, MenuOptionType, PanelType, WindowActionType } from '../api/utils';
 
-const version = __APP_VERSION__;
 const iApi = inject<InstanceAPI>('iApi');
 const oApi = inject<OrchestratorAPI>('oApi');
 const activeMenu = ref<string | undefined>(undefined);
@@ -46,7 +45,7 @@ const menuOptions = ref<Record<string, Array<MenuOption>>>({
         { key: MenuOptionType.NEW_PROJECT, label: 'New Project', hotkey: 'Ctrl+N', disabled: () => false },
         { key: MenuOptionType.OPEN_PROJECT, label: 'Open Project', hotkey: 'Ctrl+O', disabled: () => false },
         { key: MenuOptionType.SAVE_PROJECT, label: 'Save Project', hotkey: 'Ctrl+S', disabled: () => !iApi?.initalized },
-        { key: MenuOptionType.SAVE_PROJECT_AS, label: 'Save Project As', hotkey: '', disabled: () => !iApi?.initalized },
+        { key: MenuOptionType.SAVE_PROJECT_AS, label: 'Save Project As', hotkey: 'Ctrl+Shift+S', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.EXPORT, label: 'Export', hotkey: 'Ctrl+E', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.EXPORT_FRAMES, label: 'Export Frames', hotkey: 'Ctrl+Shift+E', disabled: () => !iApi?.initalized },
         { key: MenuOptionType.EXIT, label: 'Exit', hotkey: '', disabled: () => false }
@@ -125,34 +124,14 @@ function handleOption(key: string) {
     // handle the selected key here
     switch (key) {
         case MenuOptionType.NEW_PROJECT:
-            iApi?.notify.notify({
-                title: "Create new project",
-                message: "Are you sure you want to create a new project?",
-                options: [
-                    {
-                        label: "Create",
-                        callback: () => {
-                            oApi?.destroyInstance();
-                        }
-                    }
-                ],
-                showCancel: true
-            });
+            if (iApi) {
+                NotifyAPI.showNewProjectPrompt(iApi);
+            }
             break;
         case MenuOptionType.OPEN_PROJECT:
-            iApi?.notify.notify({
-                title: "Open project",
-                message: "Are you sure you want to open a project?",
-                options: [
-                    {
-                        label: "Open",
-                        callback: () => {
-                            oApi?.loadProject();
-                        }
-                    }
-                ],
-                showCancel: true
-            });
+            if (iApi) {
+                NotifyAPI.showOpenProjectPrompt(iApi);
+            }
             break;
         case MenuOptionType.SAVE_PROJECT:
             oApi?.saveProject();
@@ -203,13 +182,9 @@ function handleOption(key: string) {
             iApi?.panel.toggle(PanelType.ANIMATOR);
             break;
         case MenuOptionType.ABOUT:
-            iApi?.notify.notify({
-                title: "About",
-                message: `.pxl v${version}`,
-                subtext: "Copyright (c) 2025 sharvenp",
-                showCancel: true,
-                cancelLabel: "Close",
-            });
+            if (iApi) {
+                NotifyAPI.showAboutPrompt(iApi);
+            }
             break;
     }
 

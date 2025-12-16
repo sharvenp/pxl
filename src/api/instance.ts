@@ -1,8 +1,10 @@
-import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI, NotifyAPI, PanelAPI } from '.';
+import { EventAPI, CanvasAPI, PaletteAPI, ToolAPI, SettingsAPI, KeyBindAPI, HistoryAPI, StateAPI, NotifyAPI, PanelAPI, OrchestratorAPI } from '.';
 import { Application } from 'pixi.js';
 import { Events, PanelType } from './utils';
 
 export class InstanceAPI {
+
+    $oApi: OrchestratorAPI | undefined;
 
     event!: EventAPI;
     canvas!: CanvasAPI;
@@ -31,6 +33,10 @@ export class InstanceAPI {
             PanelType.ANIMATOR,
             PanelType.CANVAS_SETTINGS
         ], false);
+    }
+
+    initialize(oApi: OrchestratorAPI): void {
+        this.$oApi = oApi;
     }
 
     new(container: HTMLElement, config: any): void {

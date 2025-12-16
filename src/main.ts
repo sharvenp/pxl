@@ -10,6 +10,7 @@ const iApi = new InstanceAPI();
 app.provide('iApi', iApi);
 
 const oApi = new OrchestratorAPI(iApi);
+iApi.initialize(oApi);
 app.provide('oApi', oApi);
 
 app.mount('#app');
