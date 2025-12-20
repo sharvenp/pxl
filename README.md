@@ -1,6 +1,6 @@
 # .pxl
 
-A pixel art editor powered by [PixiJS](https://github.com/pixijs/pixijs) and Vue.
+A pixel art editor powered by [PixiJS](https://pixijs.com/) and Vue.
 
 ## WIP
 
