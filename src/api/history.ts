@@ -4,29 +4,35 @@ import { Events, MAX_HISTORY_SIZE, PxlSpecialGraphicType } from './utils';
 
 export class HistoryAPI extends APIScope {
 
-    private readonly _historyStack: Array<ContainerChild>;
+    // Store the frame and layer the graphic was on
+    private readonly _historyStack: Record<string, Record<string, Array<ContainerChild>>>;
 
     constructor(iApi: InstanceAPI) {
         super(iApi);
 
-        this._historyStack = [];
+        this._historyStack = {};
     }
 
     destroy(): void {
-        this._clearHistory();
+        const { frameId, layerId } = this._getCurrentGridState();
+        this._clearHistory(frameId, layerId);
     }
 
     update(): void {
 
+        const { frameId, layerId } = this._getCurrentGridState();
+
         // erase redo history since we've started drawing again
-        if (this._historyStack.length > 0) {
-            this._clearHistory();
+        if (this._historyStack[frameId] && this._historyStack[frameId][layerId]) {
+            this._clearHistory(frameId, layerId);
         }
     }
 
     undo(): void {
 
-        if (this._historyStack.length === MAX_HISTORY_SIZE) {
+        const { frameId, layerId } = this._getCurrentGridState();
+
+        if (this._historyStack[frameId] && this._historyStack[frameId][layerId] && this._historyStack[frameId][layerId].length === MAX_HISTORY_SIZE) {
             return;
         }
 
@@ -39,8 +45,19 @@ export class HistoryAPI extends APIScope {
                 return;
             }
 
+            const { frameId, layerId } = this._getCurrentGridState();
+
             topMostGraphic = grid.pop();
-            this._historyStack.push(topMostGraphic);
+
+            if (!this._historyStack[frameId]) {
+                this._historyStack[frameId] = {};
+            }
+
+            if (!this._historyStack[frameId][layerId]) {
+                this._historyStack[frameId][layerId] = [];
+            }
+
+            this._historyStack[frameId][layerId].push(topMostGraphic);
 
             grid.render();
             this.$iApi.event.emit(Events.UNDO);
@@ -49,9 +66,12 @@ export class HistoryAPI extends APIScope {
 
     redo(): void {
         const grid = this.$iApi.canvas.grid;
-        if (grid && this._historyStack.length > 0) {
+        const { frameId, layerId } = this._getCurrentGridState();
+        if (grid && this._historyStack[frameId][layerId].length > 0) {
 
-            const child = this._historyStack.pop()!;
+            const { frameId, layerId } = this._getCurrentGridState();
+
+            const child = this._historyStack[frameId][layerId].pop()!;
 
             grid.draw(child);
             grid.render();
@@ -60,9 +80,15 @@ export class HistoryAPI extends APIScope {
         }
     }
 
-    private _clearHistory(): void {
-        this._historyStack.forEach(c => c.destroy());
-        this._historyStack.length = 0;
+    private _clearHistory(frameId: string, layerId: string): void {
+        this._historyStack[frameId][layerId].forEach(c => c.destroy());
+        this._historyStack[frameId][layerId].length = 0;
+    }
+
+    private _getCurrentGridState(): { frameId: string; layerId: string } {
+        const frame = this.$iApi.canvas.grid.activeFrame.label;
+        const layer = this.$iApi.canvas.grid.activeLayer.label;
+        return { frameId: frame, layerId: layer };
     }
 
     get canUndo(): boolean {
@@ -75,6 +101,7 @@ export class HistoryAPI extends APIScope {
     }
 
     get canRedo(): boolean {
-        return this._historyStack.length > 0;
+        const { frameId, layerId } = this._getCurrentGridState();
+        return this._historyStack[frameId][layerId].length > 0;
     }
 }
