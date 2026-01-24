@@ -102,6 +102,11 @@ export class HistoryAPI extends APIScope {
 
     get canRedo(): boolean {
         const { frameId, layerId } = this._getCurrentGridState();
+
+        if (!this._historyStack[frameId] || !this._historyStack[frameId][layerId]) {
+            return false;
+        }
+
         return this._historyStack[frameId][layerId].length > 0;
     }
 }

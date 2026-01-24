@@ -22,7 +22,8 @@
                             :key="option.key"
                             :class="`px-4 py-1 ${option.disabled() ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-stone-200 cursor-pointer'}`"
                             @click="handleOption(option.key)">
-                            {{ option.label }} <span v-if="option.hotkey" class=" text-xs underline">({{ option.hotkey
+                            {{ option.label }} <span v-if="option.hotkey" class="text-xs underline text-gray-400">({{
+                                option.hotkey
                             }})</span>
                         </li>
                     </ul>
