@@ -1,11 +1,11 @@
-import type { InstanceAPI } from '.'
+import type { InstanceAPI } from ".";
 
 export abstract class APIScope {
-  readonly $iApi: InstanceAPI
+  readonly $iApi: InstanceAPI;
 
   constructor(iApi: InstanceAPI) {
-    this.$iApi = iApi
+    this.$iApi = iApi;
   }
 
-  abstract destroy(): void
+  abstract destroy(): void;
 }

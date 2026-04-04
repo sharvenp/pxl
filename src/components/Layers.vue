@@ -73,141 +73,141 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, onUnmounted, onMounted, nextTick, computed } from 'vue'
-  import { InstanceAPI } from '../api'
-  import { Events, MAX_LAYER_COUNT, PanelType } from '../api/utils'
-  import { Container } from 'pixi.js'
-  import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import { ref, inject, onUnmounted, onMounted, nextTick, computed } from "vue";
+import { InstanceAPI } from "../api";
+import { Events, MAX_LAYER_COUNT, PanelType } from "../api/utils";
+import { Container } from "pixi.js";
+import { VueDraggableNext as draggable } from "vue-draggable-next";
 
-  const iApi = inject<InstanceAPI>('iApi')
-  const handlers: Array<string> = []
-  const selectedId = ref<string>('')
-  const layers = ref<Array<Container>>([])
+const iApi = inject<InstanceAPI>("iApi");
+const handlers: Array<string> = [];
+const selectedId = ref<string>("");
+const layers = ref<Array<Container>>([]);
 
-  const visible = computed(() => iApi?.panel.isVisible(PanelType.LAYERS))
+const visible = computed(() => iApi?.panel.isVisible(PanelType.LAYERS));
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
-        selectedId.value = iApi?.canvas.grid.activeLayer.label!
-      })!,
-    )
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.CANVAS_LAYER_SELECTED, () => {
+      selectedId.value = iApi?.canvas.grid.activeLayer.label!;
+    })!,
+  );
 
-    handlers.push(
-      ...iApi?.event.ons(
-        [
-          Events.APP_INITIALIZED,
-          Events.CANVAS_LAYER_ADDED,
-          Events.CANVAS_LAYER_REMOVED,
-          Events.CANVAS_LAYER_REORDERED,
-          Events.CANVAS_FRAME_SELECTED,
-        ],
-        () => {
-          updateLayerList()
-        },
-      )!,
-    )
+  handlers.push(
+    ...iApi?.event.ons(
+      [
+        Events.APP_INITIALIZED,
+        Events.CANVAS_LAYER_ADDED,
+        Events.CANVAS_LAYER_REMOVED,
+        Events.CANVAS_LAYER_REORDERED,
+        Events.CANVAS_FRAME_SELECTED,
+      ],
+      () => {
+        updateLayerList();
+      },
+    )!,
+  );
 
-    handlers.push(
-      iApi?.event.on(Events.CANVAS_UPDATE, () => {
-        updateLayerPreview(iApi?.canvas.grid.activeLayer as Container)
-      })!,
-    )
-  })
+  handlers.push(
+    iApi?.event.on(Events.CANVAS_UPDATE, () => {
+      updateLayerPreview(iApi?.canvas.grid.activeLayer as Container);
+    })!,
+  );
+});
 
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
-  })
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
+});
 
-  function updateLayerList() {
-    layers.value = [...(iApi?.canvas.grid.activeFrameLayers ?? [])].reverse()
-    selectedId.value = iApi?.canvas.grid.activeLayer.label!
-    nextTick().then(() => {
-      // need to do this on next tick to ensure canvas is rendered
-      updateLayerPreviews()
-    })
+function updateLayerList() {
+  layers.value = [...(iApi?.canvas.grid.activeFrameLayers ?? [])].reverse();
+  selectedId.value = iApi?.canvas.grid.activeLayer.label!;
+  nextTick().then(() => {
+    // need to do this on next tick to ensure canvas is rendered
+    updateLayerPreviews();
+  });
+}
+
+function updateLayerPreviews() {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    layers.value.forEach((l) => {
+      updateLayerPreview(l as Container);
+    });
   }
+}
 
-  function updateLayerPreviews() {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      layers.value.forEach((l) => {
-        updateLayerPreview(l as Container)
-      })
+function updateLayerPreview(layer: Container) {
+  let grid = iApi?.canvas.grid;
+  if (grid && layer) {
+    if (!grid.activeFrameLayers.some((l) => l.label === layer.label)) {
+      return;
     }
-  }
-
-  function updateLayerPreview(layer: Container) {
-    let grid = iApi?.canvas.grid
-    if (grid && layer) {
-      if (!grid.activeFrameLayers.some((l) => l.label === layer.label)) {
-        return
+    let activeLayerCanvas = document.getElementById(
+      layer.label,
+    ) as HTMLCanvasElement;
+    if (activeLayerCanvas) {
+      let ctx = activeLayerCanvas.getContext("2d")!;
+      ctx.imageSmoothingEnabled = false;
+      if (ctx) {
+        ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height);
+        ctx.drawImage(
+          grid.getContainerPreview(layer),
+          0,
+          0,
+          activeLayerCanvas.width,
+          activeLayerCanvas.height,
+        );
       }
-      let activeLayerCanvas = document.getElementById(
-        layer.label,
-      ) as HTMLCanvasElement
-      if (activeLayerCanvas) {
-        let ctx = activeLayerCanvas.getContext('2d')!
-        ctx.imageSmoothingEnabled = false
-        if (ctx) {
-          ctx.clearRect(0, 0, activeLayerCanvas.width, activeLayerCanvas.height)
-          ctx.drawImage(
-            grid.getContainerPreview(layer),
-            0,
-            0,
-            activeLayerCanvas.width,
-            activeLayerCanvas.height,
-          )
-        }
-      }
     }
   }
+}
 
-  function selectLayer(layerIdx: number) {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      // reverse layerIdx
-      layerIdx = layers.value.length - layerIdx - 1
-      grid.setActiveLayer(layerIdx)
-    }
+function selectLayer(layerIdx: number) {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    // reverse layerIdx
+    layerIdx = layers.value.length - layerIdx - 1;
+    grid.setActiveLayer(layerIdx);
   }
+}
 
-  function addLayer() {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      grid.addLayer()
-    }
+function addLayer() {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    grid.addLayer();
   }
+}
 
-  function removeLayer() {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      grid.removeLayer()
-    }
+function removeLayer() {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    grid.removeLayer();
   }
+}
 
-  function syncOrder() {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      grid.reorderLayers(layers.value.reverse() as Array<Container>)
-      selectedId.value = iApi?.canvas.grid.activeLayer.label!
-    }
+function syncOrder() {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    grid.reorderLayers(layers.value.reverse() as Array<Container>);
+    selectedId.value = iApi?.canvas.grid.activeLayer.label!;
   }
+}
 
-  function toggleAll(value: boolean) {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      layers.value.forEach((layer) => {
-        layer.visible = value
-      })
-      notifyVisibilityChange()
-    }
+function toggleAll(value: boolean) {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    layers.value.forEach((layer) => {
+      layer.visible = value;
+    });
+    notifyVisibilityChange();
   }
+}
 
-  function notifyVisibilityChange() {
-    let grid = iApi?.canvas.grid
-    if (grid) {
-      grid.render()
-    }
+function notifyVisibilityChange() {
+  let grid = iApi?.canvas.grid;
+  if (grid) {
+    grid.render();
   }
+}
 </script>

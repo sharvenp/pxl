@@ -16,14 +16,14 @@
 </template>
 
 <script setup lang="ts">
-  import PxlCanvas from './components/Canvas.vue'
-  import Tools from './components/Tools.vue'
-  import Palette from './components/Palette.vue'
-  import TitleBar from './components/TitleBar.vue'
-  import StatusBar from './components/StatusBar.vue'
-  import Preview from './components/Preview.vue'
-  import CanvasSettings from './components/CanvasSettings.vue'
-  import Layers from './components/Layers.vue'
-  import Notification from './components/Notification.vue'
-  import Animator from './components/Animator.vue'
+import PxlCanvas from "./components/Canvas.vue";
+import Tools from "./components/Tools.vue";
+import Palette from "./components/Palette.vue";
+import TitleBar from "./components/TitleBar.vue";
+import StatusBar from "./components/StatusBar.vue";
+import Preview from "./components/Preview.vue";
+import CanvasSettings from "./components/CanvasSettings.vue";
+import Layers from "./components/Layers.vue";
+import Notification from "./components/Notification.vue";
+import Animator from "./components/Animator.vue";
 </script>

@@ -27,7 +27,7 @@
             class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
             @click="closeModal"
           >
-            {{ notification?.cancelLabel ?? 'Cancel' }}
+            {{ notification?.cancelLabel ?? "Cancel" }}
           </button>
         </div>
       </div>
@@ -36,35 +36,35 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, inject, onUnmounted } from 'vue'
-  import { InstanceAPI } from '../api'
-  import { Events, NotificationConfiguration } from '../api/utils'
+import { ref, onMounted, inject, onUnmounted } from "vue";
+import { InstanceAPI } from "../api";
+import { Events, NotificationConfiguration } from "../api/utils";
 
-  const iApi = inject<InstanceAPI>('iApi')
-  let handlers: Array<string> = []
-  let show = ref(false)
-  let notification = ref<NotificationConfiguration | undefined>(undefined)
+const iApi = inject<InstanceAPI>("iApi");
+let handlers: Array<string> = [];
+let show = ref(false);
+let notification = ref<NotificationConfiguration | undefined>(undefined);
 
-  function callOptionCallback(callBack: Function) {
-    callBack()
-    closeModal()
-  }
+function callOptionCallback(callBack: Function) {
+  callBack();
+  closeModal();
+}
 
-  function closeModal() {
-    show.value = false
-    notification.value = undefined
-  }
+function closeModal() {
+  show.value = false;
+  notification.value = undefined;
+}
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.NOTIFY_SHOW, (notif: NotificationConfiguration) => {
-        notification.value = notif
-        show.value = true
-      })!,
-    )
-  })
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.NOTIFY_SHOW, (notif: NotificationConfiguration) => {
+      notification.value = notif;
+      show.value = true;
+    })!,
+  );
+});
 
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
-  })
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
+});
 </script>

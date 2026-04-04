@@ -64,81 +64,81 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
-  import { InstanceAPI } from '../api'
-  import { ColorPicker } from 'vue-accessible-color-picker'
-  import {
-    Events,
-    MAX_PALETTE_SIZE,
-    PaletteItem,
-    PanelType,
-    Utils,
-  } from '../api/utils'
+import { ref, inject, onMounted, onUnmounted, computed } from "vue";
+import { InstanceAPI } from "../api";
+import { ColorPicker } from "vue-accessible-color-picker";
+import {
+  Events,
+  MAX_PALETTE_SIZE,
+  PaletteItem,
+  PanelType,
+  Utils,
+} from "../api/utils";
 
-  const iApi = inject<InstanceAPI>('iApi')
-  const showPicker = ref<boolean>(false)
-  const lastPickerColor = ref<PaletteItem>()
-  const handlers: Array<string> = []
-  const palette = ref<Array<PaletteItem>>([])
-  const currentColor = ref<PaletteItem>()
+const iApi = inject<InstanceAPI>("iApi");
+const showPicker = ref<boolean>(false);
+const lastPickerColor = ref<PaletteItem>();
+const handlers: Array<string> = [];
+const palette = ref<Array<PaletteItem>>([]);
+const currentColor = ref<PaletteItem>();
 
-  const visible = computed(() => iApi?.panel.isVisible(PanelType.PALETTE))
+const visible = computed(() => iApi?.panel.isVisible(PanelType.PALETTE));
 
-  function colorPickerChange(color: any) {
-    lastPickerColor.value = {
-      colorHex: color.colors.hex,
-      colorRGBA: Utils.hexToRGBA(color.colors.hex),
-    }
+function colorPickerChange(color: any) {
+  lastPickerColor.value = {
+    colorHex: color.colors.hex,
+    colorRGBA: Utils.hexToRGBA(color.colors.hex),
+  };
+}
+
+function togglePicker(state?: boolean) {
+  showPicker.value = state ?? !showPicker.value;
+}
+
+function selectColor(color: PaletteItem) {
+  iApi?.palette.selectColor(color);
+}
+
+function addColor() {
+  if (lastPickerColor.value && palette.value.length < MAX_PALETTE_SIZE) {
+    iApi?.palette.addColor(lastPickerColor.value);
   }
+}
 
-  function togglePicker(state?: boolean) {
-    showPicker.value = state ?? !showPicker.value
-  }
+function removeColor(color: PaletteItem) {
+  iApi?.palette.removeColor(color);
+}
 
-  function selectColor(color: PaletteItem) {
-    iApi?.palette.selectColor(color)
-  }
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.APP_INITIALIZED, () => {
+      currentColor.value = iApi?.palette.selectedColor;
+      palette.value = [...(iApi?.palette.palette ?? [])];
+    })!,
+  );
 
-  function addColor() {
-    if (lastPickerColor.value && palette.value.length < MAX_PALETTE_SIZE) {
-      iApi?.palette.addColor(lastPickerColor.value)
-    }
-  }
+  handlers.push(
+    iApi?.event.on(Events.PALETTE_COLOR_SELECT, (color: PaletteItem) => {
+      currentColor.value = color;
+    })!,
+  );
 
-  function removeColor(color: PaletteItem) {
-    iApi?.palette.removeColor(color)
-  }
+  handlers.push(
+    iApi?.event.on(Events.PALETTE_COLOR_ADD, () => {
+      // refresh
+      palette.value = [...(iApi?.palette.palette ?? [])];
+    })!,
+  );
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.APP_INITIALIZED, () => {
-        currentColor.value = iApi?.palette.selectedColor
-        palette.value = [...(iApi?.palette.palette ?? [])]
-      })!,
-    )
+  handlers.push(
+    iApi?.event.on(Events.PALETTE_COLOR_REMOVE, () => {
+      // refresh
+      palette.value = [...(iApi?.palette.palette ?? [])];
+    })!,
+  );
+});
 
-    handlers.push(
-      iApi?.event.on(Events.PALETTE_COLOR_SELECT, (color: PaletteItem) => {
-        currentColor.value = color
-      })!,
-    )
-
-    handlers.push(
-      iApi?.event.on(Events.PALETTE_COLOR_ADD, () => {
-        // refresh
-        palette.value = [...(iApi?.palette.palette ?? [])]
-      })!,
-    )
-
-    handlers.push(
-      iApi?.event.on(Events.PALETTE_COLOR_REMOVE, () => {
-        // refresh
-        palette.value = [...(iApi?.palette.palette ?? [])]
-      })!,
-    )
-  })
-
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
-  })
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
+});
 </script>

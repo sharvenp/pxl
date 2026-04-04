@@ -15,41 +15,41 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
-  import { InstanceAPI } from '../api'
-  import { Events, PanelType } from '../api/utils'
+import { ref, inject, onMounted, onUnmounted, computed } from "vue";
+import { InstanceAPI } from "../api";
+import { Events, PanelType } from "../api/utils";
 
-  const iApi = inject<InstanceAPI>('iApi')
-  const mirrorX = ref<boolean>(false)
-  const mirrorY = ref<boolean>(false)
-  const handlers: Array<string> = []
+const iApi = inject<InstanceAPI>("iApi");
+const mirrorX = ref<boolean>(false);
+const mirrorY = ref<boolean>(false);
+const handlers: Array<string> = [];
 
-  const visible = computed(() =>
-    iApi?.panel.isVisible(PanelType.CANVAS_SETTINGS),
-  )
+const visible = computed(() =>
+  iApi?.panel.isVisible(PanelType.CANVAS_SETTINGS),
+);
 
-  const updateMirrorX = () => {
-    if (iApi) {
-      iApi.canvas.mirrorX = mirrorX.value
-    }
+const updateMirrorX = () => {
+  if (iApi) {
+    iApi.canvas.mirrorX = mirrorX.value;
   }
+};
 
-  const updateMirrorY = () => {
-    if (iApi) {
-      iApi.canvas.mirrorY = mirrorY.value
-    }
+const updateMirrorY = () => {
+  if (iApi) {
+    iApi.canvas.mirrorY = mirrorY.value;
   }
+};
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.APP_INITIALIZED, () => {
-        mirrorX.value = iApi?.canvas.mirrorX ?? false
-        mirrorY.value = iApi?.canvas.mirrorY ?? false
-      })!,
-    )
-  })
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.APP_INITIALIZED, () => {
+      mirrorX.value = iApi?.canvas.mirrorX ?? false;
+      mirrorY.value = iApi?.canvas.mirrorY ?? false;
+    })!,
+  );
+});
 
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
-  })
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
+});
 </script>

@@ -59,83 +59,83 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, onUnmounted, onMounted } from 'vue'
-  import { InstanceAPI, OrchestratorAPI } from '../api'
-  import { Events } from '../api/utils'
+import { ref, inject, onUnmounted, onMounted } from "vue";
+import { InstanceAPI, OrchestratorAPI } from "../api";
+import { Events } from "../api/utils";
 
-  const container = ref()
-  const iApi = inject<InstanceAPI>('iApi')
-  const oApi = inject<OrchestratorAPI>('oApi')
-  let width = ref<number | undefined>(undefined)
-  let height = ref<number | undefined>(undefined)
-  let error = ref('')
-  let initialized = ref(false)
-  const handlers: Array<string> = []
+const container = ref();
+const iApi = inject<InstanceAPI>("iApi");
+const oApi = inject<OrchestratorAPI>("oApi");
+let width = ref<number | undefined>(undefined);
+let height = ref<number | undefined>(undefined);
+let error = ref("");
+let initialized = ref(false);
+const handlers: Array<string> = [];
 
-  const BYPASS_INIT = true
+const BYPASS_INIT = true;
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.APP_INITIALIZED, () => {
-        initialized.value = true
-      })!,
-    )
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.APP_INITIALIZED, () => {
+      initialized.value = true;
+    })!,
+  );
 
-    handlers.push(
-      iApi?.event.on(Events.APP_DESTROYED, () => {
-        initialized.value = false
-      })!,
-    )
+  handlers.push(
+    iApi?.event.on(Events.APP_DESTROYED, () => {
+      initialized.value = false;
+    })!,
+  );
 
-    oApi!.container = container.value
+  oApi!.container = container.value;
 
-    if (BYPASS_INIT) {
-      width.value = 32
-      height.value = 32
-      initializeCanvas()
-    }
-  })
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
+  if (BYPASS_INIT) {
+    width.value = 32;
+    height.value = 32;
+    initializeCanvas();
+  }
+});
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
 
-    oApi?.destroyInstance()
-    initialized.value = false
-  })
+  oApi?.destroyInstance();
+  initialized.value = false;
+});
 
-  function initializeCanvas() {
-    if (!validateDimensions()) {
-      return
-    }
+function initializeCanvas() {
+  if (!validateDimensions()) {
+    return;
+  }
 
-    const config = {
-      canvas: {
-        settings: {
-          width: width.value,
-          height: height.value,
-        },
+  const config = {
+    canvas: {
+      settings: {
+        width: width.value,
+        height: height.value,
       },
-    }
+    },
+  };
 
-    oApi!.newInstance(config)
+  oApi!.newInstance(config);
 
-    width.value = undefined
-    height.value = undefined
+  width.value = undefined;
+  height.value = undefined;
+}
+
+function validateDimensions(): boolean {
+  error.value = "";
+  if (!width.value || width.value < 0 || !height.value || height.value < 0) {
+    error.value = "Please enter valid dimensions.";
+    return false;
   }
-
-  function validateDimensions(): boolean {
-    error.value = ''
-    if (!width.value || width.value < 0 || !height.value || height.value < 0) {
-      error.value = 'Please enter valid dimensions.'
-      return false
-    }
-    if (width.value < 2 || height.value < 2) {
-      error.value = 'Canvas size must be at least 2x2 pixels.'
-      return false
-    }
-    if (width.value > 512 || height.value > 512) {
-      error.value = 'Canvas size must be at most 512x512 pixels.'
-      return false
-    }
-    return true
+  if (width.value < 2 || height.value < 2) {
+    error.value = "Canvas size must be at least 2x2 pixels.";
+    return false;
   }
+  if (width.value > 512 || height.value > 512) {
+    error.value = "Canvas size must be at most 512x512 pixels.";
+    return false;
+  }
+  return true;
+}
 </script>

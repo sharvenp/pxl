@@ -1,14 +1,14 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import IPCCommands from '../commands'
+import { contextBridge, ipcRenderer } from "electron";
+import IPCCommands from "../commands";
 
 // Expose ipcRenderer to the client
-contextBridge.exposeInMainWorld('ipcAPI', {
+contextBridge.exposeInMainWorld("ipcAPI", {
   call: (channel: string, ...args: any) => {
     if (IPCCommands[channel] !== undefined) {
-      return ipcRenderer.invoke(channel, ...args)
+      return ipcRenderer.invoke(channel, ...args);
     }
   },
-})
+});
 
 // function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
 //   return new Promise((resolve) => {

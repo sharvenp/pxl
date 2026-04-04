@@ -2,26 +2,26 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-  appId: 'com.pxl.app',
+  $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  appId: "com.pxl.app",
   asar: true,
-  productName: 'pxl',
+  productName: "pxl",
   directories: {
-    output: 'release/${version}',
+    output: "release/${version}",
   },
-  files: ['dist', 'dist-electron'],
+  files: ["dist", "dist-electron"],
   mac: {
-    target: ['dmg'],
-    artifactName: '${productName}-Mac-${version}-Installer.${ext}',
+    target: ["dmg"],
+    artifactName: "${productName}-Mac-${version}-Installer.${ext}",
   },
   win: {
     target: [
       {
-        target: 'nsis',
-        arch: ['x64'],
+        target: "nsis",
+        arch: ["x64"],
       },
     ],
-    artifactName: '${productName}-Windows-${version}-Setup.${ext}',
+    artifactName: "${productName}-Windows-${version}-Setup.${ext}",
   },
   nsis: {
     oneClick: false,
@@ -30,7 +30,7 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
-    target: ['AppImage'],
-    artifactName: '${productName}-Linux-${version}.${ext}',
+    target: ["AppImage"],
+    artifactName: "${productName}-Linux-${version}.${ext}",
   },
 }

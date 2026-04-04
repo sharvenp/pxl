@@ -1,39 +1,39 @@
-import { Application, Container, Graphics } from 'pixi.js'
-import { InstanceAPI, APIScope } from '.'
+import { Application, Container, Graphics } from "pixi.js";
+import { InstanceAPI, APIScope } from ".";
 
 export class CursorAPI extends APIScope {
-  private _pixi: Application
-  private _cursorLayer: Container
-  private _cursorGraphic: Graphics
+  private _pixi: Application;
+  private _cursorLayer: Container;
+  private _cursorGraphic: Graphics;
 
   constructor(iApi: InstanceAPI, pixi: Application) {
-    super(iApi)
+    super(iApi);
 
-    this._pixi = pixi
+    this._pixi = pixi;
 
     this._cursorLayer = new Container({
       alpha: 0.25,
-      eventMode: 'none',
-      label: 'cursorContainer',
-    })
-    this._cursorGraphic = new Graphics({ roundPixels: true })
+      eventMode: "none",
+      label: "cursorContainer",
+    });
+    this._cursorGraphic = new Graphics({ roundPixels: true });
 
-    this._cursorLayer.addChild(this._cursorGraphic)
-    this._pixi.stage.addChild(this._cursorLayer)
+    this._cursorLayer.addChild(this._cursorGraphic);
+    this._pixi.stage.addChild(this._cursorLayer);
 
-    this.clearCursor()
+    this.clearCursor();
   }
 
   destroy(): void {
-    this._cursorGraphic.destroy()
-    this._cursorLayer.destroy()
+    this._cursorGraphic.destroy();
+    this._cursorLayer.destroy();
   }
 
   clearCursor(): void {
-    this._cursorGraphic.clear()
+    this._cursorGraphic.clear();
   }
 
   get cursorGraphic(): Graphics {
-    return this._cursorGraphic
+    return this._cursorGraphic;
   }
 }

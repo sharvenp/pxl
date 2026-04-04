@@ -6,12 +6,12 @@ export class IPCAPI {
   call(channel: string, ...data: any): void {
     if (this.ipcAPISupported()) {
       //@ts-ignore
-      window.ipcAPI.call(channel, ...data)
+      window.ipcAPI.call(channel, ...data);
     }
   }
 
   ipcAPISupported(): boolean {
     //@ts-ignore
-    return !!window.ipcAPI
+    return !!window.ipcAPI;
   }
 }

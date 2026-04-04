@@ -1,4 +1,4 @@
-import { AlphaFilter, Filter } from 'pixi.js'
+import { AlphaFilter, Filter } from "pixi.js";
 import {
   APIScope,
   CanvasAPI,
@@ -7,20 +7,20 @@ import {
   PanelAPI,
   SettingsAPI,
   ToolAPI,
-} from '.'
-import { LayerFilterType, ToolType, Utils } from './utils'
+} from ".";
+import { LayerFilterType, ToolType, Utils } from "./utils";
 
 export class StateAPI extends APIScope {
-  private _loadedState: any | undefined
+  private _loadedState: any | undefined;
 
   constructor(iApi: InstanceAPI) {
-    super(iApi)
+    super(iApi);
 
-    this._loadedState = undefined
+    this._loadedState = undefined;
   }
 
   destroy(): void {
-    this._loadedState = undefined
+    this._loadedState = undefined;
   }
 
   /**
@@ -35,27 +35,27 @@ export class StateAPI extends APIScope {
       palette: this._processPalette(this.$iApi.palette),
       canvas: this._processCanvas(this.$iApi.canvas),
       panels: this._processPanels(this.$iApi.panel),
-    }
+    };
   }
 
   get loadedState(): any {
     if (this._loadedState === undefined) {
-      this._loadedState = this.getState()
+      this._loadedState = this.getState();
     }
 
-    return this._loadedState
+    return this._loadedState;
   }
 
   private _processSettings(settingsApi: SettingsAPI): any {
     const settingsState = {
       theme: settingsApi.theme,
-    }
+    };
 
-    return settingsState
+    return settingsState;
   }
 
   private _processTools(toolApi: ToolAPI): any {
-    const tools = toolApi.tools
+    const tools = toolApi.tools;
 
     const toolState = {
       selectedTool: toolApi.selectedTool.toolType ?? ToolType.PENCIL,
@@ -63,15 +63,15 @@ export class StateAPI extends APIScope {
         tool: tool.toolType,
         state: tool.getToolState(),
       })),
-    }
+    };
 
-    return toolState
+    return toolState;
   }
 
   private _processPalette(paletteApi: PaletteAPI): any {
     const paletteState = {
       selectedColor: {
-        colorHex: paletteApi.selectedColor?.colorHex ?? '#000000ff',
+        colorHex: paletteApi.selectedColor?.colorHex ?? "#000000ff",
         colorRGBA: paletteApi.selectedColor?.colorRGBA ?? {
           r: 0,
           g: 0,
@@ -88,18 +88,18 @@ export class StateAPI extends APIScope {
             b: color.colorRGBA.b,
             a: color.colorRGBA.a,
           },
-        }
+        };
       }),
-    }
+    };
 
-    return paletteState
+    return paletteState;
   }
 
   private _processCanvas(canvasApi: CanvasAPI): any {
     // helper to map filters to a serializable format
     const _processFilters = (filter: Filter | Array<Filter>) => {
       if (filter instanceof Filter) {
-        return _processFilters([filter])
+        return _processFilters([filter]);
       } else {
         return filter
           .map((filter: Filter) => {
@@ -108,14 +108,14 @@ export class StateAPI extends APIScope {
                 return {
                   type: LayerFilterType.ALPHA,
                   alpha: (filter as AlphaFilter).alpha,
-                }
+                };
               default:
-                return undefined
+                return undefined;
             }
           })
-          .filter((f: any) => f !== undefined)
+          .filter((f: any) => f !== undefined);
       }
-    }
+    };
 
     const canvasState = {
       settings: {
@@ -146,9 +146,9 @@ export class StateAPI extends APIScope {
           ),
         })),
       },
-    }
+    };
 
-    return canvasState
+    return canvasState;
   }
 
   private _processPanels(panelApi: PanelAPI): any {
@@ -156,12 +156,12 @@ export class StateAPI extends APIScope {
       openPanels: Object.keys(panelApi.panelVisibility).filter(
         (key) => panelApi.panelVisibility[key],
       ),
-    }
+    };
 
-    return panelState
+    return panelState;
   }
 
   set loadedState(state: any) {
-    this._loadedState = state
+    this._loadedState = state;
   }
 }

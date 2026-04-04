@@ -1,18 +1,18 @@
-import { ToolPropertyType } from '../../utils'
-import { ToolProperty } from './tool-property'
+import { ToolPropertyType } from "../../utils";
+import { ToolProperty } from "./tool-property";
 
 export class RadioProperty extends ToolProperty {
-  public value: string
-  private readonly _options: Array<string>
+  public value: string;
+  private readonly _options: Array<string>;
 
   constructor(propertyLabel: string, options: Array<string>, value?: string) {
-    super(ToolPropertyType.RADIO, propertyLabel)
+    super(ToolPropertyType.RADIO, propertyLabel);
 
-    this._options = options
-    this.value = value ?? ''
+    this._options = options;
+    this.value = value ?? "";
   }
 
   get options(): Array<string> {
-    return this._options
+    return this._options;
   }
 }

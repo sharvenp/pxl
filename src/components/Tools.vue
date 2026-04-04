@@ -124,35 +124,35 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
-  import { InstanceAPI } from '../api'
-  import { Events, PanelType, ToolType } from '../api/utils'
+import { ref, inject, onMounted, onUnmounted, computed } from "vue";
+import { InstanceAPI } from "../api";
+import { Events, PanelType, ToolType } from "../api/utils";
 
-  const iApi = inject<InstanceAPI>('iApi')
-  const handlers: Array<string> = []
-  const currentTool = ref<any>()
+const iApi = inject<InstanceAPI>("iApi");
+const handlers: Array<string> = [];
+const currentTool = ref<any>();
 
-  const visible = computed(() => iApi?.panel.isVisible(PanelType.TOOLS))
+const visible = computed(() => iApi?.panel.isVisible(PanelType.TOOLS));
 
-  function selectTool(tool: ToolType) {
-    iApi?.tool.selectTool(tool)
-  }
+function selectTool(tool: ToolType) {
+  iApi?.tool.selectTool(tool);
+}
 
-  onMounted(() => {
-    handlers.push(
-      iApi?.event.on(Events.APP_INITIALIZED, () => {
-        currentTool.value = iApi?.tool.selectedTool
-      })!,
-    )
+onMounted(() => {
+  handlers.push(
+    iApi?.event.on(Events.APP_INITIALIZED, () => {
+      currentTool.value = iApi?.tool.selectedTool;
+    })!,
+  );
 
-    handlers.push(
-      iApi?.event.on(Events.TOOL_SELECT, () => {
-        currentTool.value = iApi?.tool.selectedTool
-      })!,
-    )
-  })
+  handlers.push(
+    iApi?.event.on(Events.TOOL_SELECT, () => {
+      currentTool.value = iApi?.tool.selectedTool;
+    })!,
+  );
+});
 
-  onUnmounted(() => {
-    handlers.forEach((h) => iApi?.event.off(h))
-  })
+onUnmounted(() => {
+  handlers.forEach((h) => iApi?.event.off(h));
+});
 </script>

@@ -1,98 +1,98 @@
-import { InstanceAPI, IPCAPI } from '.'
-import { encode, decode } from 'cbor2'
+import { InstanceAPI, IPCAPI } from ".";
+import { encode, decode } from "cbor2";
 
 export class OrchestratorAPI {
-  readonly iApi: InstanceAPI
-  readonly ipc: IPCAPI
+  readonly iApi: InstanceAPI;
+  readonly ipc: IPCAPI;
 
-  private _container: HTMLElement | undefined
+  private _container: HTMLElement | undefined;
 
   constructor(iApi: InstanceAPI) {
-    this.iApi = iApi
-    this.ipc = new IPCAPI()
+    this.iApi = iApi;
+    this.ipc = new IPCAPI();
   }
 
   saveProject(): void {
-    const state = this.iApi.state.getState()
+    const state = this.iApi.state.getState();
     if (state) {
-      const uint8Array = new Uint8Array(encode(state))
+      const uint8Array = new Uint8Array(encode(state));
 
-      const blob = new Blob([uint8Array], { type: 'application/cbor' })
+      const blob = new Blob([uint8Array], { type: "application/cbor" });
 
-      const url = URL.createObjectURL(blob)
+      const url = URL.createObjectURL(blob);
 
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'project.pxl' // Set the desired file name
-      document.body.appendChild(a)
-      a.click()
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "project.pxl"; // Set the desired file name
+      document.body.appendChild(a);
+      a.click();
 
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   }
 
   loadProject(): void {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.pxl'
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pxl";
 
-    input.addEventListener('change', async (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0]
+    input.addEventListener("change", async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
-        const arrayBuffer = await file.arrayBuffer()
-        let configState: any = {}
+        const arrayBuffer = await file.arrayBuffer();
+        let configState: any = {};
 
         try {
-          configState = decode(new Uint8Array(arrayBuffer))
+          configState = decode(new Uint8Array(arrayBuffer));
         } catch (error) {
           this.iApi.notify.notify({
-            title: 'Error',
-            message: 'Unable to load project file.',
-            subtext: 'Please ensure the file is a valid .pxl project.',
+            title: "Error",
+            message: "Unable to load project file.",
+            subtext: "Please ensure the file is a valid .pxl project.",
             showCancel: true,
-            cancelLabel: 'Close',
-          })
-          return
+            cancelLabel: "Close",
+          });
+          return;
         }
 
         // destroy api
-        this.destroyInstance()
+        this.destroyInstance();
 
         // create new api
-        this.newInstance(configState)
+        this.newInstance(configState);
       }
-    })
+    });
 
     // trigger dialog and remove it
-    input.click()
-    input.remove()
+    input.click();
+    input.remove();
   }
 
   newInstance(config: any): void {
     if (this.iApi.initalized) {
-      throw new Error('OrchestratorAPI: Instance needs to be destroyed first')
+      throw new Error("OrchestratorAPI: Instance needs to be destroyed first");
     }
 
     if (!this._container) {
-      throw new Error('OrchestratorAPI: Container not set')
+      throw new Error("OrchestratorAPI: Container not set");
     }
 
-    this.iApi.new(this._container, config)
+    this.iApi.new(this._container, config);
   }
 
   destroyInstance(): void {
     if (this.iApi.initalized) {
-      this.iApi.destroy()
+      this.iApi.destroy();
     }
   }
 
   set container(container: HTMLElement) {
     if (this._container) {
       throw new Error(
-        'OrchestratorAPI: Container already set, cannot set again.',
-      )
+        "OrchestratorAPI: Container already set, cannot set again.",
+      );
     }
-    this._container = container
+    this._container = container;
   }
 }
