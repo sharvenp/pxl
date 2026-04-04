@@ -16,10 +16,7 @@
         "theme": {
           "type": "string",
           "description": "Theme of the project",
-          "enum": [
-            "light",
-            "dark"
-          ]
+          "enum": ["light", "dark"]
         }
       },
       "additionalProperties": false
@@ -73,18 +70,12 @@
                 ]
               }
             },
-            "required": [
-              "tool",
-              "state"
-            ],
+            "required": ["tool", "state"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "selectedTool",
-        "states"
-      ],
+      "required": ["selectedTool", "states"],
       "additionalProperties": false
     },
     "palette": {
@@ -102,10 +93,7 @@
               "$ref": "#/$defs/colorRGBA"
             }
           },
-          "required": [
-            "colorHex",
-            "colorRGBA"
-          ],
+          "required": ["colorHex", "colorRGBA"],
           "additionalProperties": false
         },
         "colors": {
@@ -122,18 +110,12 @@
                 "$ref": "#/$defs/colorRGBA"
               }
             },
-            "required": [
-              "colorHex",
-              "colorRGBA"
-            ],
+            "required": ["colorHex", "colorRGBA"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "selectedColor",
-        "colors"
-      ],
+      "required": ["selectedColor", "colors"],
       "additionalProperties": false
     },
     "canvas": {
@@ -167,12 +149,7 @@
               "description": "Whether to mirror the canvas on the y-axis or not"
             }
           },
-          "required": [
-            "width",
-            "height",
-            "mirrorX",
-            "mirrorY"
-          ],
+          "required": ["width", "height", "mirrorX", "mirrorY"],
           "additionalProperties": false
         },
         "animator": {
@@ -284,9 +261,7 @@
                                 "properties": {
                                   "type": {
                                     "type": "string",
-                                    "enum": [
-                                      "alpha"
-                                    ]
+                                    "enum": ["alpha"]
                                   },
                                   "value": {
                                     "type": "number",
@@ -295,10 +270,7 @@
                                     "maximum": 1
                                   }
                                 },
-                                "required": [
-                                  "type",
-                                  "value"
-                                ],
+                                "required": ["type", "value"],
                                 "additionalProperties": false
                               }
                             ]
@@ -339,13 +311,7 @@
                                 "$ref": "#/$defs/colorHex"
                               }
                             },
-                            "required": [
-                              "x",
-                              "y",
-                              "width",
-                              "height",
-                              "color"
-                            ],
+                            "required": ["x", "y", "width", "height", "color"],
                             "additionalProperties": false
                           }
                         }
@@ -362,28 +328,16 @@
                     }
                   }
                 },
-                "required": [
-                  "label",
-                  "selectedLayer",
-                  "layers"
-                ],
+                "required": ["label", "selectedLayer", "layers"],
                 "additionalProperties": false
               }
             }
           },
-          "required": [
-            "selectedFrame",
-            "onionSkin",
-            "fps",
-            "frames"
-          ],
+          "required": ["selectedFrame", "onionSkin", "fps", "frames"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "settings",
-        "animator"
-      ],
+      "required": ["settings", "animator"],
       "additionalProperties": false
     },
     "panels": {
@@ -406,9 +360,7 @@
           }
         }
       },
-      "required": [
-        "openPanels"
-      ],
+      "required": ["openPanels"],
       "additionalProperties": false
     }
   },
@@ -456,12 +408,7 @@
           "maximum": 255
         }
       },
-      "required": [
-        "r",
-        "g",
-        "b",
-        "a"
-      ],
+      "required": ["r", "g", "b", "a"],
       "additionalProperties": false
     },
     "tool-id": {
@@ -492,9 +439,7 @@
           "multipleOf": 1
         }
       },
-      "required": [
-        "width"
-      ],
+      "required": ["width"],
       "additionalProperties": false
     },
     "eraser-state": {
@@ -516,10 +461,7 @@
           "multipleOf": 1
         }
       },
-      "required": [
-        "width",
-        "strength"
-      ],
+      "required": ["width", "strength"],
       "additionalProperties": false
     },
     "fill-state": {
@@ -534,9 +476,7 @@
           "multipleOf": 1
         }
       },
-      "required": [
-        "tolerance"
-      ],
+      "required": ["tolerance"],
       "additionalProperties": false
     },
     "rectangle-state": {
@@ -555,10 +495,7 @@
           "description": "Whether to fill the rectangle or not"
         }
       },
-      "required": [
-        "width",
-        "fill"
-      ],
+      "required": ["width", "fill"],
       "additionalProperties": false
     },
     "ellipse-state": {
@@ -577,10 +514,7 @@
           "description": "Whether to fill the ellipse or not"
         }
       },
-      "required": [
-        "width",
-        "fill"
-      ],
+      "required": ["width", "fill"],
       "additionalProperties": false
     },
     "line-state": {
@@ -595,9 +529,7 @@
           "multipleOf": 1
         }
       },
-      "required": [
-        "thickness"
-      ],
+      "required": ["thickness"],
       "additionalProperties": false
     },
     "shade-state": {
@@ -607,10 +539,7 @@
         "mode": {
           "type": "string",
           "description": "Mode of the shade tool",
-          "enum": [
-            "Lighten",
-            "Darken"
-          ]
+          "enum": ["Lighten", "Darken"]
         },
         "strength": {
           "type": "number",
@@ -627,11 +556,7 @@
           "multipleOf": 1
         }
       },
-      "required": [
-        "mode",
-        "strength",
-        "width"
-      ],
+      "required": ["mode", "strength", "width"],
       "additionalProperties": false
     }
   }

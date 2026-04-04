@@ -2,7 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import IPCCommands from '../commands'
 import { release } from 'node:os'
 import { join } from 'node:path'
-import windowStateKeeper from "electron-window-state";
+import windowStateKeeper from 'electron-window-state'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -33,11 +33,10 @@ const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
-
   let mainWindowState = windowStateKeeper({
     defaultHeight: 700,
-    defaultWidth: 1000
-  });
+    defaultWidth: 1000,
+  })
 
   win = new BrowserWindow({
     x: mainWindowState.x,
@@ -55,15 +54,16 @@ async function createWindow() {
       // Consider using contextBridge.exposeInMainWorld
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       // nodeIntegration: true,
-      contextIsolation: true
+      contextIsolation: true,
     },
   })
 
-  mainWindowState.manage(win);
+  mainWindowState.manage(win)
 
-  win.setMenu(null);
+  win.setMenu(null)
 
-  if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
+  if (process.env.VITE_DEV_SERVER_URL) {
+    // electron-vite-vue#298
     win.loadURL(url)
     // Open devTool if the app is not packaged
     win.webContents.openDevTools()
@@ -126,5 +126,5 @@ ipcMain.handle('open-win', (_, arg) => {
 })
 
 ipcMain.handle(IPCCommands.DEBUG_PING, (...args) => {
-  console.log("debug ping", ...args)
+  console.log('debug ping', ...args)
 })

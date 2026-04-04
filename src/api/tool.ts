@@ -1,174 +1,207 @@
-import { APIScope, InstanceAPI } from ".";
-import { Clone, Ellipse, Eraser, Fill, Line, Pencil, Picker, Rectangle, Select, Shade, Tool } from "./tools";
-import { Events, GridMouseEvent, PixelCoordinates, ToolType } from "./utils";
+import { APIScope, InstanceAPI } from '.'
+import {
+  Clone,
+  Ellipse,
+  Eraser,
+  Fill,
+  Line,
+  Pencil,
+  Picker,
+  Rectangle,
+  Select,
+  Shade,
+  Tool,
+} from './tools'
+import { Events, GridMouseEvent, PixelCoordinates, ToolType } from './utils'
 
 export class ToolAPI extends APIScope {
+  private _selectedTool: Tool
+  private _isAltMode: boolean
+  private readonly _tools: Record<string, Tool>
 
-    private _selectedTool: Tool;
-    private _isAltMode: boolean;
-    private readonly _tools: Record<string, Tool>;
+  private _handlers: Array<string>
+  private _trackedPixels: Set<number>
 
-    private _handlers: Array<string>;
-    private _trackedPixels: Set<number>;
+  constructor(iApi: InstanceAPI) {
+    super(iApi)
 
-    constructor(iApi: InstanceAPI) {
-        super(iApi);
+    this._tools = {}
+    this._trackedPixels = new Set()
+    this._handlers = []
+    this._isAltMode = false
 
-        this._tools = {};
-        this._trackedPixels = new Set();
-        this._handlers = [];
-        this._isAltMode = false;
+    // populate tools
+    this._tools[ToolType.PENCIL] = new Pencil(this.$iApi)
+    this._tools[ToolType.ERASER] = new Eraser(this.$iApi)
+    this._tools[ToolType.PICKER] = new Picker(this.$iApi)
+    this._tools[ToolType.FILL] = new Fill(this.$iApi)
+    this._tools[ToolType.RECTANGLE] = new Rectangle(this.$iApi)
+    this._tools[ToolType.ELLIPSE] = new Ellipse(this.$iApi)
+    this._tools[ToolType.LINE] = new Line(this.$iApi)
+    this._tools[ToolType.SHADE] = new Shade(this.$iApi)
+    this._tools[ToolType.SELECT] = new Select(this.$iApi)
+    this._tools[ToolType.CLONE] = new Clone(this.$iApi)
 
-        // populate tools
-        this._tools[ToolType.PENCIL] = new Pencil(this.$iApi);
-        this._tools[ToolType.ERASER] = new Eraser(this.$iApi);
-        this._tools[ToolType.PICKER] = new Picker(this.$iApi);
-        this._tools[ToolType.FILL] = new Fill(this.$iApi);
-        this._tools[ToolType.RECTANGLE] = new Rectangle(this.$iApi);
-        this._tools[ToolType.ELLIPSE] = new Ellipse(this.$iApi);
-        this._tools[ToolType.LINE] = new Line(this.$iApi);
-        this._tools[ToolType.SHADE] = new Shade(this.$iApi);
-        this._tools[ToolType.SELECT] = new Select(this.$iApi);
-        this._tools[ToolType.CLONE] = new Clone(this.$iApi);
-
-        // setup _handlers
-        this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_START, (mouseEvt: GridMouseEvent, event: Events) => {
-            if (this._selectedTool && mouseEvt.isOnCanvas) {
-                if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
-                    this.previewCursor(mouseEvt);
-                } else {
-                    this.$iApi.canvas.cursor.clearCursor();
-                }
-                this.invokeAction(mouseEvt, event);
+    // setup _handlers
+    this._handlers.push(
+      this.$iApi.event.on(
+        Events.MOUSE_DRAG_START,
+        (mouseEvt: GridMouseEvent, event: Events) => {
+          if (this._selectedTool && mouseEvt.isOnCanvas) {
+            if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
+              this.previewCursor(mouseEvt)
+            } else {
+              this.$iApi.canvas.cursor.clearCursor()
             }
-        }, "INSTANCE_BOUND_tool_drag_start"));
+            this.invokeAction(mouseEvt, event)
+          }
+        },
+        'INSTANCE_BOUND_tool_drag_start',
+      ),
+    )
 
-        this._handlers.push(this.$iApi.event.on(Events.MOUSE_DRAG_STOP, (mouseEvt: GridMouseEvent, event: Events) => {
-            if (this._selectedTool) {
-                this.invokeAction(mouseEvt, event);
+    this._handlers.push(
+      this.$iApi.event.on(
+        Events.MOUSE_DRAG_STOP,
+        (mouseEvt: GridMouseEvent, event: Events) => {
+          if (this._selectedTool) {
+            this.invokeAction(mouseEvt, event)
+          }
+          if (mouseEvt.isOnCanvas) {
+            this.previewCursor(mouseEvt)
+          }
+          this._stopTracking()
+        },
+        'INSTANCE_BOUND_tool_drag_stop',
+      ),
+    )
+
+    this._handlers.push(
+      this.$iApi.event.on(
+        Events.MOUSE_MOVE,
+        (mouseEvt: GridMouseEvent, event: Events) => {
+          // invoke only if it on canvas
+          if (this._selectedTool && mouseEvt.isOnCanvas) {
+            if (mouseEvt.isDragging) {
+              if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
+                this.previewCursor(mouseEvt)
+              }
+              if (this._selectedTool.toolConfiguration.invokeOnMove) {
+                this.invokeAction(mouseEvt, event)
+              }
+            } else {
+              this.previewCursor(mouseEvt)
             }
-            if (mouseEvt.isOnCanvas) {
-                this.previewCursor(mouseEvt);
-            }
-            this._stopTracking();
-        }, "INSTANCE_BOUND_tool_drag_stop"));
+          }
+        },
+        'INSTANCE_BOUND_tool_mouse_move',
+      ),
+    )
 
-        this._handlers.push(this.$iApi.event.on(Events.MOUSE_MOVE, (mouseEvt: GridMouseEvent, event: Events) => {
+    this._handlers.push(
+      this.$iApi.event.on(
+        Events.CANVAS_MOUSE_LEAVE,
+        (event: Events) => {
+          // clear the cursor
+          this.$iApi.canvas.cursor.clearCursor()
 
-            // invoke only if it on canvas
-            if (this._selectedTool && mouseEvt.isOnCanvas) {
-                if (mouseEvt.isDragging) {
-                    if (this._selectedTool.toolConfiguration.showPreviewOnInvoke) {
-                        this.previewCursor(mouseEvt);
-                    }
-                    if (this._selectedTool.toolConfiguration.invokeOnMove) {
-                        this.invokeAction(mouseEvt, event);
-                    }
-                } else {
-                    this.previewCursor(mouseEvt);
-                }
-            }
-        }, "INSTANCE_BOUND_tool_mouse_move"));
+          // clear tracking set
+          this._stopTracking()
+        },
+        'INSTANCE_BOUND_tool_mouse_leave',
+      ),
+    )
 
-        this._handlers.push(this.$iApi.event.on(Events.CANVAS_MOUSE_LEAVE, (event: Events) => {
+    // default to pencil if not set
+    this._selectedTool =
+      this._tools[
+        this.$iApi.state.loadedState?.tools?.selectedTool ?? ToolType.PENCIL
+      ]
+    this._selectedTool.init()
+  }
 
-            // clear the cursor
-            this.$iApi.canvas.cursor.clearCursor();
+  destroy(): void {
+    this._handlers.forEach((h) => this.$iApi.event.off(h))
+    Object.values(this._tools).forEach((tool) => {
+      tool.drawGraphic.destroy()
+      tool.destroy()
+    })
+  }
 
-            // clear tracking set
-            this._stopTracking();
-        }, "INSTANCE_BOUND_tool_mouse_leave"));
-
-        // default to pencil if not set
-        this._selectedTool = this._tools[this.$iApi.state.loadedState?.tools?.selectedTool ?? ToolType.PENCIL];
-        this._selectedTool.init();
-    }
-
-    destroy(): void {
-        this._handlers.forEach(h => this.$iApi.event.off(h));
-        Object.values(this._tools).forEach(tool => {
-            tool.drawGraphic.destroy();
-            tool.destroy()
-        });
-    }
-
-    invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
-        if (this._selectedTool) {
-            if (!this._checkTracking(mouseEvent.coords) || !mouseEvent.isDragging) {
-
-                // only update the pixel tracking if mouse is being dragged
-                if (mouseEvent.isDragging) {
-                    this._updateTracking(mouseEvent.coords);
-                }
-
-                this._selectedTool.invokeAction(mouseEvent, event);
-                this.$iApi.history.update();
-            }
-        }
-    }
-
-    previewCursor(event: GridMouseEvent): void {
-        if (this._selectedTool) {
-            this._selectedTool.previewCursor(event);
-        }
-    }
-
-    selectTool(tool: ToolType): void {
-        if (this._selectedTool) {
-            this._selectedTool.destroy();
-            this.$iApi.canvas.cursor.clearCursor();
+  invokeAction(mouseEvent: GridMouseEvent, event: Events): void {
+    if (this._selectedTool) {
+      if (!this._checkTracking(mouseEvent.coords) || !mouseEvent.isDragging) {
+        // only update the pixel tracking if mouse is being dragged
+        if (mouseEvent.isDragging) {
+          this._updateTracking(mouseEvent.coords)
         }
 
-        this._selectedTool = this._tools[tool];
-        this._selectedTool.init();
+        this._selectedTool.invokeAction(mouseEvent, event)
+        this.$iApi.history.update()
+      }
+    }
+  }
 
-        this.$iApi.event.emit(Events.TOOL_SELECT, tool);
+  previewCursor(event: GridMouseEvent): void {
+    if (this._selectedTool) {
+      this._selectedTool.previewCursor(event)
+    }
+  }
+
+  selectTool(tool: ToolType): void {
+    if (this._selectedTool) {
+      this._selectedTool.destroy()
+      this.$iApi.canvas.cursor.clearCursor()
     }
 
-    toggleAltMode(mode: boolean): void {
-        this._isAltMode = mode;
-        this.$iApi.event.emit(Events.TOOL_ALT_MODE_UPDATE, mode);
+    this._selectedTool = this._tools[tool]
+    this._selectedTool.init()
+
+    this.$iApi.event.emit(Events.TOOL_SELECT, tool)
+  }
+
+  toggleAltMode(mode: boolean): void {
+    this._isAltMode = mode
+    this.$iApi.event.emit(Events.TOOL_ALT_MODE_UPDATE, mode)
+  }
+
+  private _checkTracking(coords: PixelCoordinates): boolean {
+    if (this._selectedTool?.toolConfiguration.trackPixels === false) {
+      // short-circuit
+      return false
     }
 
-    private _checkTracking(coords: PixelCoordinates): boolean {
+    const canvas = this.$iApi.canvas
+    if (canvas) {
+      return this._trackedPixels.has(coords.y * canvas.height + coords.x)
+    }
+    return true
+  }
 
-        if (this._selectedTool?.toolConfiguration.trackPixels === false) {
-            // short-circuit
-            return false;
-        }
-
-        const canvas = this.$iApi.canvas;
-        if (canvas) {
-            return this._trackedPixels.has(coords.y * canvas.height + coords.x);
-        }
-        return true;
+  private _updateTracking(coords: PixelCoordinates): void {
+    if (this._selectedTool?.toolConfiguration.trackPixels === false) {
+      return
     }
 
-    private _updateTracking(coords: PixelCoordinates): void {
-
-        if (this._selectedTool?.toolConfiguration.trackPixels === false) {
-            return;
-        }
-
-        const canvas = this.$iApi.canvas;
-        if (canvas) {
-            this._trackedPixels.add(coords.y * canvas.height + coords.x);
-        }
+    const canvas = this.$iApi.canvas
+    if (canvas) {
+      this._trackedPixels.add(coords.y * canvas.height + coords.x)
     }
+  }
 
-    private _stopTracking(): void {
-        this._trackedPixels.clear();
-    }
+  private _stopTracking(): void {
+    this._trackedPixels.clear()
+  }
 
-    get selectedTool(): Tool {
-        return this._selectedTool;
-    }
+  get selectedTool(): Tool {
+    return this._selectedTool
+  }
 
-    get isAltMode(): boolean {
-        return this._isAltMode;
-    }
+  get isAltMode(): boolean {
+    return this._isAltMode
+  }
 
-    get tools(): Array<Tool> {
-        return Object.values(this._tools);
-    }
+  get tools(): Array<Tool> {
+    return Object.values(this._tools)
+  }
 }

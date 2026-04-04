@@ -1,69 +1,69 @@
-import { Graphics } from "pixi.js";
-import { ToolProperty } from ".";
-import { APIScope } from "..";
-import { InstanceAPI } from "../instance";
-import { Events, GridMouseEvent, ToolConfiguration, ToolType } from "../utils";
+import { Graphics } from 'pixi.js'
+import { ToolProperty } from '.'
+import { APIScope } from '..'
+import { InstanceAPI } from '../instance'
+import { Events, GridMouseEvent, ToolConfiguration, ToolType } from '../utils'
 
 export abstract class Tool extends APIScope {
+  private _toolType: ToolType
+  protected _drawGraphic: Graphics
+  protected _toolProperties: Array<ToolProperty>
+  protected _toolConfiguration: ToolConfiguration
 
-    private _toolType: ToolType;
-    protected _drawGraphic: Graphics;
-    protected _toolProperties: Array<ToolProperty>;
-    protected _toolConfiguration: ToolConfiguration;
+  protected _handlers: Array<string>
 
-    protected _handlers: Array<string>;
-
-    constructor(iApi: InstanceAPI, toolType: ToolType) {
-        super(iApi);
-        this._toolType = toolType;
-        this._drawGraphic = new Graphics({ roundPixels: true });
-        this._toolProperties = [];
-        this._toolConfiguration = {
-            showPreviewOnInvoke: false,
-            invokeOnMove: false,
-            trackPixels: true,
-        };
-
-        this._handlers = [];
+  constructor(iApi: InstanceAPI, toolType: ToolType) {
+    super(iApi)
+    this._toolType = toolType
+    this._drawGraphic = new Graphics({ roundPixels: true })
+    this._toolProperties = []
+    this._toolConfiguration = {
+      showPreviewOnInvoke: false,
+      invokeOnMove: false,
+      trackPixels: true,
     }
 
-    init(): void {
-        // will be implemented by tool
-    }
+    this._handlers = []
+  }
 
-    previewCursor(event: GridMouseEvent): void {
-        // will be implemented by tool
-    }
+  init(): void {
+    // will be implemented by tool
+  }
 
-    newGraphic(): void {
-        this._drawGraphic = new Graphics({ roundPixels: true });
-    }
+  previewCursor(event: GridMouseEvent): void {
+    // will be implemented by tool
+  }
 
-    get toolConfiguration(): ToolConfiguration {
-        return this._toolConfiguration;
-    }
+  newGraphic(): void {
+    this._drawGraphic = new Graphics({ roundPixels: true })
+  }
 
-    get toolProperties(): Array<ToolProperty> {
-        return this._toolProperties;
-    }
+  get toolConfiguration(): ToolConfiguration {
+    return this._toolConfiguration
+  }
 
-    get toolType(): ToolType {
-        return this._toolType;
-    }
+  get toolProperties(): Array<ToolProperty> {
+    return this._toolProperties
+  }
 
-    get drawGraphic(): Graphics {
-        return this._drawGraphic;
-    }
+  get toolType(): ToolType {
+    return this._toolType
+  }
 
-    protected loadToolState(): any {
-        const toolState = this.$iApi.state.loadedState?.tools?.states.find((tool: any) => tool.tool === this._toolType)?.state;
-        return toolState;
-    }
+  get drawGraphic(): Graphics {
+    return this._drawGraphic
+  }
 
-    // invoke the tool's action (e.g. draw a pixel)
-    abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void;
+  protected loadToolState(): any {
+    const toolState = this.$iApi.state.loadedState?.tools?.states.find(
+      (tool: any) => tool.tool === this._toolType,
+    )?.state
+    return toolState
+  }
 
-    // get state of tool
-    abstract getToolState(): any;
+  // invoke the tool's action (e.g. draw a pixel)
+  abstract invokeAction(mouseEvent: GridMouseEvent, event: Events): void
 
+  // get state of tool
+  abstract getToolState(): any
 }

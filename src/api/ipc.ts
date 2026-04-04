@@ -1,18 +1,17 @@
 export class IPCAPI {
+  destroy(): void {
+    // do nothing
+  }
 
-    destroy(): void {
-        // do nothing
+  call(channel: string, ...data: any): void {
+    if (this.ipcAPISupported()) {
+      //@ts-ignore
+      window.ipcAPI.call(channel, ...data)
     }
+  }
 
-    call(channel: string, ...data: any): void {
-        if (this.ipcAPISupported()) {
-            //@ts-ignore
-            window.ipcAPI.call(channel, ...data)
-        }
-    }
-
-    ipcAPISupported(): boolean {
-        //@ts-ignore
-        return !!window.ipcAPI;
-    }
+  ipcAPISupported(): boolean {
+    //@ts-ignore
+    return !!window.ipcAPI
+  }
 }
