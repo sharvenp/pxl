@@ -5,10 +5,10 @@
       class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border"
     >
       <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
+        class="rounded-lg flex items-center justify-center flex-col border-2"
         @click="selectTool(ToolType.PENCIL)"
       >
-        P
+        <img src="../assets/pencil.png" width="32" />
       </button>
       <button
         class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
