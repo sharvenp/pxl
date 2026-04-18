@@ -235,9 +235,6 @@ function handleClick(evt: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener("click", handleClick);
-
-  // TODO: remove
-  iApi?.panel.toggle(PanelType.ANIMATOR);
 });
 
 onUnmounted(() => {

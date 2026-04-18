@@ -72,7 +72,8 @@ let error = ref("");
 let initialized = ref(false);
 const handlers: Array<string> = [];
 
-const BYPASS_INIT = true;
+// use to bypass initialization
+const BYPASS_INIT = false;
 
 onMounted(() => {
   handlers.push(
