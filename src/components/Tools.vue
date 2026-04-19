@@ -5,70 +5,19 @@
       class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border"
     >
       <button
-        class="rounded-lg flex items-center justify-center flex-col border-2"
-        @click="selectTool(ToolType.PENCIL)"
+        v-for="type in Object.values(ToolType)"
+        class="rounded-lg flex items-center justify-center flex-col border-2 w-16 h-16"
+        @click="selectTool(type as ToolType)"
+        :title="type"
+        :key="type"
       >
-        <img src="../assets/pencil.png" width="32" />
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.ERASER)"
-      >
-        E
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.PICKER)"
-      >
-        Pi
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.FILL)"
-      >
-        F
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.RECTANGLE)"
-      >
-        R
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.ELLIPSE)"
-      >
-        C
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.LINE)"
-      >
-        L
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.SHADE)"
-      >
-        S
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.SELECT)"
-      >
-        Se
-      </button>
-      <button
-        class="p-4 rounded-lg bg-orange-300 hover:bg-orange-500"
-        @click="selectTool(ToolType.CLONE)"
-      >
-        Cl
+        <img :src="`src/assets/${type.toLowerCase()}.png`" width="32" />
       </button>
     </div>
     <!-- Tool Property -->
     <div
       v-if="currentTool"
-      class="bg-white mt-5 flex flex-col p-4 border w-40"
+      class="bg-white mt-5 flex flex-col p-4 border w-45"
       :key="currentTool.toolType"
     >
       <span class="text-base">{{ currentTool.toolType }}</span>

@@ -87,8 +87,10 @@ export class HistoryAPI extends APIScope {
   }
 
   private _clearHistory(frameId: string, layerId: string): void {
-    this._historyStack[frameId][layerId].forEach((c) => c.destroy());
-    this._historyStack[frameId][layerId].length = 0;
+    if (this._historyStack[frameId] && this._historyStack[frameId][layerId]) {
+      this._historyStack[frameId][layerId].forEach((c) => c.destroy());
+      this._historyStack[frameId][layerId].length = 0;
+    }
   }
 
   private _getCurrentGridState(): { frameId: string; layerId: string } {
