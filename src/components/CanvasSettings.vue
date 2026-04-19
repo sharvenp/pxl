@@ -1,7 +1,7 @@
 <template>
   <div
     v-show="visible"
-    class="canvas-settings absolute rounded border bg-white m-5 flex flex-col p-4 z-10"
+    class="canvas-settings absolute pixel-border bg-white mx-5 my-7 flex flex-col p-4 z-10"
   >
     <div class="flex flex-row items-center text-xs">
       <input type="checkbox" v-model="mirrorX" @change="updateMirrorX" />

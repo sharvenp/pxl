@@ -1,7 +1,7 @@
 <template>
   <div
     v-show="visible"
-    class="canvas-layers absolute border bg-white m-5 flex flex-col p-1 z-10"
+    class="canvas-layers absolute pixel-border bg-white mx-5 my-8 flex flex-col p-1 z-10"
   >
     <div
       class="flex flex-col text-xs overflow-auto scrollbar scrollbar-thumb-stone-200 scrollbar-track-while scrollbar-thumb-rounded-full scrollbar-w-3"
@@ -10,7 +10,7 @@
         <div
           v-for="(layer, i) in layers"
           :key="i"
-          :class="`flex flex-row border m-1 p-1 ${layer.label === selectedId ? 'bg-stone-100 border-orange-200' : ''}`"
+          :class="`flex flex-row pixel-border mx-1 my-4 px-1 py-2 ${layer.label === selectedId ? 'bg-stone-100 pixel-border' : ''}`"
         >
           <div
             class="flex flex-row items-center"
@@ -26,10 +26,9 @@
               :id="layer.label"
               width="30"
               height="30"
-              class="border bg-white"
+              class="pixel-border bg-white"
             ></canvas>
             <span class="ml-2">Layer {{ i + 1 }}</span>
-            <!-- <span class="ml-2">{{ layer.label }}</span> -->
           </div>
         </div>
       </draggable>
@@ -37,34 +36,38 @@
   </div>
   <div
     v-show="visible"
-    class="canvas-layers-actions absolute border bg-white m-5 flex flex-col z-10"
+    class="canvas-layers-actions absolute pixel-border bg-white mx-5 flex flex-col z-10"
   >
-    <div class="flex flex-row justify-around p-1">
+    <div class="flex flex-row justify-around p-2">
       <button
-        class="p-1 border text-xs"
+        class="p-1 pixel-border text-xs"
         :disabled="layers.length >= MAX_LAYER_COUNT"
         @click="toggleAll(true)"
+        title="Show All Layers"
       >
         👁️
       </button>
       <button
-        class="p-1 border text-xs"
+        class="p-1 pixel-border text-xs"
         :disabled="layers.length >= MAX_LAYER_COUNT"
         @click="toggleAll(false)"
+        title="Hide All Layers"
       >
         👀
       </button>
       <button
-        class="p-1 border text-xs"
+        class="p-1 pixel-border text-xs"
         :disabled="layers.length >= MAX_LAYER_COUNT"
         @click="addLayer"
+        title="Add Layer"
       >
         ➕
       </button>
       <button
-        class="p-1 border text-xs"
+        class="p-1 pixel-border text-xs"
         :disabled="layers.length <= 1"
         @click="removeLayer"
+        title="Remove Layer"
       >
         🗑️
       </button>
@@ -94,7 +97,7 @@ onMounted(() => {
   );
 
   handlers.push(
-    ...iApi?.event.ons(
+    ...(iApi?.event.ons(
       [
         Events.APP_INITIALIZED,
         Events.CANVAS_LAYER_ADDED,
@@ -105,7 +108,7 @@ onMounted(() => {
       () => {
         updateLayerList();
       },
-    )!,
+    ) ?? []),
   );
 
   handlers.push(

@@ -115,7 +115,7 @@ export class ToolAPI extends APIScope {
     // default to pencil if not set
     this._selectedTool =
       this._tools[
-        this.$iApi.state.loadedState?.tools?.selectedTool ?? ToolType.PENCIL
+      this.$iApi.state.loadedState?.tools?.selectedTool ?? ToolType.PENCIL
       ];
     this._selectedTool.init();
   }

@@ -1,10 +1,10 @@
 <template>
   <div
     v-show="visible"
-    class="preview absolute rounded bg-white bg-opacity-60 border m-5 z-10 items-center justify-center flex"
+    class="preview absolute bg-white bg-opacity-60 pixel-border m-5 z-10 items-center justify-center flex"
   >
     <canvas
-      class="preview-canvas border"
+      class="preview-canvas pixel-border"
       width="100"
       height="100"
       ref="previewCanvas"

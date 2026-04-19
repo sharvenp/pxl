@@ -2,11 +2,11 @@
   <div v-show="visible" class="tools-menu absolute rounded m-5 z-10">
     <!-- Tool buttons -->
     <div
-      class="bg-white grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 border"
+      class="grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 pixel-border"
     >
       <button
         v-for="type in Object.values(ToolType)"
-        class="rounded-lg flex items-center justify-center flex-col border-2 w-16 h-16"
+        class="rounded-lg flex items-center justify-center flex-col pixel-border w-16 h-16"
         @click="selectTool(type as ToolType)"
         :title="type"
         :key="type"
@@ -17,7 +17,7 @@
     <!-- Tool Property -->
     <div
       v-if="currentTool"
-      class="bg-white mt-5 flex flex-col p-4 border w-45"
+      class="bg-white mt-5 flex flex-col p-4 pixel-border w-45"
       :key="currentTool.toolType"
     >
       <span class="text-base">{{ currentTool.toolType }}</span>

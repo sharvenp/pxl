@@ -1,20 +1,22 @@
 <template>
   <div
     v-show="visible"
-    class="absolute animator p-3 bottom-10 left-5 rounded border bg-white"
+    class="absolute animator p-3 bottom-10 left-5 rounded pixel-border bg-white"
   >
     <div>
-      <div class="flex items-center gap-4 mb-2">
+      <div class="flex items-center gap-4 mb-4">
         <button
-          class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
+          class="px-3 py-1 pixel-border hover:bg-stone-300 transition text-sm font-medium"
           :disabled="frames.length >= MAX_FRAME_COUNT"
           @click="addFrame"
+          title="Add frame"
         >
-          ➕ Add Frame
+          Add Frame
         </button>
         <button
-          class="px-3 py-1 rounded bg-stone-200 hover:bg-stone-300 transition text-sm font-medium"
+          class="px-3 py-1 pixel-border hover:bg-stone-300 transition text-sm font-medium"
           @click="preview()"
+          title="Preview animation"
         >
           ▶️ Preview
         </button>
@@ -65,10 +67,10 @@
           <img :id="frame.label" v-on:dblclick="selectFrame(i)" />
 
           <!-- Icon Buttons Bottom Right -->
-          <div class="absolute top-1 left-1 right-1 flex justify-between">
+          <div class="absolute bottom-1 left-1 right-1 flex justify-between">
             <!-- Clone Icon -->
             <button
-              class="p-1 rounded hover:bg-stone-100 transition"
+              class="p-1 hover:bg-stone-100 transition"
               title="Clone"
               @click="cloneFrame(i)"
             >
@@ -104,7 +106,7 @@
             </button>
             <!-- Delete Icon -->
             <button
-              class="p-1 rounded hover:bg-stone-100 transition"
+              class="p-1 hover:bg-stone-100 transition"
               title="Delete"
               @click="deleteFrame(i)"
             >
@@ -181,7 +183,7 @@ onMounted(() => {
   );
 
   handlers.push(
-    ...iApi?.event.ons(
+    ...(iApi?.event.ons(
       [
         Events.APP_INITIALIZED,
         Events.CANVAS_FRAME_ADDED,
@@ -193,7 +195,7 @@ onMounted(() => {
         fps.value = iApi?.canvas.grid.fps;
         updateFrameList();
       },
-    )!,
+    ) ?? []),
   );
 
   handlers.push(
