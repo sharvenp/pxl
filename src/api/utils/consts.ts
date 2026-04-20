@@ -7,3 +7,4 @@ export const MAX_FPS = 60;
 export const CURSOR_PREVIEW_COLOR = "0x75757FFF";
 export const NO_COLOR_FULL_ALPHA = "0x000000FF";
 export const NO_COLOR = "0x00000000";
+export const COMMON_CANVAS_DIMENSIONS = [[16, 16], [32, 32], [64, 64], [128, 128]];

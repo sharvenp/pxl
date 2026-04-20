@@ -5,7 +5,9 @@
       class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-20"
       @click.self="closeModal"
     >
-      <div class="flex flex-col bg-white p-6 rounded shadow-lg w-full max-w-md">
+      <div
+        class="flex flex-col bg-white p-6 pixel-border shadow-lg w-full max-w-md"
+      >
         <h2 class="text-lg font-semibold mb-2">{{ notification?.title }}</h2>
         <div class="mb-4">
           <p class="text-gray-700">{{ notification?.message }}</p>
@@ -17,14 +19,14 @@
           <button
             v-for="(option, index) in notification?.options"
             :key="index"
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600"
             @click="callOptionCallback(option.callback)"
           >
             {{ option.label }}
           </button>
           <button
             v-if="notification?.showCancel"
-            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            class="px-4 py-2 bg-gray-300 hover:bg-gray-400"
             @click="closeModal"
           >
             {{ notification?.cancelLabel ?? "Cancel" }}

@@ -7,7 +7,7 @@
 
     <div
       v-if="!initialized"
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 border-stone-300 border-2 w-96 text-center p-5 rounded-xl"
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 border-stone-300 pixel-border w-96 text-center p-5"
     >
       <h2 class="text-lg font-bold mb-4">Canvas Setup</h2>
       <p class="text-sm text-gray-600 mb-4">
@@ -22,7 +22,7 @@
             <input
               id="width"
               v-model="width"
-              class="appearance-none border rounded-lg p-2 w-full"
+              class="appearance-none pixel-border p-2 w-full"
               type="number"
               min="2"
               max="512"
@@ -36,7 +36,7 @@
             <input
               id="height"
               v-model="height"
-              class="appearance-none border rounded-lg p-2 w-full"
+              class="appearance-none pixel-border p-2 w-full"
               type="number"
               min="2"
               max="512"
@@ -45,8 +45,21 @@
           </div>
         </div>
       </div>
+      <!-- Common Dimensions -->
+      <div class="flex flex-col space-y-3 mt-5">
+        <div class="flex justify-around flex-wrap gap-2">
+          <button
+            v-for="dims in COMMON_CANVAS_DIMENSIONS"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-3"
+            @click="setAndInitialize(dims[0], dims[1])"
+            :key="`${dims[0]}x${dims[1]}`"
+          >
+            {{ dims[0] }}x{{ dims[1] }}
+          </button>
+        </div>
+      </div>
       <button
-        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-4 w-full"
+        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 mt-4 w-full"
         @click="initializeCanvas"
       >
         Create Canvas
@@ -61,7 +74,7 @@
 <script setup lang="ts">
 import { ref, inject, onUnmounted, onMounted } from "vue";
 import { InstanceAPI, OrchestratorAPI } from "../api";
-import { Events } from "../api/utils";
+import { COMMON_CANVAS_DIMENSIONS, Events } from "../api/utils";
 
 const container = ref();
 const iApi = inject<InstanceAPI>("iApi");
@@ -102,6 +115,12 @@ onUnmounted(() => {
   oApi?.destroyInstance();
   initialized.value = false;
 });
+
+function setAndInitialize(w: number, h: number) {
+  width.value = w;
+  height.value = h;
+  initializeCanvas();
+}
 
 function initializeCanvas() {
   if (!validateDimensions()) {

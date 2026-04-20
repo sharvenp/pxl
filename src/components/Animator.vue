@@ -1,7 +1,7 @@
 <template>
   <div
     v-show="visible"
-    class="absolute animator p-3 bottom-10 left-5 rounded pixel-border bg-white"
+    class="absolute animator p-3 bottom-10 left-5 pixel-border bg-white"
   >
     <div>
       <div class="flex items-center gap-4 mb-4">

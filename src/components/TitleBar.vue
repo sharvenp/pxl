@@ -41,7 +41,7 @@
         </button>
         <div
           v-if="activeMenu === menu"
-          class="absolute bg-white border mt-1 shadow-md w-max rounded"
+          class="absolute bg-white border mt-1 shadow-md w-max"
           :id="`title-bar-${menu}-options`"
         >
           <ul>

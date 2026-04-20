@@ -129,3 +129,10 @@ img {
                  0 -2px 0 0 var(--accent-color),
                  0 2px 0 0 var(--accent-color);
 }
+
+.pixel-border-focus {
+  box-shadow:   -2px 0 0 0 var(--text-primary-color),
+                 2px 0 0 0 var(--text-primary-color),
+                 0 -2px 0 0 var(--text-primary-color),
+                 0 2px 0 0 var(--text-primary-color);
+}

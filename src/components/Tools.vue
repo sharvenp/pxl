@@ -1,17 +1,17 @@
 <template>
-  <div v-show="visible" class="tools-menu absolute rounded m-5 z-10">
+  <div v-show="visible" class="tools-menu absolute m-5 z-10">
     <!-- Tool buttons -->
     <div
       class="grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 pixel-border"
     >
       <button
         v-for="type in Object.values(ToolType)"
-        class="rounded-lg flex items-center justify-center flex-col pixel-border w-16 h-16"
+        :class="`flex items-center justify-center flex-col w-16 h-16 ${currentTool?.toolType === type ? 'pixel-border-focus' : 'pixel-border'}`"
         @click="selectTool(type as ToolType)"
         :title="type"
         :key="type"
       >
-        <img :src="`src/assets/${type.toLowerCase()}.png`" width="32" />
+        <img :src="`src/assets/${type.toLowerCase()}.png`" width="48" />
       </button>
     </div>
     <!-- Tool Property -->
@@ -60,7 +60,7 @@
         <template v-else-if="prop.propertyType === 'button'">
           <div class="text-xs mt-2">
             <button
-              class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded"
+              class="bg-gray-200 hover:bg-gray-300 px-2 py-1"
               @click="iApi?.event.emit(prop.event)"
             >
               {{ prop.propertyLabel }}
