@@ -44,6 +44,3 @@ jobs:
 
       - name: Build the files
         run: npm run build
-
-      - name: Copy public folder into dist
-        run: cp -r public/. dist/
