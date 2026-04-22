@@ -1,6 +1,6 @@
 {
   "name": "pxl",
-  "version": "0.0.1",
+  "version": "1.0.0-beta",
   "main": "dist-electron/main/index.js",
   "description": "A desktop pixel art editor.",
   "author": "sharvenp",
