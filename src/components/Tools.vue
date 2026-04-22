@@ -11,7 +11,7 @@
         :title="type"
         :key="type"
       >
-        <img :src="`../public/${type.toLowerCase()}.png`" width="48" />
+        <img :src="`../${type.toLowerCase()}.png`" width="48" />
       </button>
     </div>
     <!-- Tool Property -->
