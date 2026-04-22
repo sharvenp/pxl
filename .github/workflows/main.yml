@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    name: Create build
+    uses: ./.github/workflows/build.yml
+    with:
+      cache_sha: ${{ format('{0}-{1}', github.ref_name, github.event.pull_request.head.sha || github.sha) }}
+
+  post-build:
+    name: Create bundle
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build files
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: ${{ format('{0}-{1}', github.ref_name, github.event.pull_request.head.sha || github.sha) }}
+
+      - name: Cache dist files
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: dist-${{ format('{0}-{1}', github.ref_name, github.event.pull_request.head.sha || github.sha) }}
+
+  deploy-pages:
+    name: Deploy the files
+    needs: post-build
+    uses: ./.github/workflows/pages.yml
+    with:
+      cache_sha: ${{ format('{0}-{1}', github.ref_name, github.event.pull_request.head.sha || github.sha) }}

@@ -20,7 +20,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "build": "vue-tsc --noEmit && vite build",
+    "electron:build": "vue-tsc --noEmit && vite build && electron-builder",
     "preview": "vite preview",
     "lint": "eslint --ext .ts,.tsx,.vue src/",
     "format": "prettier --write ."
