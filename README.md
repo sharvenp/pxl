@@ -1,4 +1,4 @@
-# .pxl
+# pxl
 
 A pixel art editor powered by [PixiJS](https://pixijs.com/) and [Vue](https://vuejs.org/).
 

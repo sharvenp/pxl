@@ -9,16 +9,13 @@
       v-if="!initialized"
       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 border-stone-300 pixel-border w-96 text-center p-5"
     >
-      <h2 class="text-lg font-bold mb-4">Canvas Setup</h2>
+      <h1 class="text-4xl font-bold mb-4">.pxl</h1>
       <p class="text-sm text-gray-600 mb-4">
-        Enter the dimensions for your canvas below
+        Enter the dimensions for your canvas
       </p>
       <div class="flex flex-col space-y-3">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 text-sm">
           <div class="flex flex-col">
-            <label for="width" class="text-sm font-medium text-gray-700 mb-1"
-              >Width</label
-            >
             <input
               id="width"
               v-model="width"
@@ -30,9 +27,6 @@
             />
           </div>
           <div class="flex flex-col">
-            <label for="height" class="text-sm font-medium text-gray-700 mb-1"
-              >Height</label
-            >
             <input
               id="height"
               v-model="height"
@@ -46,11 +40,11 @@
         </div>
       </div>
       <!-- Common Dimensions -->
-      <div class="flex flex-col space-y-3 mt-5">
+      <div class="flex flex-col space-y-3 mt-5 text-sm">
         <div class="flex justify-around flex-wrap gap-2">
           <button
             v-for="dims in COMMON_CANVAS_DIMENSIONS"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-3"
+            class="bg-gray-200 hover:bg-gray-300 font-bold py-1 px-3"
             @click="setAndInitialize(dims[0], dims[1])"
             :key="`${dims[0]}x${dims[1]}`"
           >
@@ -59,7 +53,7 @@
         </div>
       </div>
       <button
-        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 mt-4 w-full"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 mt-4 w-full"
         @click="initializeCanvas"
       >
         Create Canvas
