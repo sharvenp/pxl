@@ -18,7 +18,7 @@
           @click="preview()"
           title="Preview animation"
         >
-          ▶️ Preview
+          Preview
         </button>
         <label
           class="flex items-center gap-2 text-sm cursor-pointer select-none"

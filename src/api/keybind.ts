@@ -78,7 +78,7 @@ export class KeyBindAPI extends APIScope {
 
   private _processInputDown(evt: KeyboardEvent): void {
     // prevent firing repeatedly when held down
-    if (evt.repeat) {
+    if (evt.repeat || this._isTypingInField(evt)) {
       return;
     }
 
@@ -110,6 +110,11 @@ export class KeyBindAPI extends APIScope {
   }
 
   private _processInputUp(evt: KeyboardEvent): void {
+
+    if (this._isTypingInField(evt)) {
+      return;
+    }
+
     const key = <Key>evt.key.toUpperCase();
 
     const candidateKeyBinds = this._keyBinds.filter(
@@ -130,6 +135,11 @@ export class KeyBindAPI extends APIScope {
   private _processBlur(): void {
     // clear the keys
     this._keys.length = 0;
+  }
+
+  private _isTypingInField(evt: KeyboardEvent): boolean {
+    const target = evt.target;
+    return target instanceof Element && target.matches('input, textarea, select, [contenteditable]');
   }
 
   private _initiailizeDefaultKeyBinds(): void {

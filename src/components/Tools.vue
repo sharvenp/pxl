@@ -28,7 +28,7 @@
             <span>{{ prop.value }}{{ prop.unit }}</span>
           </div>
           <input
-            class="mt-1"
+            class="mt-1 max-w-36"
             type="range"
             :min="prop.minValue"
             :max="prop.maxValue"

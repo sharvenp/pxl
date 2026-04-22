@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Jersey+20&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,7 +24,10 @@
 html,
 body,
 #app {
-  font-family: "Sora", sans-serif;
+  font-family: "Jersey 20", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
   height: 100%;
 }
 
@@ -93,11 +96,11 @@ img {
   top: 264px;
   right: 0px;
   width: 155px;
-  height: 250px;
+  height: 320px;
 }
 
 .canvas-layers-actions {
-  top: 515px;
+  top: 575px;
   right: 0px;
   width: 155px;
 }
