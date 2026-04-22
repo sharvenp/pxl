@@ -2,7 +2,7 @@
   <div v-show="visible" class="tools-menu absolute m-5 z-10">
     <!-- Tool buttons -->
     <div
-      class="grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 pixel-border"
+      class="grid grid-rows-3 grid-cols-2 gap-4 p-4 font-mono text-sm text-center font-bold leading-6 pixel-border bg-white"
     >
       <button
         v-for="type in Object.values(ToolType)"
